@@ -66,9 +66,9 @@ const FrontSlider = () => {
                     ))
                 }
             </Slider>
-            <div className='w-full absolute left-0 -bottom-16 '>
-                <div className='flex justify-center bg-white w-fit mx-auto shadow-md rounded-sm py-5'>
-                    <div className=' border-r w-[19rem] h-full text-center flex flex-col  gap-5 items-center px-3 py-2 cursor-pointer group'>
+            <div className='w-full sm:absolute left-0 -bottom-16 '>
+                <div className='flex flex-wrap justify-center bg-white w-fit mx-auto shadow-md rounded-sm py-5'>
+                    <div className=' border-r my-3 w-[19rem] h-full text-center flex flex-col  gap-5 items-center px-3 py-2 cursor-pointer group'>
                         <div className='bg-green-600 h-12 p-2 rounded-full w-12 grid place-items-center group-hover:rotate-[360deg] transition-transform duration-500'>
                             <FiSend className=' text-2xl text-white ' />
                         </div>
@@ -77,7 +77,7 @@ const FrontSlider = () => {
                             <p className='uppercase text-gray-400 text-[12px]'>On Order $5000</p>
                         </div>
                     </div>
-                    <div className=' border-r w-[19rem] h-full text-center flex flex-col  gap-5 items-center px-3 py-2 cursor-pointer group'>
+                    <div className=' border-r my-3 w-[19rem] h-full text-center flex flex-col  gap-5 items-center px-3 py-2 cursor-pointer group'>
                         <div className='bg-green-600 h-12 p-2 rounded-full w-12 grid place-items-center group-hover:rotate-[360deg] transition-transform duration-500'>
                             <BiSupport className=' text-2xl text-white ' />
                         </div>
@@ -86,7 +86,7 @@ const FrontSlider = () => {
                             <p className='uppercase text-gray-400 text-[12px]'>LIFE TIME SUPPORT 24/7</p>
                         </div>
                     </div>
-                    <div className=' border-r w-[19rem] h-full text-center flex flex-col  gap-5 items-center px-3 py-2 cursor-pointer group'>
+                    <div className=' border-r my-3 w-[19rem] h-full text-center flex flex-col  gap-5 items-center px-3 py-2 cursor-pointer group'>
                         <div className='bg-green-600 h-12 p-2 rounded-full w-12 grid place-items-center group-hover:rotate-[360deg] transition-transform duration-500'>
                             <SiLinktree className=' text-2xl text-white ' />
                         </div>
@@ -95,7 +95,7 @@ const FrontSlider = () => {
                             <p className='uppercase text-gray-400 text-[12px]'>HELP ALL ASPECTS</p>
                         </div>
                     </div>
-                    <div className=' w-[19rem] h-full text-center flex flex-col  gap-5 items-center px-3 py-2 cursor-pointer group'>
+                    <div className=' my-3 w-[19rem] h-full text-center flex flex-col  gap-5 items-center px-3 py-2 cursor-pointer group'>
                         <div className='bg-green-600 h-12 p-2 rounded-full w-12 grid place-items-center group-hover:rotate-[360deg] transition-transform duration-500'>
                             <RiHeadphoneLine className=' text-2xl text-white ' />
                         </div>

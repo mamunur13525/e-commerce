@@ -1,143 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { IoSearch } from 'react-icons/io5';
+import { BsBagPlus } from 'react-icons/bs';
+import { MdFavoriteBorder, MdOutlineArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
+import cogoToast from 'cogo-toast';
+import 'react-responsive-modal/styles.css';
+import { Modal } from 'react-responsive-modal';
+import Button from '../Button';
+import { itemLists } from '../../../FakeData/FakeData';
+import Slider from "react-slick";
 
 const ProductLists = () => {
-    let itemLists = [
-        {
-            id: 0,
-            item_name: 'Stayberry',
-            item_img: 'https://cdn.shopify.com/s/files/1/2179/9295/products/11_bfd2aa7c-4b01-448f-adcd-d621336fdea5_grande.jpg?v=1500460099',
-            base_price: 400.00,
-            weight_category: 'kg',
-            category: 'fruits',
-            discount: 10,
-            currency: 'usd',
-        },
-        {
-            id: 1,
-            item_name: 'union bed',
-            item_img: 'https://cdn.shopify.com/s/files/1/2179/9295/products/14_c2b85c63-76e4-441b-9cf4-6af58ef57974_grande.jpg?v=1500460080',
-            base_price: 183.00,
-            weight_category: 'kg',
-            category: 'fruits',
-            discount: 8,
-            currency: 'usd',
-        },
-        {
-            id: 2,
-            item_name: 'Cucombar',
-            item_img: 'https://cdn.shopify.com/s/files/1/2179/9295/products/7_131028d3-ab5d-4f57-9720-f4409cff4ded_grande.jpg?v=1500459572',
-            base_price: 354.00,
-            weight_category: 'kg',
-            category: 'fruits',
-            discount: 10,
-            currency: 'usd',
-        },
-        {
-            id: 3,
-            item_name: 'Stayberry',
-            item_img: 'https://cdn.shopify.com/s/files/1/2179/9295/products/3_c0fc88de-95cd-4402-b483-296adbe228cc_grande.jpg?v=1500459194',
-            base_price: 368.00,
-            weight_category: 'kg',
-            category: 'fruits',
-            discount: 10,
-            currency: 'usd',
-        },
-
-        {
-            id: 3,
-            item_name: 'Stayberry',
-            item_img: 'https://cdn.shopify.com/s/files/1/2179/9295/products/5_046d7508-fd6e-4f9b-a120-e58ff5802198_grande.jpg?v=1500459460',
-            base_price: 305.00,
-            weight_category: 'kg',
-            category: 'fruits',
-            discount: 10,
-            currency: 'usd',
-        },
-        {
-            id: 4,
-            item_name: 'Stayberry',
-            item_img: 'https://cdn.shopify.com/s/files/1/2179/9295/products/15_8fdea367-f778-4836-b1cb-54ef3e0c6f3b_grande.jpg?v=1500460099',
-            base_price: 72.00,
-            weight_category: 'kg',
-            category: 'fruits',
-            discount: 10,
-            currency: 'usd',
-        },
-        {
-            id: 5,
-            item_name: 'Stayberry',
-            item_img: 'https://cdn.shopify.com/s/files/1/2179/9295/products/6_1857190a-3408-40aa-8fe2-9ff6668f62a7_grande.jpg?v=1500459515',
-            base_price: 95.00,
-            weight_category: 'kg',
-            category: 'fruits',
-            discount: 10,
-            currency: 'usd',
-        },
-        {
-            id: 6,
-            item_name: 'Stayberry',
-            item_img: 'https://cdn.shopify.com/s/files/1/2179/9295/products/8_6214bb22-7161-4a44-9868-c76b88b1ff16_grande.jpg?v=1500459621',
-            base_price: 195.00,
-            weight_category: 'kg',
-            category: 'fruits',
-            discount: 10,
-            currency: 'usd',
-        },
-        {
-            id: 7,
-            item_name: 'Stayberry',
-            item_img: 'https://cdn.shopify.com/s/files/1/2179/9295/products/16_grande.jpg?v=1500459950',
-            base_price: 208.00,
-            weight_category: 'kg',
-            category: 'fruits',
-            discount: 10,
-            currency: 'usd',
-        },
-        {
-            id: 8,
-            item_name: 'Stayberry',
-            item_img: 'https://cdn.shopify.com/s/files/1/2179/9295/products/10_a909a839-7e86-43e2-a8e0-40ba8cb04496_grande.jpg?v=1500459734',
-            base_price: 75.00,
-            weight_category: 'kg',
-            category: 'fruits',
-            discount: 10,
-            currency: 'usd',
-        },
-        {
-            id: 9,
-            item_name: 'Stayberry',
-            item_img: 'https://cdn.shopify.com/s/files/1/2179/9295/products/4_f313a82a-af68-47fa-873d-36c8c94a3de5_grande.jpg?v=1500459484',
-            base_price: 105.00,
-            weight_category: 'kg',
-            category: 'fruits',
-            discount: 10,
-            currency: 'usd',
-        },
-        {
-            id: 10,
-            item_name: 'Stayberry',
-            item_img: 'https://cdn.shopify.com/s/files/1/2179/9295/products/15_8fdea367-f778-4836-b1cb-54ef3e0c6f3b_grande.jpg?v=1500460099',
-            base_price: 65.00,
-            weight_category: 'kg',
-            category: 'fruits',
-            discount: 10,
-            currency: 'usd',
-        },
-    ]
     return (
-        <div className='flex flex-wrap justify-between mt-8'>
+        <div className='flex flex-wrap sm:justify-between justify-center mt-8'>
             {
                 itemLists && itemLists.map(item => (
-                    <div key={item?.id} className='w-[251px] h-[268px] my-2 relative group overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer'>
-                        <img className='w-full group-hover:scale-110 transition-transform duration-300' src={item?.item_img} alt="prduct_image" />
-                        <div className='absolute bottom-4 h-12  w-full px-4'>
-                            <h1 className='text-lg font-medium'>{item?.item_name}</h1>
-                            <div className='flex gap-1 items-end'>
-                                <span className='text-gray-500 line-through tracking-tighter'>{item?.currency === 'usd' && '$'}{item?.base_price}.00</span>
-                                <span className='text-green-600 text-xl font-medium tracking-tight'>{item?.currency === 'usd' && '$'}{item?.base_price - (item?.base_price / item?.discount)}.00</span>
-                            </div>
-                        </div>
-                    </div>
+                    <Product key={item.id} item={item} />
                 ))
             }
         </div>
@@ -145,3 +22,101 @@ const ProductLists = () => {
 };
 
 export default ProductLists;
+
+
+
+const sliderSettings = {
+    lazyLoad: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 2,
+    swipeToSlide: true,
+    prevArrow: <MdOutlineArrowBackIosNew className='text-red-500' />,
+    nextArrow: <MdArrowForwardIos className='text-red-500' />
+};
+
+const Product = ({ item }) => {
+    const [openModal, setOpenModal] = useState(false);
+    const [mainImageShow, setMainImageShow] = useState(null)
+    const addProductToCart = () => {
+        cogoToast.success('Item Added to Cart.')
+    }
+
+    const addProductToFavorite = () => {
+        cogoToast.success('Item Added to Favorites')
+    }
+
+    useEffect(() => {
+        setMainImageShow(item.item_img)
+    }, [])
+    return (
+        <div className='w-[251px] h-[268px] my-2 relative group overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer'>
+            <Modal classNames={{
+                overlay: 'customOverlay',
+                modal: 'w-full max-w-[75%!important]  h-[75vh] transition-all duration-1000',
+            }} open={openModal} onClose={() => setOpenModal(false)} center>
+                <div className='flex justify-between h-full'>
+                    <div className='w-1/2 relative h-full'>
+                        <div className='w-full h-[80%]'>
+                            {
+                                mainImageShow !== null &&
+                                <img className='h-full' src={mainImageShow || ''} alt="product  image" />
+                            }
+                        </div>
+                        <div className='absolute bottom-3 left-0 w-[90%]'>
+                            <Slider {...sliderSettings}>
+                                {
+                                    item.nestedImages.map((img, ind) => (
+                                        <div key={ind} className='w-1/4 h-fit cursor-pointer'>
+                                            <img onClick={() => setMainImageShow(img)} className='h-full' src={img} alt="product  image" />
+                                        </div>
+                                    ))
+                                }
+                            </Slider>
+                        </div>
+                    </div>
+                    <div className='w-1/2 flex items-center'>
+                        <div>
+                            <h1 className='hover:text-green-600 text-4xl mb-2 leading-[50px] pb-5 uppercase font-normal cursor-pointer'>{item?.item_name}</h1>
+                            <hr className='bg-gray-300' />
+                            <p className='my-5'><span className='inline-block text-3xl font-normal line-through text-gray-600 align-bottom mr-2'>{item?.currency === 'usd' && '$'}{item?.base_price}.00</span> <span className='text-green-700 inline-block align-bottom m-0 text-4xl'>{item?.currency === 'usd' && '$'}{item?.base_price - (item?.base_price / item?.discount)}.00</span></p>
+                            <p className='text-gray-700 mt-5 mb-5'>{item?.description}</p>
+                            <div className='flex justify-between gap-3'>
+                                <div className='w-1/2'>
+                                    <p className='font-bold text-lg text-gray-900 uppercase'>Size</p>
+                                    <select className='w-full border-gray-400 border mt-2 bg-transparent h-11 outline-none cursor-pointer py-2 px-2' name="" id="">
+                                        <option className='cursor-pointer' value="1.5" selected>1.5</option>
+                                        <option className='cursor-pointer' value="2.3">2.3</option>
+                                        <option className='cursor-pointer' value="3.2">3.2</option>
+                                        <option className='cursor-pointer' value="6.3">6.3</option>
+                                    </select>
+                                </div>
+                                <div className='w-1/2'>
+                                    <p className='font-bold text-lg text-gray-900 uppercase'>Quantity</p>
+                                    <input className='w-full border-gray-400 border mt-2 bg-transparent h-11 outline-none py-2 px-2' type="number" name="" id="" defaultValue={1} />
+                                </div>
+                            </div>
+                            <Button clickFunc={addProductToCart} classAdd='inline-block mb-0 font-normal text-center align-middle cursor-pointer whitespace-no-wrap text-sm rounded bg-[#80b435] hover:bg-[#356d20] select-none rounded-none py-3 w-[10rem] mt-8' text='Add to Cart' />
+                        </div>
+                    </div>
+                </div>
+            </Modal>
+            <img className='w-full group-hover:scale-110 transition-transform duration-300' src={item?.item_img} alt="prduct_image" />
+            <div className='absolute bottom-4 h-12  w-full px-4'>
+                <h1 className='text-lg font-medium group-hover:text-green-600 transition-all'>{item?.item_name}</h1>
+                <div className='flex gap-1 items-end'>
+                    <span className='text-gray-500 line-through tracking-tighter'>{item?.currency === 'usd' && '$'}{item?.base_price}.00</span>
+                    <span className='text-green-600 text-xl font-medium tracking-tight'>{item?.currency === 'usd' && '$'}{item?.base_price - (item?.base_price / item?.discount)}.00</span>
+                </div>
+            </div>
+            <div className='absolute left-0 top-0 w-full h-full grid place-items-center group'>
+                <div className='w-5/6 flex justify-center border rounded-full shadow-md bg-white py-3 translate-y-10 invisible  opacity-0 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300'>
+                    <BsBagPlus onClick={addProductToCart} className='border-r py-1 w-1/3 flex justify-center text-[29px] hover:text-green-600' />
+                    <MdFavoriteBorder onClick={addProductToFavorite} className='border-r py-1 w-1/3 flex justify-center text-[29px] hover:text-green-600' />
+                    <IoSearch onClick={() => setOpenModal(true)} className=' py-1 w-1/3 flex justify-center text-[29px] hover:text-green-600' />
+                </div>
+            </div>
+        </div>
+    )
+}
+
