@@ -152,6 +152,9 @@ const Navbar = () => {
                         </div>
                         <div className='relative'>
                             <FiShoppingBag onClick={() => setShowCart(prev => !prev)} className='text-2xl cursor-pointer' />
+                            <span className='absolute -right-2 -bottom-2 bg-green-500 text-white w-4 h-4 text-xs font-semibold grid place-items-center rounded-full'>
+                                4
+                            </span>
                             <DropDownItems cartRef={cartRef} visibility={showCart} classAdd=''>
                                 <ul className='w-32'>
                                     <li className='py-1 px-3 hover:bg-slate-200'>Item 1</li>

@@ -8,14 +8,39 @@ import { Modal } from 'react-responsive-modal';
 import Button from '../Button';
 import { itemLists } from '../../../FakeData/FakeData';
 import Slider from "react-slick";
+import Head from 'next/head';
 
-const ProductLists = () => {
+const ProductLists = ({ searchValue, selectedCategory = '', listProducts = null }) => {
+    const [filterProducts, setFilterProducts] = useState([]);
+    useEffect(() => {
+        if (!searchValue === '') {
+            categorFilterFunc();
+        } else {
+            categorFilterFunc();
+        }
+
+    }, [selectedCategory])
+
+
+    const categorFilterFunc = () => {
+        let filterProducts = [];
+        if (selectedCategory === 'All Products') {
+            filterProducts = itemLists;
+        } else {
+            filterProducts = itemLists.filter(item => item.category === selectedCategory)
+        }
+        setFilterProducts([...filterProducts])
+    }
+    console.log({ filterProducts })
+
     return (
         <div className='flex flex-wrap sm:justify-between justify-center mt-8'>
             {
-                itemLists && itemLists.map(item => (
-                    <Product key={item.id} item={item} />
+                filterProducts.length ? filterProducts.map(item => (
+                    <Product key={Math.random()} item={item} />
                 ))
+                    :
+                    'No Products Found!'
             }
         </div>
     );
@@ -29,10 +54,11 @@ const sliderSettings = {
     lazyLoad: true,
     speed: 500,
     slidesToShow: 3,
-    slidesToScroll: 2,
+    slidesToScroll: 3,
     swipeToSlide: true,
+    Infinity: true,
     prevArrow: <MdOutlineArrowBackIosNew className='text-red-500' />,
-    nextArrow: <MdArrowForwardIos className='text-red-500' />
+    nextArrow: <MdArrowForwardIos className='text-red-500' />,
 };
 
 const Product = ({ item }) => {
@@ -40,6 +66,7 @@ const Product = ({ item }) => {
     const [mainImageShow, setMainImageShow] = useState(null)
     const addProductToCart = () => {
         cogoToast.success('Item Added to Cart.')
+        setOpenModal(false);
     }
 
     const addProductToFavorite = () => {
@@ -50,20 +77,20 @@ const Product = ({ item }) => {
         setMainImageShow(item.item_img)
     }, [])
     return (
-        <div className='w-[251px] h-[268px] my-2 relative group overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer'>
+        <div className='animate-waving-hand w-[251px] h-[268px] my-2 relative group overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer'>
             <Modal classNames={{
                 overlay: 'customOverlay',
-                modal: 'w-full max-w-[75%!important]  h-[75vh] transition-all duration-1000',
+                modal: 'w-full max-w-[75%!important] md:max-w-[90%!important] lg:max-w-[75%!important] h-fit transition-all duration-1000',
             }} open={openModal} onClose={() => setOpenModal(false)} center>
-                <div className='flex justify-between h-full'>
-                    <div className='w-1/2 relative h-full'>
-                        <div className='w-full h-[80%]'>
+                <div className='flex flex-col md:flex-row justify-between h-full'>
+                    <div className='w-full md:w-1/2 relative h-full'>
+                        <div className='w-[70%] mx-auto'>
                             {
                                 mainImageShow !== null &&
-                                <img className='h-full' src={mainImageShow || ''} alt="product  image" />
+                                <img className='w-full' src={mainImageShow || ''} alt="product  image" />
                             }
                         </div>
-                        <div className='absolute bottom-3 left-0 w-[90%]'>
+                        <div className='w-[95%] '>
                             <Slider {...sliderSettings}>
                                 {
                                     item.nestedImages.map((img, ind) => (
@@ -75,8 +102,8 @@ const Product = ({ item }) => {
                             </Slider>
                         </div>
                     </div>
-                    <div className='w-1/2 flex items-center'>
-                        <div>
+                    <div className='w-full md:w-1/2 flex items-center'>
+                        <div className='py-5'>
                             <h1 className='hover:text-green-600 text-4xl mb-2 leading-[50px] pb-5 uppercase font-normal cursor-pointer'>{item?.item_name}</h1>
                             <hr className='bg-gray-300' />
                             <p className='my-5'><span className='inline-block text-3xl font-normal line-through text-gray-600 align-bottom mr-2'>{item?.currency === 'usd' && '$'}{item?.base_price}.00</span> <span className='text-green-700 inline-block align-bottom m-0 text-4xl'>{item?.currency === 'usd' && '$'}{item?.base_price - (item?.base_price / item?.discount)}.00</span></p>
@@ -96,14 +123,14 @@ const Product = ({ item }) => {
                                     <input className='w-full border-gray-400 border mt-2 bg-transparent h-11 outline-none py-2 px-2' type="number" name="" id="" defaultValue={1} />
                                 </div>
                             </div>
-                            <Button clickFunc={addProductToCart} classAdd='inline-block mb-0 font-normal text-center align-middle cursor-pointer whitespace-no-wrap text-sm rounded bg-[#80b435] hover:bg-[#356d20] select-none rounded-none py-3 w-[10rem] mt-8' text='Add to Cart' />
+                            <Button clickFunc={addProductToCart} classAdd='text-white inline-block mb-0 font-normal text-center align-middle cursor-pointer whitespace-no-wrap text-sm rounded bg-[#80b435] hover:bg-[#356d20] select-none rounded-none py-3 w-[10rem] mt-8' text='Add to Cart' />
                         </div>
                     </div>
                 </div>
             </Modal>
             <img className='w-full group-hover:scale-110 transition-transform duration-300' src={item?.item_img} alt="prduct_image" />
             <div className='absolute bottom-4 h-12  w-full px-4'>
-                <h1 className='text-lg font-medium group-hover:text-green-600 transition-all'>{item?.item_name}</h1>
+                <h1 className='text-xl font-medium group-hover:text-green-600 transition-all'>{item?.item_name}</h1>
                 <div className='flex gap-1 items-end'>
                     <span className='text-gray-500 line-through tracking-tighter'>{item?.currency === 'usd' && '$'}{item?.base_price}.00</span>
                     <span className='text-green-600 text-xl font-medium tracking-tight'>{item?.currency === 'usd' && '$'}{item?.base_price - (item?.base_price / item?.discount)}.00</span>
@@ -116,7 +143,7 @@ const Product = ({ item }) => {
                     <IoSearch onClick={() => setOpenModal(true)} className=' py-1 w-1/3 flex justify-center text-[29px] hover:text-green-600' />
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 

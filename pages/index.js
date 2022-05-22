@@ -3,9 +3,13 @@ import Footer from '../components/Shared/Footer/Footer'
 import FrontSlider from '../components/Shared/FrontSlider/FrontSlider'
 import Navbar from '../components/Shared/Navbar/Navbar'
 import ShowingProducts from '../components/Home/ShowingProducts/ShowingProducts'
+import BlogSection from '../components/BlogSection/BlogSection'
+import SubscribeModal from '../components/Shared/SubscribeModal/SubscribeModal'
+import ChoseUs from '../components/Shared/ChoseUs/ChoseUs'
 
 
 export default function Home() {
+
   return (
     <div>
       <Head>
@@ -15,12 +19,16 @@ export default function Home() {
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className='bg-slate-100'>
+      <main className=''>
+        <SubscribeModal />
         <Navbar />
         <FrontSlider />
         <ShowingProducts classAdd='mt-20' />
+        <ChoseUs />
+        <BlogSection />
         <Footer />
       </main>
     </div>
   )
 }
+

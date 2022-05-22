@@ -4,7 +4,7 @@ const Button = ({ clickFunc, text = '', classAdd }) => {
     return (
         <button
             onClick={clickFunc}
-            className={`bg-green-700 text-white py-[8px] px-5  shadow hover:bg-green-600 ${classAdd}`}
+            className={` py-[8px] px-5  shadow hover:bg-green-600 transition-all cursor-pointer ${classAdd}`}
         >
             {text}
         </button>

@@ -1,3 +1,47 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.navImage {
+  position: absolute;
+  height: 200px;
+  width: 100%;
+  background: url("https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/bg-footer.jpg")
+    no-repeat scroll center bottom;
+  content: "";
+  left: 0px;
+  bottom: calc(100% - 0px);
+}
+button.slick-arrow.slick-next {
+  right: 2rem;
+  z-index: 56;
+}
+
+button.slick-arrow.slick-prev {
+  left: 2rem;
+  z-index: 56;
+}
+.slick-slider.slick-initialized:hover svg.slick-arrow.slick-prev,
+.slick-slider.slick-initialized:hover svg.slick-arrow.slick-next {
+  opacity: 100%;
+  transform: translateX(0px);
+}
+svg.slick-arrow.slick-prev,
+svg.slick-arrow.slick-next {
+  transform: translateX(2rem);
+  opacity: 0;
+  transition: all 0.6s;
+  color: rgb(255, 255, 255) !important;
+  filter: drop-shadow(0px 0px 10px black);
+  width: 2rem;
+  z-index: 2;
+  height: 2rem;
+}
+svg.slick-arrow.slick-prev {
+  left: 1rem;
+  top: 38%;
+}
+svg.slick-arrow.slick-next {
+  right: 3.8rem;
+  top: 38%;
+}

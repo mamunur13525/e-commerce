@@ -52,7 +52,7 @@ const FrontSlider = () => {
                                     <h1 className='font-sans text-5xl font-bold text-green-600'>{slideInfo.title}</h1>
                                     <p className='font-sans  text-3xl mt-3'>{slideInfo.subTitle}</p>
                                     <p className='mt-10 cursor-pointer '>{slideInfo.description}</p>
-                                    <Button text='Shop Now' classAdd='mt-5 rounded-md' />
+                                    <Button text='Shop Now' classAdd='text-white mt-5 bg-[#80b435] hover:text-[#80b435] hover:bg-white  hover:border-[#356d20]' />
                                 </div>
                                 <div className='w-2/4'>
 
