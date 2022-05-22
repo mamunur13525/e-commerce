@@ -10,7 +10,7 @@ import { itemLists } from '../../../FakeData/FakeData';
 import Slider from "react-slick";
 import Head from 'next/head';
 
-const ProductLists = ({ searchValue, selectedCategory = '', listProducts = null }) => {
+const ProductLists = ({ productClass = '', searchValue, selectedCategory = '', listProducts = null }) => {
     const [filterProducts, setFilterProducts] = useState([]);
     useEffect(() => {
         if (!searchValue === '') {
@@ -34,14 +34,14 @@ const ProductLists = ({ searchValue, selectedCategory = '', listProducts = null 
     console.log({ filterProducts })
 
     return (
-        <div className='flex flex-wrap sm:justify-between justify-center mt-8'>
+        <div className='flex flex-wrap sm:justify-evenly justify-center mt-8'>
             {
                 filterProducts.length ? filterProducts.map(item => (
-                    <Product key={Math.random()} item={item} />
+                    <Product productClass={productClass} key={Math.random()} item={item} />
                 ))
                     :
                     'No Products Found!'
-            }
+            }   
         </div>
     );
 };
@@ -61,7 +61,7 @@ const sliderSettings = {
     nextArrow: <MdArrowForwardIos className='text-red-500' />,
 };
 
-const Product = ({ item }) => {
+const Product = ({ item, productClass = '' }) => {
     const [openModal, setOpenModal] = useState(false);
     const [mainImageShow, setMainImageShow] = useState(null)
     const addProductToCart = () => {
@@ -77,7 +77,8 @@ const Product = ({ item }) => {
         setMainImageShow(item.item_img)
     }, [])
     return (
-        <div className='animate-waving-hand w-[251px] h-[268px] my-2 relative group overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer'>
+        <div className={`animate-waving-hand my-2 relative group overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer ${productClass}`
+        }>
             <Modal classNames={{
                 overlay: 'customOverlay',
                 modal: 'w-full max-w-[75%!important] md:max-w-[90%!important] lg:max-w-[75%!important] h-fit transition-all duration-1000',
@@ -123,7 +124,9 @@ const Product = ({ item }) => {
                                     <input className='w-full border-gray-400 border mt-2 bg-transparent h-11 outline-none py-2 px-2' type="number" name="" id="" defaultValue={1} />
                                 </div>
                             </div>
-                            <Button clickFunc={addProductToCart} classAdd='text-white inline-block mb-0 font-normal text-center align-middle cursor-pointer whitespace-no-wrap text-sm rounded bg-[#80b435] hover:bg-[#356d20] select-none rounded-none py-3 w-[10rem] mt-8' text='Add to Cart' />
+                            <Button clickFunc={addProductToCart} classAdd='text-white inline-block mb-0 font-normal text-center align-middle cursor-pointer whitespace-no-wrap text-sm rounded bg-[#80b435] hover:bg-[#356d20] select-none rounded-none py-3 w-[10rem] mt-8' >
+                                Add to Cart
+                            </Button>
                         </div>
                     </div>
                 </div>

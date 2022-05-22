@@ -34,8 +34,9 @@ const SubscribeModal = () => {
                     </div>
                     <Button
                         classAdd='mt-5 text-green-600 border border-[#80b435]  hover:bg-white bg-[#80b435] text-white hover:text-[#80b435] text-xl font-light py-2 w-[10rem]'
-                        text='Subscribe'
-                    />
+                    >
+                        Subscribe
+                    </Button>
                 </div>
             </div>
         </Modal>

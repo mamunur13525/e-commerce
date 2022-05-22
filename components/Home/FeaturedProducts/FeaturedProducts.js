@@ -2,34 +2,34 @@ import React, { useState } from 'react';
 import Button from '../../Shared/Button';
 import ProductLists from '../../Shared/ProductLists/ProductLists';
 
-const ShowingProducts = ({ classAdd = '' }) => {
+const FeaturedProducts = ({ classAdd = '' }) => {
     const [selectedCategory, setSelectedCategory] = useState('All Products')
     let categoryLists = [
         {
             id: 0,
-            title: 'All Products'
+            title: 'Popular'
         },
         {
             id: 1,
-            title: 'fruits'
+            title: 'New Arrival'
         },
         {
             id: 2,
-            title: 'vegetables'
+            title: 'Special'
         },
         {
             id: 3,
-            title: 'nuts'
+            title: 'on Sale'
         },
         {
             id: 4,
-            title: 'Other products'
+            title: 'Top Rated'
         }
     ]
     return (
         <div className={`bg-white py-20 ${classAdd}`}>
             <div className='container mx-auto'>
-                <h1 className='text-4xl text-center'>Latest Products</h1>
+                <h1 className='text-4xl text-center'>Featured Products</h1>
                 <ul className='flex justify-center gap-10 mt-8'>
                     {
                         categoryLists && categoryLists.map(cat => (
@@ -38,7 +38,7 @@ const ShowingProducts = ({ classAdd = '' }) => {
                     }
                 </ul>
                 <div>
-                    <ProductLists productClass='w-[250px] h-[265px]' selectedCategory={selectedCategory} listProducts={null} />
+                    <ProductLists productClass='w-[200px] h-[250px] border-r ' selectedCategory={selectedCategory} listProducts={null} />
                 </div>
                 <div className='flex justify-center mt-16'>
                     <Button classAdd='text-green-600 border border-[#80b435]  bg-white hover:bg-[#80b435] hover:text-white text-xl font-light py-2 w-[10rem]' >
@@ -50,4 +50,4 @@ const ShowingProducts = ({ classAdd = '' }) => {
     );
 };
 
-export default ShowingProducts;
+export default FeaturedProducts;
