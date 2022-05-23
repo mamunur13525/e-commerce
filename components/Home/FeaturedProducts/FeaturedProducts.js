@@ -38,7 +38,7 @@ const FeaturedProducts = ({ classAdd = '' }) => {
                     }
                 </ul>
                 <div>
-                    <ProductLists productClass='w-[200px] h-[250px] border-r ' selectedCategory={selectedCategory} listProducts={null} />
+                    <ProductLists productClass='w-[200px] h-[250px] border-r ' selectedCategory={'All Products'} listProducts={null} />
                 </div>
                 <div className='flex justify-center mt-16'>
                     <Button classAdd='text-green-600 border border-[#80b435]  bg-white hover:bg-[#80b435] hover:text-white text-xl font-light py-2 w-[10rem]' >

@@ -48,7 +48,7 @@ let categoryFoods = [
         ]
     },
 ]
-const NabarNav = [
+const NavbarNav = [
     {
         id: 0,
         path: '/',
@@ -110,6 +110,8 @@ const Navbar = () => {
     const [showingSearch, setShowingSearch] = useState(false);
     const [showCart, setShowCart] = useState(false);
     const cartRef = useRef();
+    const [stickyClass, setStickyClass] = useState('-translate-y-20');
+
 
     useEffect(() => {
         const checkIfClickedOutside = e => {
@@ -124,9 +126,24 @@ const Navbar = () => {
     }, [showCart])
 
 
-    return (
 
-        <nav className="bg-white border-gray-200 h-[8.3rem]">
+    useEffect(() => {
+        window.addEventListener('scroll', stickNavbar);
+
+        return () => {
+            window.removeEventListener('scroll', stickNavbar);
+        };
+    }, []);
+
+    const stickNavbar = () => {
+        if (window !== undefined) {
+            let windowHeight = window.scrollY;
+            windowHeight > 200 ? setStickyClass('translate-[0!important]') : setStickyClass('-translate-y-20');
+        }
+    };
+
+    return (
+        <nav className={`shadow-sm bg-white border-gray-200 h-[8.3rem]`}>
             <div className='absolute top-0 z-40 w-full  px-10 lg:px-20 md:px-15 py-4'>
                 <div className="container flex justify-between items-center mx-auto mb-3">
                     <div className='w-1/3'>
@@ -166,15 +183,8 @@ const Navbar = () => {
                     </div>
                 </div>
                 <hr />
-                <div className='flex justify-center sticky top-0'>
-                    <ul className="flex gap-4 mt-4">
-                        {
-                            NabarNav.map(nav => (
-                                <NavItem nav={nav} key={nav.id} />
-                            ))
-                        }
-                    </ul>
-                </div>
+                <NavbarPosition showProfileCart={false} classAdd='py-4 mt-2  justify-center' NavbarNav={NavbarNav} />
+                <NavbarPosition showProfileCart={true} classAdd={`shadow-sm  fixed top-0 left-0 justify-between py-4  ${stickyClass}`} NavbarNav={NavbarNav} />
             </div >
         </nav>
 
@@ -182,6 +192,68 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+const NavbarPosition = ({ showProfileCart, NavbarNav, classAdd = '' }) => {
+    const [showingSearch, setShowingSearch] = useState(false);
+    const [showCart, setShowCart] = useState(false);
+    const cartRef = useRef();
+    const handleScroll = () => {
+        const position = window.pageYOffset;
+        console.log({ position })
+    };
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+    return (
+        <div className={`flex  w-full bg-white items-center px-20 ${classAdd} duration-500  transition-transform z-50`}>
+            {
+                showProfileCart &&
+                <Link href="/" className='w-1/3 '>
+                    <div className="w-1/3 cursor-pointer">
+                        <img src="https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/h1_logo1.png?v=53464895439087604121500261105" className="h-10" alt="Flowbite Logo" />
+                        {/* <span className=" whitespace-nowrap text-4xl">Fresh Food</span> */}
+                    </div>
+                </Link>
+            }
+            <div className='mx-auto'>
+                <ul className="flex gap-4">
+                    {
+                        NavbarNav.map(nav => (
+                            <NavItem nav={nav} key={nav.id} />
+                        ))
+                    }
+                </ul>
+            </div>
+            {
+                showProfileCart &&
+                <div className='flex justify-end gap-4 w-1/3 '>
+                    <div className='relative'>
+                        <input className={`absolute top-[-5px] right-8 shado px-2 py-1 text-gray-700 border border-gray-500 rounded-md focus:outline-none  ${showingSearch ? 'w-[15rem] opacity-100 visible' : 'opacity-0 w-[0rem] invisible'}  transition-all duration-500`} type="search" name="search_item" placeholder='Search..' />
+                        <IoSearch onClick={() => setShowingSearch(prev => !prev)} className='text-2xl cursor-pointer' />
+                    </div>
+                    <div className='relative'>
+                        <FiShoppingBag onClick={() => setShowCart(prev => !prev)} className='text-2xl cursor-pointer' />
+                        <span className='absolute -right-2 -bottom-2 bg-green-500 text-white w-4 h-4 text-xs font-semibold grid place-items-center rounded-full'>
+                            4
+                        </span>
+                        <DropDownItems cartRef={cartRef} visibility={showCart} classAdd=''>
+                            <ul className='w-32'>
+                                <li className='py-1 px-3 hover:bg-slate-200'>Item 1</li>
+                                <li className='py-1 px-3 hover:bg-slate-200'>Item 1</li>
+                                <li className='py-1 px-3 hover:bg-slate-200'>Item 1</li>
+                            </ul>
+                        </DropDownItems>
+                    </div>
+                </div>
+            }
+        </div >
+    )
+}
 
 const NavItem = ({ nav }) => {
     const [dropShow, setDropShow] = useState(false);
@@ -205,7 +277,7 @@ const NavItem = ({ nav }) => {
 
 const DropDownItems = ({ cartRef = null, classAdd, children, visibility = false }) => {
     return (
-        <div ref={cartRef} className={`absolute z-30  top-7 left: 0
+        <div ref={cartRef} className={`absolute z-30  top-11     left: 0
         right: 0 shadow-lg border py-2 bg-white flex translate-y-5  transition-all duration-500 translate-x-[-44%] ${visibility ? 'visible translate-y-0 opacity-100' : 'invisible opacity-0'} ${classAdd}`}>
             {children}
         </div>

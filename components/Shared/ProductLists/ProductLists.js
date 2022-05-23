@@ -8,7 +8,7 @@ import { Modal } from 'react-responsive-modal';
 import Button from '../Button';
 import { itemLists } from '../../../FakeData/FakeData';
 import Slider from "react-slick";
-import Head from 'next/head';
+
 
 const ProductLists = ({ productClass = '', searchValue, selectedCategory = '', listProducts = null }) => {
     const [filterProducts, setFilterProducts] = useState([]);
@@ -18,7 +18,6 @@ const ProductLists = ({ productClass = '', searchValue, selectedCategory = '', l
         } else {
             categorFilterFunc();
         }
-
     }, [selectedCategory])
 
 
@@ -31,7 +30,6 @@ const ProductLists = ({ productClass = '', searchValue, selectedCategory = '', l
         }
         setFilterProducts([...filterProducts])
     }
-    console.log({ filterProducts })
 
     return (
         <div className='flex flex-wrap sm:justify-evenly justify-center mt-8'>

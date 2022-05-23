@@ -33,7 +33,7 @@ const SubscribeModal = () => {
                         <input className='w-[80%] bg-white px-2 py-4 mb-2 text-center font-light shadow-sm focus:outline-none' type="email" placeholder='Enter your email address' name="" id="" />
                     </div>
                     <Button
-                        classAdd='mt-5 text-green-600 border border-[#80b435]  hover:bg-white bg-[#80b435] text-white hover:text-[#80b435] text-xl font-light py-2 w-[10rem]'
+                        classAdd='mt-5 text-green-600 border border-[#80b435]  hover:bg-white bg-[#80b435] text-[white!important] hover:text-[#80b435] text-xl font-light py-2 w-[10rem]'
                     >
                         Subscribe
                     </Button>

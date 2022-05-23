@@ -42,13 +42,13 @@ let sliderInfos = [
 const FrontSlider = () => {
 
     return (
-        <div className='h-screen w-full mx-auto relative'>
+        <div className=' h-screen w-full mx-auto relative'>
             <Slider {...sliderSettings}>
                 {
                     sliderInfos.map(slideInfo => (
                         <div key={slideInfo.id} className='w-9/10 h-screen mx-auto  shadow rounded-md relative'>
                             <div className='h-full flex flex-col justify-center w-10/12 mx-auto relative z-20' >
-                                <div className='w-2/4 -mt-40'>
+                                <div className='w-2/4 -mt-40 animate-waving-hand'>
                                     <h1 className='font-sans text-5xl font-bold text-green-600'>{slideInfo.title}</h1>
                                     <p className='font-sans  text-3xl mt-3'>{slideInfo.subTitle}</p>
                                     <p className='mt-10 cursor-pointer '>{slideInfo.description}</p>
