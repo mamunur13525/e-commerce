@@ -52,8 +52,9 @@ const Footer = () => {
                             <div className="w-full my-4">
                                 <input type="email" placeholder="Place enter your email" name="" id="" className="w-full border bg-white py-3 px-2 text-sm text-gray-400 font-light focus:outline-none" />
                             </div>
-                            <button className=" py-[8px] px-5  shadow hover:bg-green-600 transition-all cursor-pointer bg-[#80b435] text-white">
-                                Subscribe</button>
+                            <Button classAdd=" flex items-center  gap-2 py-[8px] px-5  shadow hover:bg-green-600 transition-all cursor-pointer bg-[#80b435] text-white">
+                                Subscribe  <BsArrowRight />
+                            </Button>
                         </div>
                     </div>
                 </div>

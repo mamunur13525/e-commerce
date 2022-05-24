@@ -87,7 +87,7 @@ const AboutMainSection = () => {
 
                     </div>
                     <div>
-                        <h1 className='text-center  px-10 lg:px-0 lg:text-left text-3xl mb-6 bg-white w-fit pr-16'>A FRIENDLY ONLINE STORY</h1>
+                        <h1 className='mt-10 lg:mt-0 text-center  px-10 lg:px-0 lg:text-left text-3xl mb-6 bg-white w-full lg:w-fit lg:pr-16'>A FRIENDLY ONLINE STORY</h1>
                         <p className='text-center  px-10 lg:px-0 lg:text-left mb-6 pr-10 text-[17px] w-full text-gray-600'>
                             Lorem ipsum dolor sit ameconsecteturadipiscingelit. Curabiturutiaculis arcu. Proin tincidunt, ipsum nec vehicula euismnequnibhpretiumlorem at ornare risus sem et risus.
                         </p>

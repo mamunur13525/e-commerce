@@ -1,6 +1,7 @@
 import React from 'react';
 import SectionTitle from '../../Shared/SectionTitle/SectionTitle';
-import { IoLogoGoogleplus, IoLogoTwitter } from 'react-icons/io5';
+import { IoLogoTwitter } from 'react-icons/io5';
+import { IoLogoGoogleplus } from 'react-icons/io';
 import { TiSocialFacebook } from 'react-icons/ti';
 import { TiSocialSkype } from 'react-icons/ti';
 
@@ -115,14 +116,13 @@ const Farmer = () => {
                                         farmer.description
                                     }
                                 </p>
-                                <div>
-                                    <ul>
-
+                                <div className='mt-5'>
+                                    <ul className='list-none flex justify-center gap-3 '>
                                         {
                                             farmer.socials_link.map(social => (
-                                                <li key={social.id}>
-                                                    <a target='_blank' href={social.link}>
-                                                        {/* {social.icon} */}
+                                                <li className='text-xl' key={social.id}>
+                                                    <a className='hover:text-[#80b435]' target='_blank' href={social.link}>
+                                                        {social.icon}
                                                     </a>
                                                 </li>
                                             ))

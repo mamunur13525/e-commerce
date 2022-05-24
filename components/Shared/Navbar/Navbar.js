@@ -4,7 +4,7 @@ import { CgProfile } from 'react-icons/cg';
 import { BsTelephone } from 'react-icons/bs';
 import { FiShoppingBag } from 'react-icons/fi';
 import { IoSearch } from 'react-icons/io5';
-
+import CartDropDown from '../Cart/CartDropDown';
 
 let categoryFoods = [
     {
@@ -159,7 +159,6 @@ const Navbar = () => {
                     <Link href="/" className='w-auto '>
                         <div className="flex items-center gap-3 cursor-pointer">
                             <img src="https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/h1_logo1.png?v=53464895439087604121500261105" className="h-12" alt="Flowbite Logo" />
-                            {/* <span className=" whitespace-nowrap text-4xl">Fresh Food</span> */}
                         </div>
                     </Link>
                     <div className='flex justify-end gap-4 w-1/3 '>
@@ -168,16 +167,12 @@ const Navbar = () => {
                             <IoSearch onClick={() => setShowingSearch(prev => !prev)} className='text-2xl cursor-pointer' />
                         </div>
                         <div className='relative'>
-                            <FiShoppingBag onClick={() => setShowCart(prev => !prev)} className='text-2xl cursor-pointer' />
+                            <FiShoppingBag onClick={() => setShowCart(prev => !prev)} ref={cartRef} className='text-2xl cursor-pointer' />
                             <span className='absolute -right-2 -bottom-2 bg-green-500 text-white w-4 h-4 text-xs font-semibold grid place-items-center rounded-full'>
                                 4
                             </span>
-                            <DropDownItems cartRef={cartRef} visibility={showCart} classAdd='right-[-3.5rem]'>
-                                <ul className='w-32'>
-                                    <li className='py-1 px-3 hover:bg-slate-200'>Item 1</li>
-                                    <li className='py-1 px-3 hover:bg-slate-200'>Item 1</li>
-                                    <li className='py-1 px-3 hover:bg-slate-200'>Item 1</li>
-                                </ul>
+                            <DropDownItems cartRef={cartRef} visibility={showCart} classAdd='left-[-8rem] border'>
+                                <CartDropDown />
                             </DropDownItems>
                         </div>
                     </div>
@@ -207,7 +202,7 @@ const NavbarPosition = ({ showProfileCart, NavbarNav, classAdd = '' }) => {
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
-        }; 
+        };
     }, []);
     return (
         <div className={`flex  w-full bg-white items-center px-20 ${classAdd} duration-500  transition-transform z-50`}>
@@ -221,7 +216,7 @@ const NavbarPosition = ({ showProfileCart, NavbarNav, classAdd = '' }) => {
                 </Link>
             }
             <div className='mx-auto'>
-                <ul className="flex gap-4"> 
+                <ul className="flex gap-4">
                     {
                         NavbarNav.map(nav => (
                             <NavItem nav={nav} key={nav.id} />
@@ -241,12 +236,8 @@ const NavbarPosition = ({ showProfileCart, NavbarNav, classAdd = '' }) => {
                         <span className='absolute -right-2 -bottom-2 bg-green-500 text-white w-4 h-4 text-xs font-semibold grid place-items-center rounded-full'>
                             4
                         </span>
-                        <DropDownItems cartRef={cartRef} visibility={showCart} classAdd=''>
-                            <ul className='w-32 bg-white'>
-                                <li className='py-1 px-3 hover:bg-slate-200'>Item 1</li>
-                                <li className='py-1 px-3 hover:bg-slate-200'>Item 1</li>
-                                <li className='py-1 px-3 hover:bg-slate-200'>Item 1</li>
-                            </ul>
+                        <DropDownItems cartRef={cartRef} visibility={showCart} classAdd='left-[-8rem] border'>
+                            <CartDropDown />
                         </DropDownItems>
                     </div>
                 </div>
