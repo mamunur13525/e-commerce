@@ -26,8 +26,12 @@ export default function Home() {
         <FrontSlider />
         <ShowingProducts classAdd='mt-20' />
         <SalesOffer />
-        <ChoseUs />
-        <FeaturedProducts  classAdd='mt-20' />
+        <ChoseUs
+          image='//cdn.shopify.com/s/files/1/2179/9295/files/icon-choose-1_small.png?v=1500449652'
+          title='Why Choose Us'
+          description={`The fact of the matter is that you really know something's organic when you find bugs! they obviously wouldn't have made it that far in a non-organic growing environment, so better than any certification or seal on a package, the presence of creatures let you know the plant was healthy and.`}
+        />
+        <FeaturedProducts classAdd='mt-20' />
         <BlogSection />
         <Footer />
       </main>

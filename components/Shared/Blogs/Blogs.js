@@ -1,7 +1,7 @@
 import React from 'react';
 import { bloglists } from '../../../FakeData/FakeData';
 import Slider from "react-slick";
-import { MdFavoriteBorder, MdOutlineArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
+import { MdOutlineArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
 
 
 function SampleNextArrow(props) {
@@ -39,7 +39,6 @@ const sliderSettings = {
                 slidesToShow: 3,
                 slidesToScroll: 3,
                 infinite: true,
-                dots: true
             }
         },
         {

@@ -1,14 +1,14 @@
 import React from 'react';
 
-const SectionTitle = ({ title = '', subtitle = '', description = '' }) => {
+const SectionTitle = ({ titleClass = '', subtitleClass = '', descriptionClass = '', title = '', subtitle = '', description = '' }) => {
     return (
         <div className='w-full lg:w-[760px] mx-auto text-center mb-16 '>
             {
                 subtitle !== '' &&
-                <h1 className='text-[#80b435] text-3xl'>{subtitle}</h1>
+                <h1 className={`text-[#80b435] text-3xl mb-6  ${subtitleClass}`}>{subtitle}</h1>
             }
-            <h1 className='text-5xl mb-5'>{title}</h1>
-            <p className='text-[1rem] text-gray-500'>
+            <h1 className={`text-5xl mb-5 ${titleClass}`}>{title}</h1>
+            <p className={`text-[1rem] text-gray-500 ${descriptionClass}`}>
                 {
                     description !== '' &&
                     `The fact of the matter is that you really know something's organic when you find bugs! they obviously wouldn't have made it that far in a non-organic growing environment, so better than any certification or seal on a package, the presence of creatures let you know the plant was healthy and.`

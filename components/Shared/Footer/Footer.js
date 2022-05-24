@@ -1,5 +1,4 @@
 import React from 'react';
-import style from '../../../styles/Home.module.css';
 import Button from '../Button';
 import { FaPinterestP } from 'react-icons/fa';
 import { IoLogoTwitter, IoLogoInstagram } from 'react-icons/io5';
@@ -11,7 +10,7 @@ import { BsArrowRight } from 'react-icons/bs';
 
 const Footer = () => {
     return (
-        <div style={style} className='relative '>
+        <div className='relative mt-40'>
             <div className='navImage'>
             </div>
             <div className="bg-gray-100">

@@ -1,12 +1,17 @@
 import React from 'react';
 import SectionTitle from '../SectionTitle/SectionTitle';
 
-const ChoseUs = ({ title = '', subtitle = '', description = '' }) => {
+const ChoseUs = ({ image = '', titleClass = '', subtitleClass = '', descriptionClass = '', title = '', subtitle = '', description = '' }) => {
     return (
-        <div className='container mx-auto'>
-
-            <SectionTitle title={title} subtitle={subtitle} description={description} />
-
+        <div className='container mx-auto py-28'>
+            <SectionTitle
+                descriptionClass={descriptionClass}
+                subtitleClass={subtitleClass}
+                titleClass={titleClass}
+                title={title}
+                subtitle={subtitle}
+                description={description}
+            />
             <div className='flex flex-col lg:flex-row items-center lg:justify-evenly gap-y-10 mt-16'>
                 <div>
                     <div className="mb-20 w-10/12 lg:w-[15rem] mx-auto">
@@ -32,7 +37,7 @@ const ChoseUs = ({ title = '', subtitle = '', description = '' }) => {
                     </div>
                 </div>
                 <div>
-                    <img src="https://cdn.shopify.com/s/files/1/2179/9295/files/images-choose_grande.jpg?v=1500449615" alt="image" />
+                    <img src={image} alt="image" />
                 </div>
                 <div className='text-right'>
                     <div className="mb-20 w-10/12 lg:w-[15rem] mx-auto">
