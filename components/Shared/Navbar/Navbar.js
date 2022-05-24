@@ -221,7 +221,7 @@ const NavbarPosition = ({ showProfileCart, NavbarNav, classAdd = '' }) => {
                 </Link>
             }
             <div className='mx-auto'>
-                <ul className="flex gap-4">
+                <ul className="flex gap-4"> 
                     {
                         NavbarNav.map(nav => (
                             <NavItem nav={nav} key={nav.id} />
