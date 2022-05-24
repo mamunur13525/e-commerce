@@ -207,7 +207,7 @@ const NavbarPosition = ({ showProfileCart, NavbarNav, classAdd = '' }) => {
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
-        };
+        }; 
     }, []);
     return (
         <div className={`flex  w-full bg-white items-center px-20 ${classAdd} duration-500  transition-transform z-50`}>
