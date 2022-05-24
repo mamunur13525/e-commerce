@@ -121,7 +121,7 @@ const Farmer = () => {
                                         {
                                             farmer.socials_link.map(social => (
                                                 <li className='text-xl' key={social.id}>
-                                                    <a className='hover:text-[#80b435]' target='_blank' href={social.link}>
+                                                    <a rel="noreferrer" className='hover:text-[#80b435]' target='_blank' href={social.link}>
                                                         {social.icon}
                                                     </a>
                                                 </li>

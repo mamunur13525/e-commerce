@@ -244,7 +244,7 @@ const NavbarPosition = ({ showProfileCart, NavbarNav, classAdd = '' }) => {
             }
         </div >
     )
-}
+}   
 
 const NavItem = ({ nav }) => {
     const [dropShow, setDropShow] = useState(false);
