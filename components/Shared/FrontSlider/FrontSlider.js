@@ -35,14 +35,14 @@ let sliderInfos = [
         id: 2,
         title: 'This is Third page.',
         subTitle: 'this is the subtitle',
-        bg_image: 'https://images.unsplash.com/photo-1595588232962-0cd2efdbd6c3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1331&q=80',
+        bg_image: 'https://cdn.shopify.com/s/files/1/2179/9295/files/home1-slideshow1.jpg?v=1500372244',
         description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit neque earum veniam quis deleniti aperiam mollitia voluptatibus iusto exercitationem explicabo!'
     },
 ]
 const FrontSlider = () => {
 
     return (
-        <div className=' h-screen w-full mx-auto relative'>
+        <div className='h-full lg:h-screen w-full mx-auto relative'>
             <Slider {...sliderSettings}>
                 {
                     sliderInfos.map(slideInfo => (
@@ -61,14 +61,14 @@ const FrontSlider = () => {
                                 </div>
                             </div>
                             <div className='absolute w-full left-0 -top-16 -z-10'>
-                                <img className='w-full scale-x-[-1]' src={slideInfo.bg_image} alt="ss" />
+                                <img className='w-full h-full scale-x-[-1]' src={slideInfo.bg_image} alt="ss" />
                             </div>
                         </div>
 
                     ))
                 }
             </Slider>
-            <div className='w-full sm:absolute left-0 -bottom-16 '>
+            {/* <div className='w-full sm:absolute left-0 -bottom-16 '>
                 <div className='flex flex-wrap justify-center bg-white w-fit mx-auto shadow-md rounded-sm py-5'>
                     <div className=' border-r my-3 w-[19rem] h-full text-center flex flex-col  gap-5 items-center px-3 py-2 cursor-pointer group'>
                         <div className='bg-green-600 h-12 p-2 rounded-full w-12 grid place-items-center group-hover:rotate-[360deg] transition-transform duration-500'>
@@ -107,7 +107,7 @@ const FrontSlider = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 };

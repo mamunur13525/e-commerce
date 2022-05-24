@@ -53,7 +53,7 @@ const NavbarNav = [
         id: 0,
         path: '/',
         text: 'Home',
-        content: <ul className='w-[10rem] list-disc px-5'>
+        content: <ul className='bg-white border md:border-0 w-[10rem] list-disc px-5'>
             <li className='py-2 border-b cursor-pointer hover:text-green-700'>Home 1</li>
             <li className='py-2 border-b cursor-pointer hover:text-green-700'>Home 2</li>
             <li className='py-2 border-b cursor-pointer hover:text-green-700'>Home 3</li>
@@ -65,7 +65,7 @@ const NavbarNav = [
         id: 1,
         path: '/about',
         text: 'About',
-        content: <div className='w-[80vw] py-3 px-5'>
+        content: <div className='bg-white border md:border-0 ml-32 md:ml-0 w-[80vw] py-3 px-5'>
             <img className='w-full' src="https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/megamenu_1_image.jpg?v=114805082236215743311501465503" alt="image" />
             <div className='flex justify-between gap-5 mt-5'>
                 {categoryFoods && categoryFoods.map(category => (
@@ -85,22 +85,22 @@ const NavbarNav = [
         id: 2,
         path: '/services',
         text: 'Services',
-        content: <div className='w-fit flex gap-5 list-disc px-5 h-[16em] items-center' >
-            <ul className='w-[10rem]'>
+        content: <div className='bg-white border md:border-0 w-[25rem] md:w-[40rem] flex gap-5 list-disc p-4 h-[16em] items-center' >
+            <ul className='w-1/3'>
                 <li className='py-3 border-b cursor-pointer hover:text-green-700'>Services 1</li>
                 <li className='py-3 border-b cursor-pointer hover:text-green-700'>Services 2</li>
                 <li className='py-3 border-b cursor-pointer hover:text-green-700'>Services 3</li>
                 <li className='py-3 border-b cursor-pointer hover:text-green-700'>Services 4</li>
                 <li className='py-3 cursor-pointer hover:text-green-700'>Services 5</li>
             </ul>
-            <ul className='w-[10rem]'>
+            <ul className='w-1/3'>
                 <li className='py-3 border-b cursor-pointer hover:text-green-700'>Services 1</li>
                 <li className='py-3 border-b cursor-pointer hover:text-green-700'>Services 2</li>
                 <li className='py-3 border-b cursor-pointer hover:text-green-700'>Services 3</li>
                 <li className='py-3 border-b cursor-pointer hover:text-green-700'>Services 4</li>
                 <li className='py-3 cursor-pointer hover:text-green-700'>Services 5</li>
             </ul>
-            <div className='w-[10rem]'>
+            <div className='w-1/3'>
                 <img className='w-full' src="https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=696&q=80" alt="image" />
             </div>
         </div>
@@ -144,7 +144,7 @@ const Navbar = () => {
 
     return (
         <nav className={`shadow-sm bg-white border-gray-200 h-[8.3rem]`}>
-            <div className='absolute top-0 z-40 w-full  px-10 lg:px-20 md:px-15 py-4'>
+            <div className='absolute left-0 top-0 z-40 w-full  px-10 lg:px-20 md:px-15 py-4'>
                 <div className="container flex justify-between items-center mx-auto mb-3">
                     <div className='w-1/3'>
                         <div className='flex gap-1 items-center'>
@@ -172,7 +172,7 @@ const Navbar = () => {
                             <span className='absolute -right-2 -bottom-2 bg-green-500 text-white w-4 h-4 text-xs font-semibold grid place-items-center rounded-full'>
                                 4
                             </span>
-                            <DropDownItems cartRef={cartRef} visibility={showCart} classAdd=''>
+                            <DropDownItems cartRef={cartRef} visibility={showCart} classAdd='right-[-3.5rem]'>
                                 <ul className='w-32'>
                                     <li className='py-1 px-3 hover:bg-slate-200'>Item 1</li>
                                     <li className='py-1 px-3 hover:bg-slate-200'>Item 1</li>
@@ -183,8 +183,8 @@ const Navbar = () => {
                     </div>
                 </div>
                 <hr />
-                <NavbarPosition showProfileCart={false} classAdd='py-4 mt-2  justify-center' NavbarNav={NavbarNav} />
-                <NavbarPosition showProfileCart={true} classAdd={`shadow-sm  fixed top-0 left-0 justify-between py-4  ${stickyClass}`} NavbarNav={NavbarNav} />
+                <NavbarPosition showProfileCart={false} classAdd='py-2 mt-2  justify-center' NavbarNav={NavbarNav} />
+                {/* <NavbarPosition showProfileCart={true} classAdd={`shadow-sm  fixed top-0 left-0 justify-between py-4  ${stickyClass}`} NavbarNav={NavbarNav} /> */}
             </div >
         </nav>
 
@@ -277,8 +277,8 @@ const NavItem = ({ nav }) => {
 
 const DropDownItems = ({ cartRef = null, classAdd, children, visibility = false }) => {
     return (
-        <div ref={cartRef} className={`absolute z-30  top-11     left: 0
-        right: 0 shadow-lg border py-2 bg-white flex translate-y-5  transition-all duration-500 translate-x-[-44%] ${visibility ? 'visible translate-y-0 opacity-100' : 'invisible opacity-0'} ${classAdd}`}>
+        <div ref={cartRef} className={`absolute z-30  top-10 left: 0
+        right: 0 shadow-lg md:bg-white py-2  flex translate-y-5  transition-all duration-500 md:translate-x-[-44%] translate-x-[-50%] ${visibility ? 'visible translate-y-0 opacity-100' : 'invisible opacity-0'} ${classAdd}`}>
             {children}
         </div>
     )
