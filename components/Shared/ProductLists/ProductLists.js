@@ -75,7 +75,7 @@ const Product = ({ item, productClass = '' }) => {
         setMainImageShow(item.item_img)
     }, [])
     return (
-        <div className={`animate-waving-hand my-2 relative group overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer ${productClass}`
+        <div className={`animate-waving-hand my-2 relative group overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer ${productClass} `
         }>
             <Modal classNames={{
                 overlay: 'customOverlay',

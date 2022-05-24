@@ -4,6 +4,7 @@ import Button from '../Button';
 import { FaPinterestP } from 'react-icons/fa';
 import { IoLogoTwitter, IoLogoInstagram } from 'react-icons/io5';
 import { ImFacebook } from 'react-icons/im';
+import { BsArrowRight } from 'react-icons/bs';
 
 
 
@@ -16,35 +17,35 @@ const Footer = () => {
             <div className="bg-gray-100">
                 <div className="container mx-auto pb-8 pt-12 px-10">
                     <div className="w-full flex flex-wrap flex-between">
-                        <div className="w-full md:w-1/2 lg:w-3/12">
+                        <div className="w-full md:w-1/2 lg:w-3/12 mb-3">
                             <h1 className="text-[#80b435] text-xl mb-5">About  Us</h1>
                             <p className="text-[#2b2b2b] text-[15px]">With more than 15 years of experience we can proudly say that we are one of the best in business, a trusted supplier for more than 1000 companies...</p>
-                            <p className="text-[#80b435] text-xs mt-5">READ MORE </p>
+                            <p className="flex  items-center gap-1 text-[#80b435] hover:text-[#558512] text-xs mt-5 cursor-pointer">READ MORE <BsArrowRight /></p>
                         </div>
-                        <div className="w-full md:w-1/2 lg:w-3/12 md:pl-5 lg:pl-5">
+                        <div className="w-full md:w-1/2 lg:w-3/12 md:pl-5 lg:pl-5 mb-3">
                             <h1 className="text-[#80b435] text-xl mb-5">
                                 Infomation</h1>
                             <ul className="list-none flex flex-col gap-3 text-gray-600">
-                                <li className="cursor-pointer text-sm">Delivery</li>
-                                <li className="cursor-pointer text-sm">Legal Notice</li>
-                                <li className="cursor-pointer text-sm">Terms &amp; Conditions</li>
-                                <li className="cursor-pointer text-sm">About Us</li>
-                                <li className="cursor-pointer text-sm">Secure Payment</li>
-                                <li className="cursor-pointer text-sm">Our Stores</li>
+                                <li className="cursor-pointer text-sm hover:text-[#80b435]">Delivery</li>
+                                <li className="cursor-pointer text-sm hover:text-[#80b435]">Legal Notice</li>
+                                <li className="cursor-pointer text-sm hover:text-[#80b435]">Terms &amp; Conditions</li>
+                                <li className="cursor-pointer text-sm hover:text-[#80b435]">About Us</li>
+                                <li className="cursor-pointer text-sm hover:text-[#80b435]">Secure Payment</li>
+                                <li className="cursor-pointer text-sm hover:text-[#80b435]">Our Stores</li>
                             </ul>
                         </div>
-                        <div className="w-full md:w-1/2 lg:w-3/12">
+                        <div className="w-full md:w-1/2 lg:w-3/12  mb-3">
                             <h1 className="text-[#80b435] text-xl mb-5">Get It Touch</h1>
                             <ul className="list-none flex items-center gap-4">
-                                <li className="cursor-pointer"><IoLogoTwitter className='text-xl text-[#80b435]' /></li>
-                                <li className="cursor-pointer"><ImFacebook className='text-xl text-[#80b435]' /></li>
-                                <li className="cursor-pointer"><IoLogoInstagram className='text-xl text-[#80b435]' /></li>
-                                <li className="cursor-pointer"><FaPinterestP className='text-xl text-[#80b435]' /></li>
+                                <li className="cursor-pointer"><IoLogoTwitter className='text-xl text-[#80b435] hover:text-[#2b2b2b]' /></li>
+                                <li className="cursor-pointer"><ImFacebook className='text-xl text-[#80b435] hover:text-[#2b2b2b]' /></li>
+                                <li className="cursor-pointer"><IoLogoInstagram className='text-xl text-[#80b435] hover:text-[#2b2b2b]' /></li>
+                                <li className="cursor-pointer"><FaPinterestP className='text-xl text-[#80b435] hover:text-[#2b2b2b]' /></li>
                             </ul>
                             <h1 className="mt-10  text-[#80b435] text-xl mb-5">Payment Accept</h1>
                             <img src="https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/f1_payment1_img.png?v=169920717840467018591501466879" alt="" />
                         </div>
-                        <div className="w-full md:w-1/2 lg:w-3/12 md:pl-5 lg:pl-0">
+                        <div className="w-full md:w-1/2 lg:w-3/12 md:pl-5 lg:pl-0  mb-3">
                             <h1 className="text-[#80b435] text-xl mb-5">
                                 Get Newsletter</h1>
                             <p className="text-[#2b2b2b] text-[15px]">
@@ -58,7 +59,7 @@ const Footer = () => {
                     </div>
                 </div>
                 <hr />
-                <div className="container py-4 px-10 mx-auto flex flex-wrap justify-between items-center text-sm font-light">
+                <div className="container py-4 px-10 mx-auto flex flex-wrap justify-between items-center text-sm font-light mb-3">
                     <span className="text-gray-500 mb-3 md:mb-0">
                         Copyright ©2017 Fresh Food-All Rights  Reserved
                     </span>

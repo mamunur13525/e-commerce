@@ -43,7 +43,7 @@ const sliderSettings = {
             }
         },
         {
-            breakpoint: 600,
+            breakpoint: 800,
             settings: {
                 slidesToShow: 2,
                 slidesToScroll: 2,
@@ -51,12 +51,14 @@ const sliderSettings = {
             }
         },
         {
-            breakpoint: 480,
+            breakpoint: 600,
             settings: {
                 slidesToShow: 1,
-                slidesToScroll: 1
+                slidesToScroll: 1,
+                initialSlide: 1
             }
         }
+
     ]
 };
 
@@ -80,7 +82,7 @@ export default Blogs;
 const Blog = ({ blog }) => {
     return (
         <div className='w-[90%] my-5 cursor-pointer'>
-            <div className='h-[245px]  overflow-hidden'>
+            <div className='h-fit md:h-[150px] lg:h-[245px]  overflow-hidden'>
                 <img className='w-full hover:scale-110 transition-transform duration-300' src={blog?.img} alt="prduct_image" />
             </div>
             <div className='w-full'>

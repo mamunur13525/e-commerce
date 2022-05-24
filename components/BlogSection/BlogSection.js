@@ -7,7 +7,7 @@ const BlogSection = ({ classAdd = '' }) => {
         <div className={`container mb-48 mx-auto bg-white py-20 ${classAdd}`}>
             <div className='container mx-auto'>
                 <h1 className='text-4xl text-center'>Lastest From Blog</h1>
-                <div>
+                <div className='px-8'>
                     <Blogs />
                 </div>
                 <div className='flex justify-center mt-16'>

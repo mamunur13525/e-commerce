@@ -184,7 +184,7 @@ const Navbar = () => {
                 </div>
                 <hr />
                 <NavbarPosition showProfileCart={false} classAdd='py-2 mt-2  justify-center' NavbarNav={NavbarNav} />
-                {/* <NavbarPosition showProfileCart={true} classAdd={`shadow-sm  fixed top-0 left-0 justify-between py-4  ${stickyClass}`} NavbarNav={NavbarNav} /> */}
+                <NavbarPosition showProfileCart={true} classAdd={`shadow-sm  fixed top-0 left-0 justify-between py-4  ${stickyClass}`} NavbarNav={NavbarNav} />
             </div >
         </nav>
 
@@ -242,7 +242,7 @@ const NavbarPosition = ({ showProfileCart, NavbarNav, classAdd = '' }) => {
                             4
                         </span>
                         <DropDownItems cartRef={cartRef} visibility={showCart} classAdd=''>
-                            <ul className='w-32'>
+                            <ul className='w-32 bg-white'>
                                 <li className='py-1 px-3 hover:bg-slate-200'>Item 1</li>
                                 <li className='py-1 px-3 hover:bg-slate-200'>Item 1</li>
                                 <li className='py-1 px-3 hover:bg-slate-200'>Item 1</li>
