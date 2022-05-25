@@ -53,7 +53,7 @@ const ProductView = () => {
                                         <img onClick={() => setMainImageShow(img)} className='h-full' src={img} alt="product  image" />
                                     </div>
                                 ))
-                            }
+                            } 
                         </Slider>
                     </div>
                 </div>
