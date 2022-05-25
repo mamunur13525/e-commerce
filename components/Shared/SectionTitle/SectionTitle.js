@@ -2,7 +2,7 @@ import React from 'react';
 
 const SectionTitle = ({ titleClass = '', subtitleClass = '', descriptionClass = '', title = '', subtitle = '', description = '' }) => {
     return (
-        <div className='w-full lg:w-[760px] mx-auto text-center mb-16 '>
+        <div className='w-full lg:w-[760px] px-5 mx-auto text-center mb-16 '>
             {
                 subtitle !== '' &&
                 <h1 className={`text-[#80b435] text-3xl mb-6  ${subtitleClass}`}>{subtitle}</h1>

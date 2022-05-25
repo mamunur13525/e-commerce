@@ -45,7 +45,7 @@ const Footer = () => {
                             <img src="https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/f1_payment1_img.png?v=169920717840467018591501466879" alt="" />
                         </div>
                         <div className="w-full md:w-1/2 lg:w-3/12 md:pl-5 lg:pl-0  mb-3">
-                            <h1 className="text-[#80b435] text-xl mb-5">
+                            <h1 className="mt-4 md:mt-0 text-[#80b435] text-xl mb-5">
                                 Get Newsletter</h1>
                             <p className="text-[#2b2b2b] text-[15px]">
                                 Sed ut perpiciatis  unde omnix  iste  natus error sit voluptatem  accusantium</p>

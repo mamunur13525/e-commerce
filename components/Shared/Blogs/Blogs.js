@@ -80,7 +80,7 @@ export default Blogs;
 
 const Blog = ({ blog }) => {
     return (
-        <div className='w-[90%] my-5 cursor-pointer'>
+        <div className='w-[100%] px-3 my-5 cursor-pointer'>
             <div className='h-fit md:h-[150px] lg:h-[245px]  overflow-hidden'>
                 <img className='w-full hover:scale-110 transition-transform duration-300' src={blog?.img} alt="prduct_image" />
             </div>

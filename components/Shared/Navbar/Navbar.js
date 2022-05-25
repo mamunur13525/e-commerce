@@ -4,6 +4,8 @@ import { CgProfile } from 'react-icons/cg';
 import { BsTelephone } from 'react-icons/bs';
 import { FiShoppingBag } from 'react-icons/fi';
 import { IoSearch } from 'react-icons/io5';
+import { GrClose } from 'react-icons/gr';
+import { RiBarChartHorizontalLine } from 'react-icons/ri';
 import CartDropDown from '../Cart/CartDropDown';
 
 let categoryFoods = [
@@ -111,7 +113,7 @@ const Navbar = () => {
     const [showCart, setShowCart] = useState(false);
     const cartRef = useRef();
     const [stickyClass, setStickyClass] = useState('-translate-y-20');
-
+    const [showNavs, setShowNavs] = useState(false);
 
     useEffect(() => {
         const checkIfClickedOutside = e => {
@@ -143,15 +145,19 @@ const Navbar = () => {
     };
 
     return (
-        <nav className={`shadow-sm bg-white border-gray-200 h-[8.3rem]`}>
+        <nav className={`shadow-sm bg-white border-gray-200 h-[4.8rem] md:h-[8.3rem]`}>
             <div className='absolute left-0 top-0 z-40 w-full  px-10 lg:px-20 md:px-15 py-4'>
                 <div className="container flex justify-between items-center mx-auto mb-3">
                     <div className='w-1/3'>
-                        <div className='flex gap-1 items-center'>
+                        <div className='md:hidden'>
+                            <GrClose onClick={() => setShowNavs(false)} className={`${showNavs ? '' : 'hidden'}  cursor-pointer text-[25px]`} />
+                            <RiBarChartHorizontalLine onClick={() => setShowNavs(true)} className={`${showNavs ? 'hidden' : ''}  cursor-pointer text-[25px]`} />
+                        </div>
+                        <div className='hidden md:flex gap-1 items-center'>
                             <CgProfile />
                             My Account
                         </div>
-                        <div className='flex gap-1 items-center'>
+                        <div className='hidden md:flex gap-1 items-center'>
                             <BsTelephone />
                             <span className='text-green-500'>+8801935-015460</span>
                         </div>
@@ -178,8 +184,8 @@ const Navbar = () => {
                     </div>
                 </div>
                 <hr />
-                <NavbarPosition showProfileCart={false} classAdd='py-2 mt-2  justify-center' NavbarNav={NavbarNav} />
-                <NavbarPosition showProfileCart={true} classAdd={`shadow-sm  fixed top-0 left-0 justify-between py-4  ${stickyClass}`} NavbarNav={NavbarNav} />
+                <NavbarPosition showProfileCart={false} classAdd='hidden md:flex py-2 mt-2  justify-center' NavbarNav={NavbarNav} />
+                <NavbarPosition showNavs={showNavs} setShowNavs={setShowNavs} showProfileCart={true} classAdd={`shadow-sm  fixed top-0 left-0 justify-between py-4  ${stickyClass}`} NavbarNav={NavbarNav} />
             </div >
         </nav>
 
@@ -188,7 +194,7 @@ const Navbar = () => {
 
 export default Navbar;
 
-const NavbarPosition = ({ showProfileCart, NavbarNav, classAdd = '' }) => {
+const NavbarPosition = ({ showNavs, setShowNavs, showProfileCart, NavbarNav, classAdd = '' }) => {
     const [showingSearch, setShowingSearch] = useState(false);
     const [showCart, setShowCart] = useState(false);
     const cartRef = useRef();
@@ -205,17 +211,21 @@ const NavbarPosition = ({ showProfileCart, NavbarNav, classAdd = '' }) => {
         };
     }, []);
     return (
-        <div className={`flex  w-full bg-white items-center px-20 ${classAdd} duration-500  transition-transform z-50`}>
+        <div className={`flex justify-between  w-full bg-white items-center px-10 lg:px-20 ${classAdd} duration-500  transition-transform z-50`}>
+            <div className='md:hidden w-1/3'>
+                <GrClose onClick={() => setShowNavs(false)} className={`${showNavs ? '' : 'hidden'}  cursor-pointer text-[25px]`} />
+                <RiBarChartHorizontalLine onClick={() => setShowNavs(true)} className={`${showNavs ? 'hidden' : ''}  cursor-pointer text-[25px]`} />
+            </div>
             {
                 showProfileCart &&
-                <Link href="/" className='w-1/3 '>
-                    <div className="w-1/3 cursor-pointer">
-                        <img src="https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/h1_logo1.png?v=53464895439087604121500261105" className="h-10" alt="Flowbite Logo" />
+                <Link href="/" >
+                    <div className="cursor-pointer w-1/3">
+                        <img  src="https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/h1_logo1.png?v=53464895439087604121500261105" className="h-12  w-fit md:h-10" alt="Flowbite Logo" />
                         {/* <span className=" whitespace-nowrap text-4xl">Fresh Food</span> */}
                     </div>
                 </Link>
             }
-            <div className='mx-auto'>
+            <div className='hidden w-full w-auto md:block mx-auto'>
                 <ul className="flex gap-4">
                     {
                         NavbarNav.map(nav => (
@@ -244,7 +254,7 @@ const NavbarPosition = ({ showProfileCart, NavbarNav, classAdd = '' }) => {
             }
         </div >
     )
-}   
+}
 
 const NavItem = ({ nav }) => {
     const [dropShow, setDropShow] = useState(false);

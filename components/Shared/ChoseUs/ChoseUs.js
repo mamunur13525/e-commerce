@@ -3,7 +3,7 @@ import SectionTitle from '../SectionTitle/SectionTitle';
 
 const ChoseUs = ({ image = '', titleClass = '', subtitleClass = '', descriptionClass = '', title = '', subtitle = '', description = '' }) => {
     return (
-        <div className='container mx-auto py-28'>
+        <div className='container mx-auto sm:py-10 lg:py-28'>
             <SectionTitle
                 descriptionClass={descriptionClass}
                 subtitleClass={subtitleClass}

@@ -24,7 +24,7 @@ export default function Home() {
         <SubscribeModal />
         <Navbar />
         <FrontSlider />
-        <ShowingProducts classAdd='mt-20' />
+        <ShowingProducts />
         <SalesOffer />
         <ChoseUs
           image='https://cdn.shopify.com/s/files/1/2179/9295/files/images-choose_grande.jpg?v=1500449615'
