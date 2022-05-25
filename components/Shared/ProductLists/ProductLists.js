@@ -8,6 +8,8 @@ import { Modal } from 'react-responsive-modal';
 import Button from '../Button';
 import { itemLists } from '../../../FakeData/FakeData';
 import Slider from "react-slick";
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 
 const ProductLists = ({ productClass = '', searchValue, selectedCategory = '', listProducts = null }) => {
@@ -39,7 +41,7 @@ const ProductLists = ({ productClass = '', searchValue, selectedCategory = '', l
                 ))
                     :
                     'No Products Found!'
-            }   
+            }
         </div>
     );
 };
@@ -62,6 +64,7 @@ const sliderSettings = {
 const Product = ({ item, productClass = '' }) => {
     const [openModal, setOpenModal] = useState(false);
     const [mainImageShow, setMainImageShow] = useState(null)
+    const router = useRouter()
     const addProductToCart = () => {
         cogoToast.success('Item Added to Cart.')
         setOpenModal(false);
@@ -111,15 +114,15 @@ const Product = ({ item, productClass = '' }) => {
                                 <div className='w-1/2'>
                                     <p className='font-bold text-lg text-gray-900 uppercase'>Size</p>
                                     <select className='w-full border-gray-400 border mt-2 bg-transparent h-11 outline-none cursor-pointer py-2 px-2' name="" id="">
-                                        <option className='cursor-pointer' value="1.5" selected>1.5</option>
-                                        <option className='cursor-pointer' value="2.3">2.3</option>
-                                        <option className='cursor-pointer' value="3.2">3.2</option>
-                                        <option className='cursor-pointer' value="6.3">6.3</option>
+                                        <option className='cursor-pointer' defaultValue="1.5" selected>1.5</option>
+                                        <option className='cursor-pointer' defaultValue="2.3">2.3</option>
+                                        <option className='cursor-pointer' defaultValue="3.2">3.2</option>
+                                        <option className='cursor-pointer' defaultValue="6.3">6.3</option>
                                     </select>
                                 </div>
                                 <div className='w-1/2'>
                                     <p className='font-bold text-lg text-gray-900 uppercase'>Quantity</p>
-                                    <input className='w-full border-gray-400 border mt-2 bg-transparent h-11 outline-none py-2 px-2' type="number" name="" id="" defaultValue={1} />
+                                    <input className='w-full border-gray-400 border mt-2 bg-transparent h-11 outline-none py-2 px-2' type="number" name="" id="" defaultValue='1' />
                                 </div>
                             </div>
                             <Button clickFunc={addProductToCart} classAdd='text-white inline-block mb-0 font-normal text-center align-middle cursor-pointer whitespace-no-wrap text-sm rounded bg-[#80b435] hover:bg-[#356d20] select-none rounded-none py-3 w-[10rem] mt-8' >
@@ -129,15 +132,24 @@ const Product = ({ item, productClass = '' }) => {
                     </div>
                 </div>
             </Modal>
-            <img className='w-full group-hover:scale-110 transition-transform duration-300' src={item?.item_img} alt="prduct_image" />
-            <div className='absolute bottom-4 h-12  w-full px-4'>
-                <h1 className='text-xl font-medium group-hover:text-green-600 transition-all'>{item?.item_name}</h1>
-                <div className='flex gap-1 items-end'>
-                    <span className='text-gray-500 line-through tracking-tighter'>{item?.currency === 'usd' && '$'}{item?.base_price}.00</span>
-                    <span className='text-green-600 text-xl font-medium tracking-tight'>{item?.currency === 'usd' && '$'}{item?.base_price - (item?.base_price / item?.discount)}.00</span>
+            <div onClick={() => router.push(`products/${item?.id}`)}>
+                <img className='w-full group-hover:scale-110 transition-transform duration-300' src={item?.item_img} alt="prduct_image" />
+                <div className='absolute bottom-4 h-12  w-full px-4'>
+                    <h1 className='text-xl font-medium group-hover:text-green-600 transition-all'>{item?.item_name}</h1>
+                    <div className='flex gap-1 items-end'>
+                        <span className='text-gray-500 line-through tracking-tighter'>{item?.currency === 'usd' && '$'}{item?.base_price}.00</span>
+                        <span className='text-green-600 text-xl font-medium tracking-tight'>{item?.currency === 'usd' && '$'}{item?.base_price - (item?.base_price / item?.discount)}.00</span>
+                    </div>
                 </div>
             </div>
-            <div className='absolute left-0 top-0 w-full h-full grid place-items-center group'>
+            {/* 
+            position: absolute;
+    width: 96%;
+    top: 50%;
+    right: 0;
+    transform: translate(2%,-50%);
+     */}
+            <div className='absolute left-0 top-[50%] w-[96%] translate-x-[2%] translate-y-[-50%] grid place-items-center group'>
                 <div className='w-5/6 flex justify-center border rounded-full shadow-md bg-white py-3 translate-y-10 invisible  opacity-0 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300'>
                     <BsBagPlus onClick={addProductToCart} className='border-r py-1 w-1/3 flex justify-center text-[29px] hover:text-green-600' />
                     <MdFavoriteBorder onClick={addProductToFavorite} className='border-r py-1 w-1/3 flex justify-center text-[29px] hover:text-green-600' />

@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import React, { useRef, useState, useEffect } from 'react';
+import Link from 'next/link';
 import { CgProfile } from 'react-icons/cg';
 import { BsTelephone } from 'react-icons/bs';
 import { FiShoppingBag } from 'react-icons/fi';
@@ -55,13 +55,14 @@ const NavbarNav = [
         id: 0,
         path: '/',
         text: 'Home',
-        content: <ul className='bg-white border md:border-0 w-[10rem] list-disc px-5'>
-            <li className='py-2 border-b cursor-pointer hover:text-green-700'>Home 1</li>
-            <li className='py-2 border-b cursor-pointer hover:text-green-700'>Home 2</li>
-            <li className='py-2 border-b cursor-pointer hover:text-green-700'>Home 3</li>
-            <li className='py-2 border-b cursor-pointer hover:text-green-700'>Home 4</li>
-            <li className='py-2 cursor-pointer hover:text-green-700'>Home 5</li>
-        </ul>
+        content:
+            <ul className='bg-white border md:border-0 w-[10rem] list-disc px-5'>
+                <li className='py-2 border-b cursor-pointer hover:text-green-700'>Home 1</li>
+                <li className='py-2 border-b cursor-pointer hover:text-green-700'>Home 2</li>
+                <li className='py-2 border-b cursor-pointer hover:text-green-700'>Home 3</li>
+                <li className='py-2 border-b cursor-pointer hover:text-green-700'>Home 4</li>
+                <li className='py-2 cursor-pointer hover:text-green-700'>Home 5</li>
+            </ul>
     },
     {
         id: 1,
@@ -111,13 +112,14 @@ const NavbarNav = [
 const Navbar = () => {
     const [showingSearch, setShowingSearch] = useState(false);
     const [showCart, setShowCart] = useState(false);
-    const cartRef = useRef();
+    const cartRef = useRef(null);
+    const iconRef = useRef(null);
     const [stickyClass, setStickyClass] = useState('-translate-y-20');
     const [showNavs, setShowNavs] = useState(false);
 
     useEffect(() => {
         const checkIfClickedOutside = e => {
-            if (showCart && cartRef.current && !cartRef.current.contains(e.target)) {
+            if (showCart && cartRef.current && !cartRef.current.contains(e.target) && iconRef.current && !iconRef.current.contains(e.target)) {
                 setShowCart(false)
             }
         }
@@ -162,7 +164,7 @@ const Navbar = () => {
                             <span className='text-green-500'>+8801935-015460</span>
                         </div>
                     </div>
-                    <Link href="/" className='w-auto '>
+                    <Link href="/" className='w-auto' passHref>
                         <div className="flex items-center gap-3 cursor-pointer">
                             <img src="https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/h1_logo1.png?v=53464895439087604121500261105" className="h-12" alt="Flowbite Logo" />
                         </div>
@@ -173,7 +175,7 @@ const Navbar = () => {
                             <IoSearch onClick={() => setShowingSearch(prev => !prev)} className='text-2xl cursor-pointer' />
                         </div>
                         <div className='relative'>
-                            <FiShoppingBag onClick={() => setShowCart(prev => !prev)} ref={cartRef} className='text-2xl cursor-pointer' />
+                            <FiShoppingBag onClick={() => setShowCart(prev => !prev)} ref={iconRef} className='text-2xl cursor-pointer' />
                             <span className='absolute -right-2 -bottom-2 bg-green-500 text-white w-4 h-4 text-xs font-semibold grid place-items-center rounded-full'>
                                 4
                             </span>
@@ -197,19 +199,8 @@ export default Navbar;
 const NavbarPosition = ({ showNavs, setShowNavs, showProfileCart, NavbarNav, classAdd = '' }) => {
     const [showingSearch, setShowingSearch] = useState(false);
     const [showCart, setShowCart] = useState(false);
-    const cartRef = useRef();
-    const handleScroll = () => {
-        const position = window.pageYOffset;
-        console.log({ position })
-    };
+    const cartRefOther = useRef(null);
 
-    useEffect(() => {
-        window.addEventListener('scroll', handleScroll, { passive: true });
-
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
-    }, []);
     return (
         <div className={`flex justify-between  w-full bg-white items-center px-10 lg:px-20 ${classAdd} duration-500  transition-transform z-50`}>
             <div className='md:hidden w-1/3'>
@@ -218,15 +209,15 @@ const NavbarPosition = ({ showNavs, setShowNavs, showProfileCart, NavbarNav, cla
             </div>
             {
                 showProfileCart &&
-                <Link href="/" >
+                <Link href="/" passHref>
                     <div className="cursor-pointer w-1/3">
-                        <img  src="https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/h1_logo1.png?v=53464895439087604121500261105" className="h-12  w-fit md:h-10" alt="Flowbite Logo" />
+                        <img src="https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/h1_logo1.png?v=53464895439087604121500261105" className="h-12  w-fit md:h-10" alt="Flowbite Logo" />
                         {/* <span className=" whitespace-nowrap text-4xl">Fresh Food</span> */}
                     </div>
                 </Link>
             }
-            <div className='hidden w-full w-auto md:block mx-auto'>
-                <ul className="flex gap-4">
+            <div className='hidden w-full md:block mx-auto'>
+                <ul className="flex justify-center gap-4">
                     {
                         NavbarNav.map(nav => (
                             <NavItem nav={nav} key={nav.id} />
@@ -246,7 +237,7 @@ const NavbarPosition = ({ showNavs, setShowNavs, showProfileCart, NavbarNav, cla
                         <span className='absolute -right-2 -bottom-2 bg-green-500 text-white w-4 h-4 text-xs font-semibold grid place-items-center rounded-full'>
                             4
                         </span>
-                        <DropDownItems cartRef={cartRef} visibility={showCart} classAdd='left-[-8rem] border'>
+                        <DropDownItems cartRef={cartRefOther} visibility={showCart} classAdd='left-[-8rem] border'>
                             <CartDropDown />
                         </DropDownItems>
                     </div>
@@ -265,7 +256,11 @@ const NavItem = ({ nav }) => {
             onMouseLeave={() => setDropShow(false)}
             className='relative group'
         >
-            <span className={`block uppercase font-serif font-bold text-xl py-2 pr-4text-gray-700 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-green-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 ${pathname === nav.path ? 'text-green-700' : ''}`}><Link href={nav.path}>{nav.text}</Link></span>
+            <span className={`block uppercase font-serif font-bold text-xl py-2 pr-4text-gray-700 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-green-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700 ${pathname === nav.path ? 'text-green-700' : ''}`}>
+                <Link href={`${nav.path}`} passHref>
+                    {nav.text}
+                </Link>
+            </span>
             <DropDownItems visibility={dropShow} classAdd='py-3 px-1'>
                 {nav.content}
             </DropDownItems>
