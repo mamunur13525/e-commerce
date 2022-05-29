@@ -5,6 +5,7 @@ import Slider from "react-slick";
 import { MdOutlineArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
 import { AiOutlinePlus } from 'react-icons/ai';
 
+
 const sliderSettings = {
     lazyLoad: true,
     speed: 500,
@@ -37,13 +38,16 @@ let item = {
     currency: 'usd',
 }
 const ProductView = () => {
-    const [mainImageShow, setMainImageShow] = useState(item.item_img || '')
+    const [mainImageShow, setMainImageShow] = useState('https://cdn.shopify.com/s/files/1/2179/9295/products/11_bfd2aa7c-4b01-448f-adcd-d621336fdea5_grande.jpg?v=1500460099')
+    const addProductToCart = () => {
+        console.log('add to cart')
+    }
     return (
-        <div >
-            <div className='container mx-auto flex gap-5 py-20'>
-                <div className='w-1/2'>
-                    <div className='h-[40rem] border'>
-                        <img className='h-full' src={mainImageShow} alt="image" />
+        <div className='container mx-auto'>
+            <div className='flex flex-col lg:flex-row '>
+                <div className='w-full lg:w-1/2'>
+                    <div className='lg:h-[40rem] relative '>
+                        <img className='w-full lg:h-full' src={mainImageShow} alt="image" />
                     </div>
                     <div className='w-[95%] '>
                         <Slider {...sliderSettings}>
@@ -53,11 +57,11 @@ const ProductView = () => {
                                         <img onClick={() => setMainImageShow(img)} className='h-full' src={img} alt="product  image" />
                                     </div>
                                 ))
-                            } 
+                            }
                         </Slider>
                     </div>
                 </div>
-                <div className='w-1/2'>
+                <div className='px-10 w-full lg:w-1/2 mt-10'>
                     <h1 className='text-[48px] pb-5'>UNION BED</h1>
                     <div className='flex gap-2'>
                         <BsStar className='text-3xl' />
@@ -98,8 +102,7 @@ const ProductView = () => {
                         </div>
 
                     </div>
-                    {/* clickFunc={addProductToCart} */}
-                    <Button classAdd='text-white inline-block border-white mb-0 font-normal text-center align-middle cursor-pointer whitespace-no-wrap text-lg font-semibold rounded bg-[#80b435] hover:bg-white hover:text-[#80b435] hover:border hover:border-[#80b435] select-none rounded-none py-3 w-[13rem] mt-8 uppercase' >
+                    <Button clickFunc={addProductToCart} classAdd='text-white inline-block border-white mb-0 font-normal text-center align-middle cursor-pointer whitespace-no-wrap text-lg font-semibold rounded bg-[#80b435] hover:border hover:border-[#80b435] select-none rounded-none py-3 w-[13rem] mt-8 uppercase mb-10 hover:bg-white hover:text-[#80b435] ' >
                         Add to Cart
                     </Button>
                     <DetailAccordion />
@@ -153,3 +156,5 @@ const DetailAccordion = () => {
         </div>
     )
 }
+
+

@@ -14,12 +14,12 @@
 }
 button.slick-arrow.slick-next {
   right: 2rem;
-  z-index: 56;
+  z-index: 30;
 }
 
 button.slick-arrow.slick-prev {
   left: 2rem;
-  z-index: 56;
+  z-index: 30;
 }
 .slick-slider.slick-initialized:hover svg.slick-arrow.slick-prev,
 .slick-slider.slick-initialized:hover svg.slick-arrow.slick-next {

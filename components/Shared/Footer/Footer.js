@@ -1,14 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '../Button';
 import { FaPinterestP } from 'react-icons/fa';
 import { IoLogoTwitter, IoLogoInstagram } from 'react-icons/io5';
 import { ImFacebook } from 'react-icons/im';
-import { BsArrowRight } from 'react-icons/bs';
-
-
-
+import { BsArrow90DegUp, BsArrowRight } from 'react-icons/bs';
 
 const Footer = () => {
+    const [scrollUpShow, setScrollUpShow] = useState(false)
+    useEffect(() => {
+        window.addEventListener('scroll', stickNavbar);
+        return () => {
+            window.removeEventListener('scroll', stickNavbar);
+        };
+    }, []);
+
+    const stickNavbar = () => {
+        if (window !== undefined) {
+            let windowHeight = window.scrollY;
+            windowHeight > 200 ? setScrollUpShow(true) : setScrollUpShow(false
+            );
+        }
+    };
+
+
     return (
         <div className='relative mt-40'>
             <div className='navImage'>
@@ -83,6 +97,12 @@ const Footer = () => {
                     </div>
                 </div>
             </div>
+
+
+            <div onClick={() => window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })} className={`animate-bounce grid place-items-center shadow-2xl border border-gray-300 bg-gray-100 h-10 w-10 cursor-pointer fixed bottom-10 ${scrollUpShow ? 'right-0' : "-right-full"} transition-all duration-1000`}>
+                <BsArrow90DegUp className='text-xl' />
+            </div>
+
         </div >
 
     );

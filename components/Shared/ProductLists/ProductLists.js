@@ -61,7 +61,7 @@ const sliderSettings = {
     nextArrow: <MdArrowForwardIos className='text-red-500' />,
 };
 
-const Product = ({ item, productClass = '' }) => {
+export const Product = ({ item, productClass = '' }) => {
     const [openModal, setOpenModal] = useState(false);
     const [mainImageShow, setMainImageShow] = useState(null)
     const router = useRouter()
@@ -78,7 +78,7 @@ const Product = ({ item, productClass = '' }) => {
         setMainImageShow(item.item_img)
     }, [])
     return (
-        <div className={`animate-waving-hand my-2 relative group overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer ${productClass} `
+        <div className={`animate-waving-hand mx-auto my-2 relative group overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer ${productClass} `
         }>
             <Modal classNames={{
                 overlay: 'customOverlay',

@@ -3,10 +3,13 @@ import Link from 'next/link';
 import { CgProfile } from 'react-icons/cg';
 import { BsTelephone } from 'react-icons/bs';
 import { FiShoppingBag } from 'react-icons/fi';
-import { IoSearch } from 'react-icons/io5';
+import { IoSearch, IoCloseSharp } from 'react-icons/io5';
 import { GrClose } from 'react-icons/gr';
 import { RiBarChartHorizontalLine } from 'react-icons/ri';
+import { AiOutlinePlus } from 'react-icons/ai';
+// import { IoCloseSharp } from 'react-icons/ai';
 import CartDropDown from '../Cart/CartDropDown';
+import { useRouter } from 'next/router';
 
 let categoryFoods = [
     {
@@ -116,6 +119,7 @@ const Navbar = () => {
     const iconRef = useRef(null);
     const [stickyClass, setStickyClass] = useState('-translate-y-20');
     const [showNavs, setShowNavs] = useState(false);
+    const sideNavRef = useRef(null);
 
     useEffect(() => {
         const checkIfClickedOutside = e => {
@@ -133,7 +137,6 @@ const Navbar = () => {
 
     useEffect(() => {
         window.addEventListener('scroll', stickNavbar);
-
         return () => {
             window.removeEventListener('scroll', stickNavbar);
         };
@@ -149,6 +152,13 @@ const Navbar = () => {
     return (
         <nav className={`shadow-sm bg-white border-gray-200 h-[4.8rem] md:h-[8.3rem]`}>
             <div className='absolute left-0 top-0 z-40 w-full  px-10 lg:px-20 md:px-15 py-4'>
+                <div ref={sideNavRef} className={`fixed w-full ${showNavs ? "left-0" : "-left-full"} top-0 h-screen bg-gray-800 z-[150] text-white transition-all `}>
+                    <p className='flex items-center justify-between  text-white text-2xl p-4 text-center font-semibold'>
+                        <span>Navbar</span>
+                        <IoCloseSharp onClick={() => setShowNavs(false)} className='text-3xl text-white cursor-pointer' />
+                    </p>
+                    <NavItemAccordion setShowNavs={setShowNavs} />
+                </div>
                 <div className="container flex justify-between items-center mx-auto mb-3">
                     <div className='w-1/3'>
                         <div className='md:hidden'>
@@ -186,7 +196,7 @@ const Navbar = () => {
                     </div>
                 </div>
                 <hr />
-                <NavbarPosition showProfileCart={false} classAdd='hidden md:flex py-2 mt-2  justify-center' NavbarNav={NavbarNav} />
+                <NavbarPosition showProfileCart={false} setShowNavs={setShowNavs} classAdd='hidden md:flex py-2 mt-2  justify-center' NavbarNav={NavbarNav} />
                 <NavbarPosition showNavs={showNavs} setShowNavs={setShowNavs} showProfileCart={true} classAdd={`shadow-sm  fixed top-0 left-0 justify-between py-4  ${stickyClass}`} NavbarNav={NavbarNav} />
             </div >
         </nav>
@@ -201,11 +211,11 @@ const NavbarPosition = ({ showNavs, setShowNavs, showProfileCart, NavbarNav, cla
     const [showCart, setShowCart] = useState(false);
     const cartRefOther = useRef(null);
 
+    console.log({ showNavs })
     return (
         <div className={`flex justify-between  w-full bg-white items-center px-10 lg:px-20 ${classAdd} duration-500  transition-transform z-50`}>
             <div className='md:hidden w-1/3'>
-                <GrClose onClick={() => setShowNavs(false)} className={`${showNavs ? '' : 'hidden'}  cursor-pointer text-[25px]`} />
-                <RiBarChartHorizontalLine onClick={() => setShowNavs(true)} className={`${showNavs ? 'hidden' : ''}  cursor-pointer text-[25px]`} />
+                <RiBarChartHorizontalLine onClick={() => setShowNavs(true)} className={`cursor-pointer text-[25px]`} />
             </div>
             {
                 showProfileCart &&
@@ -278,4 +288,81 @@ const DropDownItems = ({ cartRef = null, classAdd, children, visibility = false 
             {children}
         </div>
     )
-}   
+}
+
+
+
+
+const NavItemAccordion = ({ setShowNavs }) => {
+    const [showAccordion, setShowAccordion] = useState(null)
+    const router = useRouter();
+    let data = [
+        {
+            id: 0,
+            title: 'Home',
+            content: [
+                { id: 0, name: 'Home1', link: '/hom1' },
+                { id: 1, name: 'Home1', link: '/hom1' },
+                { id: 2, name: 'Home1', link: '/hom1' },
+                { id: 3, name: 'Home1', link: '/hom1' },
+                { id: 4, name: 'Home1', link: '/hom1' }
+            ]
+        },
+        {
+            id: 1,
+            title: 'About',
+            content: [
+                { id: 0, name: 'Home1', link: '/hom1' },
+                { id: 1, name: 'Home1', link: '/hom1' },
+                { id: 2, name: 'Home1', link: '/hom1' },
+                { id: 3, name: 'Home1', link: '/hom1' },
+                { id: 4, name: 'Home1', link: '/hom1' }
+            ]
+        },
+        {
+            id: 2,
+            title: 'Services',
+            content: [
+                { id: 0, name: 'Home1', link: '/hom1' },
+                { id: 1, name: 'Home1', link: '/hom1' },
+                { id: 2, name: 'Home1', link: '/hom1' },
+                { id: 3, name: 'Home1', link: '/hom1' },
+                { id: 4, name: 'Home1', link: '/hom1' }
+            ]
+        }
+    ]
+    console.log(showAccordion)
+    return (
+        <div>
+            {
+                data.map(item => (
+                    <div
+                        key={item.id}
+                        className='flex flex-col justify-center  px-5'
+                    >
+                        <div className='flex justify-between gap-4 items-center cursor-pointer border-b border-gray-50'>
+                            <p onClick={() => { router.push(item.title.toLowerCase()); setShowNavs(false) }} className={`${showAccordion === item.id ? 'text-[#80b435]' : ''} text-xl py-3 font-medium duration-200 w-fit`}>{item.title}</p>
+                            <div
+                                onClick={() => { showAccordion === item.id ? setShowAccordion(null) : setShowAccordion(item.id) }}
+                                className='w-full flex justify-end'
+                            >
+                                <AiOutlinePlus className={`text-2xl ${showAccordion === item.id ? 'rotate-[135deg]' : ''} transition-transform duration-200`} />
+                            </div>
+                        </div>
+                        <ul className={`${showAccordion === item.id ? 'min-h-fit mt-2 mb-3' : 'max-h-0'}  transition-all   overflow-hidden duration-200 px-3`}>
+                            {
+                                item.content.map(li => (
+                                    <li
+                                        key={li.id}
+                                        className='py-2 border-b border-dashed border-gray-100'
+                                    >{li.name}</li>
+                                ))
+                            }
+                        </ul>
+                    </div>
+                ))
+            }
+
+        </div >
+    )
+}
