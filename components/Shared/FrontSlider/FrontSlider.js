@@ -7,6 +7,7 @@ import { SiLinktree } from "react-icons/si";
 import { MdOutlineArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 import Button from '../Button';
 
+
 const sliderSettings = {
     infinite: true,
     fade: true,
@@ -50,12 +51,12 @@ const FrontSlider = () => {
                     sliderInfos.length && sliderInfos.map(slideInfo => (
                         <div
                             key={slideInfo.id}
-                            className={`h-full  pb-5  lg:h-screen mx-auto  shadow rounded-md relative`}>
+                            className={`h-full md:pb-5 lg:h-screen mx-auto  shadow rounded-md relative`}>
                             <div className='  flex flex-col h-full items-center justify-center mx-auto relative z-20' >
                                 <div className='w-full mb-16 text-center animate-waving-hand'>
-                                    <h1 className='font-sans font-light text-8xl text-green-600 drop-shadow-2xl uppercase'>{slideInfo.title}</h1>
+                                    <h1 className='mt-10     font-sans font-light text-4xl md:text-6xl lg:text-7xl text-green-600 drop-shadow-2xl uppercase'>{slideInfo.title}</h1>
                                     {/* <p className=' w-7/12 mx-auto font-sans text-xl md:text-3xl mt-1 md:mt-3 capitalize'>{slideInfo.subTitle}</p> */}
-                                    <p className='mx-auto w-7/12 mt-1 md:mt-10 cursor-pointer text-xl'>{slideInfo.description}</p>
+                                    <p className='mx-auto w-10/12 md:w-7/12 mt-1 md:mt-10 cursor-pointer text-xl'>{slideInfo.description}</p>
                                     <Button classAdd='text-white mt-2 md:mt-5 bg-[#80b435] hover:text-[#80b435] hover:bg-white  hover:border-[#356d20]' >
                                         Shop Now
                                     </Button>
@@ -70,37 +71,37 @@ const FrontSlider = () => {
                 }
             </Slider >
             <div className='w-full lg:absolute left-0 -bottom-16 '>
-                <div className='flex flex-wrap justify-center bg-white w-5/6 mx-auto lg:shadow-md rounded-sm py-5'>
-                    <div className='border-r-0 sm:border-r my-3 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 h-full text-center flex flex-col  gap-5 items-center px-3 py-2 cursor-pointer group'>
-                        <div className='bg-green-600 h-12 p-2 rounded-full w-12 grid place-items-center group-hover:rotate-[360deg] transition-transform duration-500'>
-                            <FiSend className=' text-2xl text-white ' />
+                <div className='flex flex-wrap justify-center bg-white w-5/6 mx-auto lg:shadow-md rounded-sm py-1'>
+                    <div className='border-r-0 sm:border-r my-3 w-1/2 md:w-1/3 lg:w-1/4 h-full text-center flex flex-col  gap-5 items-center px-3 py-2 cursor-pointer group'>
+                        <div className='p-2 rounded-full grid place-items-center group-hover:rotate-[360deg] transition-transform duration-500'>
+                            <FiSend className=' text-4xl text-green-600 ' />
                         </div>
                         <div>
                             <p className='uppercase font-semibold group-hover:text-green-600'>Free Shipping</p>
                             <p className='uppercase text-gray-400 text-[12px]'>On Order $5000</p>
                         </div>
                     </div>
-                    <div className='border-r-0  md:border-r my-3 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 h-full text-center flex flex-col  gap-5 items-center px-3 py-2 cursor-pointer group'>
-                        <div className='bg-green-600 h-12 p-2 rounded-full w-12 grid place-items-center group-hover:rotate-[360deg] transition-transform duration-500'>
-                            <BiSupport className=' text-2xl text-white ' />
+                    <div className='border-r-0  md:border-r my-3 w-1/2 md:w-1/3 lg:w-1/4 h-full text-center flex flex-col  gap-5 items-center px-3 py-2 cursor-pointer group'>
+                        <div className='p-2 rounded-full grid place-items-center group-hover:rotate-[360deg] transition-transform duration-500'>
+                            <BiSupport className=' text-4xl text-green-600 ' />
                         </div>
                         <div>
                             <p className='uppercase font-semibold group-hover:text-green-600'>Support</p>
                             <p className='uppercase text-gray-400 text-[12px]'>LIFE TIME SUPPORT 24/7</p>
                         </div>
                     </div>
-                    <div className='border-r-0 sm:border-r  lg:border-r my-3 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 h-full text-center flex flex-col  gap-5 items-center px-3 py-2 cursor-pointer group'>
-                        <div className='bg-green-600 h-12 p-2 rounded-full w-12 grid place-items-center group-hover:rotate-[360deg] transition-transform duration-500'>
-                            <SiLinktree className=' text-2xl text-white ' />
+                    <div className='border-r-0 sm:border-r  lg:border-r my-3 w-1/2 md:w-1/3 lg:w-1/4 h-full text-center flex flex-col  gap-5 items-center px-3 py-2 cursor-pointer group'>
+                        <div className='p-2 rounded-full grid place-items-center group-hover:rotate-[360deg] transition-transform duration-500'>
+                            <SiLinktree className=' text-4xl text-green-600 ' />
                         </div>
                         <div>
                             <p className='uppercase font-semibold group-hover:text-green-600'>Help partner</p>
                             <p className='uppercase text-gray-400 text-[12px]'>HELP ALL ASPECTS</p>
                         </div>
                     </div>
-                    <div className=' my-3 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 h-full text-center flex flex-col  gap-5 items-center px-3 py-2 cursor-pointer group'>
-                        <div className='bg-green-600 h-12 p-2 rounded-full w-12 grid place-items-center group-hover:rotate-[360deg] transition-transform duration-500'>
-                            <RiHeadphoneLine className=' text-2xl text-white ' />
+                    <div className=' my-3 w-1/2 md:w-1/3 lg:w-1/4 h-full text-center flex flex-col  gap-5 items-center px-3 py-2 cursor-pointer group'>
+                        <div className='p-2 rounded-full grid place-items-center group-hover:rotate-[360deg] transition-transform duration-500'>
+                            <RiHeadphoneLine className=' text-4xl text-green-600 ' />
                         </div>
                         <div>
                             <p className='uppercase font-semibold group-hover:text-green-600'>CONTACT WITH US</p>

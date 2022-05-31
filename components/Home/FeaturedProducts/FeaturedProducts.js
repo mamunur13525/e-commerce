@@ -27,7 +27,7 @@ const FeaturedProducts = ({ classAdd = '' }) => {
         }
     ]
     return (
-        <div className={`bg-white py-20 ${classAdd}`}>
+        <div className={`bg-white lg:py-10 ${classAdd}`}>
             <div className='container mx-auto'>
                 <h1 className='text-4xl text-center'>Featured Products</h1>
                 <ul className='flex flex-wrap justify-center gap-10 mt-8 px-10'>

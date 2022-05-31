@@ -28,7 +28,6 @@ button.slick-arrow.slick-prev {
 }
 svg.slick-arrow.slick-prev,
 svg.slick-arrow.slick-next {
-  transform: translateX(2rem);
   opacity: 0;
   transition: all 0.6s;
   color: rgb(255, 255, 255) !important;
@@ -37,11 +36,40 @@ svg.slick-arrow.slick-next {
   z-index: 2;
   height: 2rem;
 }
+svg.slick-arrow.slick-prev{
+  transform: translateX(2rem);
+
+}
+svg.slick-arrow.slick-next{
+  transform: translateX(-2rem);
+
+}
 svg.slick-arrow.slick-prev {
-  left: 1rem;
+  left: 2rem;
   top: 38%;
 }
 svg.slick-arrow.slick-next {
-  right: 3.8rem;
+  right: 2rem;
   top: 38%;
+}
+
+@media screen and (max-width: 800px) {
+  svg.slick-arrow.slick-prev {
+    left: 1rem;
+   
+  }
+  svg.slick-arrow.slick-next {
+    right: 1rem;
+  
+  }
+}
+@media screen and (max-width: 600px) {
+  svg.slick-arrow.slick-prev {
+    left: .5rem;
+   
+  }
+  svg.slick-arrow.slick-next {
+    right: .5rem;
+  
+  }
 }

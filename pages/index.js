@@ -31,7 +31,7 @@ export default function Home() {
           title='Why Choose Us'
           description={`The fact of the matter is that you really know something's organic when you find bugs! they obviously wouldn't have made it that far in a non-organic growing environment, so better than any certification or seal on a package, the presence of creatures let you know the plant was healthy and.`}
         />
-        <FeaturedProducts classAdd='mt-20' />
+        <FeaturedProducts  />
         <BlogSection />
         <Footer />
       </main>
