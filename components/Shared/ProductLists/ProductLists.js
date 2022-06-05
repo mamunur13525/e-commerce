@@ -82,7 +82,7 @@ export const Product = ({ item, productClass = '' }) => {
         }>
             <Modal classNames={{
                 overlay: 'customOverlay',
-                modal: 'w-full max-w-[75%!important] md:max-w-[90%!important] lg:max-w-[75%!important] h-fit transition-all duration-1000',
+                modal: 'w-full my-2!important  h-fit max-w-[90%!important] md:max-w-[75%!important] md:max-w-[90%!important] lg:max-w-[75%!important] h-fit transition-all duration-1000',
             }} open={openModal} onClose={() => setOpenModal(false)} center>
                 <div className='flex flex-col md:flex-row justify-between h-full'>
                     <div className='w-full md:w-1/2 relative h-full'>

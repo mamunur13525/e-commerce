@@ -10,6 +10,7 @@ import { AiOutlinePlus } from 'react-icons/ai';
 // import { IoCloseSharp } from 'react-icons/ai';
 import CartDropDown from '../Cart/CartDropDown';
 import { useRouter } from 'next/router';
+import SearchGlobal from '../SearchGlobal/SearchGlobal';
 
 let categoryFoods = [
     {
@@ -122,6 +123,7 @@ const Navbar = () => {
     const sideNavRef = useRef(null);
 
     useEffect(() => {
+        console.log('hit')
         const checkIfClickedOutside = e => {
             if (showCart && cartRef.current && !cartRef.current.contains(e.target) && iconRef.current && !iconRef.current.contains(e.target)) {
                 setShowCart(false)
@@ -131,7 +133,7 @@ const Navbar = () => {
         return () => {
             document.removeEventListener("mousedown", checkIfClickedOutside)
         }
-    }, [showCart])
+    }, [showCart, cartRef, iconRef])
 
 
 
@@ -150,7 +152,7 @@ const Navbar = () => {
     };
 
     return (
-        <nav className={`shadow-sm bg-white border-gray-200 h-[4.8rem] md:h-[8.3rem]`}>
+        <nav className={`relative shadow-sm bg-white border-gray-200 h-[4.8rem] md:h-[8.3rem]`}>                <SearchGlobal showingSearch={showingSearch} setShowingSearch={setShowingSearch} />
             <div className='absolute left-0 top-0 z-40 w-full  px-10 lg:px-20 md:px-15 py-4'>
                 <div ref={sideNavRef} className={`fixed w-full ${showNavs ? "left-0" : "-left-full"} top-0 h-screen bg-gray-800 z-[150] text-white transition-all `}>
                     <p className='flex items-center justify-between  text-white text-2xl p-4 text-center font-semibold'>
@@ -181,7 +183,6 @@ const Navbar = () => {
                     </Link>
                     <div className='flex justify-end gap-4 w-1/3 '>
                         <div className='relative'>
-                            <input className={`absolute top-[-5px] right-8 shado px-2 py-1 text-gray-700 border border-gray-500 rounded-md focus:outline-none  ${showingSearch ? 'w-[15rem] opacity-100 visible' : 'opacity-0 w-[0rem] invisible'}  transition-all duration-500`} type="search" name="search_item" placeholder='Search..' />
                             <IoSearch onClick={() => setShowingSearch(prev => !prev)} className='text-2xl cursor-pointer' />
                         </div>
                         <div className='relative'>
@@ -196,8 +197,8 @@ const Navbar = () => {
                     </div>
                 </div>
                 <hr />
-                <NavbarPosition showProfileCart={false} setShowNavs={setShowNavs} classAdd='hidden md:flex py-2 mt-2  justify-center' NavbarNav={NavbarNav} />
-                <NavbarPosition showNavs={showNavs} setShowNavs={setShowNavs} showProfileCart={true} classAdd={`shadow-sm  fixed top-0 left-0 justify-between py-4  ${stickyClass}`} NavbarNav={NavbarNav} />
+                <NavbarPosition setShowingSearch={setShowingSearch} showProfileCart={false} setShowNavs={setShowNavs} classAdd='hidden md:flex py-2 mt-2  justify-center' NavbarNav={NavbarNav} />
+                <NavbarPosition setShowingSearch={setShowingSearch} showNavs={showNavs} setShowNavs={setShowNavs} showProfileCart={true} classAdd={`shadow-sm  fixed top-0 left-0 justify-between py-4  ${stickyClass}`} NavbarNav={NavbarNav} />
             </div >
         </nav>
 
@@ -206,8 +207,7 @@ const Navbar = () => {
 
 export default Navbar;
 
-const NavbarPosition = ({ showNavs, setShowNavs, showProfileCart, NavbarNav, classAdd = '' }) => {
-    const [showingSearch, setShowingSearch] = useState(false);
+const NavbarPosition = ({ setShowingSearch, showNavs, setShowNavs, showProfileCart, NavbarNav, classAdd = '' }) => {
     const [showCart, setShowCart] = useState(false);
     const cartRefOther = useRef(null);
 
@@ -239,7 +239,6 @@ const NavbarPosition = ({ showNavs, setShowNavs, showProfileCart, NavbarNav, cla
                 showProfileCart &&
                 <div className='flex justify-end gap-4 w-1/3 '>
                     <div className='relative'>
-                        <input className={`absolute top-[-5px] right-8 shado px-2 py-1 text-gray-700 border border-gray-500 rounded-md focus:outline-none  ${showingSearch ? 'w-[15rem] opacity-100 visible' : 'opacity-0 w-[0rem] invisible'}  transition-all duration-500`} type="search" name="search_item" placeholder='Search..' />
                         <IoSearch onClick={() => setShowingSearch(prev => !prev)} className='text-2xl cursor-pointer' />
                     </div>
                     <div className='relative'>

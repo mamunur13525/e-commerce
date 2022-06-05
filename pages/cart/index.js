@@ -1,7 +1,8 @@
 import Head from 'next/head'
+import CartDetails from '../../components/Cart/CartDetails'
 import Footer from '../../components/Shared/Footer/Footer'
 import Navbar from '../../components/Shared/Navbar/Navbar'
-import Signup from '../../components/Signup/Signup'
+import PageTitleSection from '../../components/Shared/PageTitleSection/PageTitleSection'
 
 
 export default function Home() {
@@ -16,7 +17,15 @@ export default function Home() {
             </Head>
             <main className=''>
                 <Navbar />
-                <Signup />
+                <PageTitleSection
+                    img='https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/breadcrumb_image_3.jpg?v=83084458265994090391500869701'
+                    title='YOUR SHOPPING CART'
+                />
+                <div className="container mx-auto">
+                    <div className="container mx-auto">
+                        <CartDetails />
+                    </div>
+                </div>
                 <Footer />
             </main>
         </div>

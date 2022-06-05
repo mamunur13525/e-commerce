@@ -43,7 +43,7 @@ const ProductView = () => {
         console.log('add to cart')
     }
     return (
-        <div className='container mx-auto'>
+        <div className='container mx-auto mt-1'>
             <div className='flex flex-col lg:flex-row '>
                 <div className='w-full lg:w-1/2'>
                     <div className='lg:h-[40rem] relative '>

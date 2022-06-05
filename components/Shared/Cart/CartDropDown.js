@@ -1,8 +1,13 @@
+import { useRouter } from 'next/router';
 import React from 'react';
 import { GrFormClose } from 'react-icons/gr';
 import Button from '../Button'
 
 const CartDropDown = () => {
+    const router = useRouter();
+    const viewCart = () => {
+        router.push('/cart')
+    }
     return (
         <div className='w-72 h-fit p-4 pt-0 bg-white'>
             <div className='flex justify-between items-center py-3 border-b'>
@@ -44,7 +49,7 @@ const CartDropDown = () => {
                     <p className='font-medium text-xl  text-[#80b435]'>$300.00</p>
                 </div>
                 <div className='flex justify-between gap-3 items-center'>
-                    <Button classAdd='hover:text-white py-2 px-4 uppercase'>
+                    <Button clickFunc={viewCart} classAdd='hover:text-white py-2 px-4 uppercase'>
                         View Cart
                     </Button>
                     <Button classAdd='bg-green-600 uppercase py-2 hover:bg-white hover:text-[#80b435] text-white'>
