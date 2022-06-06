@@ -194,8 +194,8 @@ const Navbar = () => {
                                 <CartDropDown />
                             </DropDownItems>
                         </div>
-                    </div>
-                </div>
+                    </div> 
+                </div> 
                 <hr />
                 <NavbarPosition setShowingSearch={setShowingSearch} showProfileCart={false} setShowNavs={setShowNavs} classAdd='hidden md:flex py-2 mt-2  justify-center' NavbarNav={NavbarNav} />
                 <NavbarPosition setShowingSearch={setShowingSearch} showNavs={showNavs} setShowNavs={setShowNavs} showProfileCart={true} classAdd={`shadow-sm  fixed top-0 left-0 justify-between py-4  ${stickyClass}`} NavbarNav={NavbarNav} />
