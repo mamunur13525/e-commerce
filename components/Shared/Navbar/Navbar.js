@@ -192,7 +192,7 @@ const Navbar = () => {
                             </span>
                             <DropDownItems cartRef={cartRef} visibility={showCart} classAdd='left-[-8rem] border'>
                                 <CartDropDown />
-                            </DropDownItems>
+                            </DropDownItems> 
                         </div>
                     </div> 
                 </div> 
