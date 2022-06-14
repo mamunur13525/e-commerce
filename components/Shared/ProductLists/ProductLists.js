@@ -2,13 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { IoSearch } from 'react-icons/io5';
 import { BsBagPlus } from 'react-icons/bs';
 import { MdFavoriteBorder, MdOutlineArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
-import cogoToast from 'cogo-toast';
 import 'react-responsive-modal/styles.css';
 import { Modal } from 'react-responsive-modal';
 import Button from '../Button';
 import { itemLists } from '../../../FakeData/FakeData';
 import Slider from "react-slick";
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 
@@ -66,12 +64,12 @@ export const Product = ({ item, productClass = '' }) => {
     const [mainImageShow, setMainImageShow] = useState(null)
     const router = useRouter()
     const addProductToCart = () => {
-        cogoToast.success('Item Added to Cart.')
+       
         setOpenModal(false);
     }
 
     const addProductToFavorite = () => {
-        cogoToast.success('Item Added to Favorites')
+      
     }
 
     useEffect(() => {

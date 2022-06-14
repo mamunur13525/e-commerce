@@ -77,12 +77,12 @@ const SearchGlobal = ({ showingSearch, setShowingSearch }) => {
     return (
         <div className={`fixed flex justify-center items-start h-screen z-50 bg-[#00000080] px-5 py-3 w-full ${showingSearch ? "visible" : "invisible"} `}>
             <div ref={searchRef} className={`bg-white w-11/12 md:w-5/6 lg:w-1/2 mt-10 py-4 rounded translate-y-5 transition-all  ${showingSearch ? "translate-y-0 opacity-100" : "opacity-0"}`}>
+
                 <div className='flex items-center gap-2 pt-2  pb-5  px-4'>
-
-                    <input ref={inputRef} onChange={(e) => setSearchValue(e.target.value)} className='text-xl px-2 w-full py-1 border border-gray-400 rounded focus:outline-none shadow' value={searchValue} type="text" name="" id="" autoFocus />
-
+                    <input ref={inputRef} onChange={(e) => setSearchValue(e.target.value)} className='text-xl px-2 w-full py-1 border border-gray-200 rounded focus:outline-none shadow' value={searchValue} type="text" name="" id="" autoFocus />
                     <GoSearch onClick={searchProducts} className='text-2xl' />
                 </div>
+
                 <hr className='shadow' />
                 <div>
                     <ul className='list-none max-h-[70vh] overflow-auto'>
