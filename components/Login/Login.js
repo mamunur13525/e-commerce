@@ -50,7 +50,7 @@ export default Login;
 export const FormBox = ({ inputFeilds = [], submitBtn = 'Sign in' }) => {
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const onSubmit = (data) => {
-        console.log(data)
+       
     }
     return (
         <>{
@@ -70,9 +70,6 @@ export const FormBox = ({ inputFeilds = [], submitBtn = 'Sign in' }) => {
                                 type={feild.type}
                                 placeholder={feild.placeholder}
                             />
-                            {
-                                console.log(errors[feild.name])
-                            }
                             {errors[feild.name] && <span className='text-red-700 mt-2 text-sm italic'>This field is required</span>}
                         </div>
                     ))

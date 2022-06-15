@@ -8,9 +8,9 @@ import { GrClose } from 'react-icons/gr';
 import { RiBarChartHorizontalLine } from 'react-icons/ri';
 import { AiOutlinePlus } from 'react-icons/ai';
 // import { IoCloseSharp } from 'react-icons/ai';
-import CartDropDown from '../Cart/CartDropDown';
 import { useRouter } from 'next/router';
 import SearchGlobal from '../SearchGlobal/SearchGlobal';
+import CartSidebar from '../Cart/CartSidebar';
 
 let categoryFoods = [
     {
@@ -116,24 +116,9 @@ const NavbarNav = [
 const Navbar = () => {
     const [showingSearch, setShowingSearch] = useState(false);
     const [showCart, setShowCart] = useState(false);
-    const cartRef = useRef(null);
-    const iconRef = useRef(null);
-    const [stickyClass, setStickyClass] = useState('-translate-y-20');
+     const [stickyClass, setStickyClass] = useState('-translate-y-20');
     const [showNavs, setShowNavs] = useState(false);
     const sideNavRef = useRef(null);
-
-    useEffect(() => {
-        console.log('hit')
-        const checkIfClickedOutside = e => {
-            if (showCart && cartRef.current && !cartRef.current.contains(e.target) && iconRef.current && !iconRef.current.contains(e.target)) {
-                setShowCart(false)
-            }
-        }
-        document.addEventListener("mousedown", checkIfClickedOutside)
-        return () => {
-            document.removeEventListener("mousedown", checkIfClickedOutside)
-        }
-    }, [showCart, cartRef, iconRef])
 
 
 
@@ -150,14 +135,25 @@ const Navbar = () => {
             windowHeight > 200 ? setStickyClass('translate-[0!important]') : setStickyClass('-translate-y-20');
         }
     };
+    useEffect(() => {
+        if (showCart) {
+            document.body.style.overflowY = "hidden";
+        } else {
+            document.body.style.overflowY = "unset";
+        }
+    }, [showCart])
 
     return (
-        <nav className={`relative shadow-sm bg-white border-gray-200 h-[4.8rem] md:h-[8.3rem]`}>                <SearchGlobal showingSearch={showingSearch} setShowingSearch={setShowingSearch} />
+        <nav className={`relative shadow-sm bg-white border-gray-200 h-[4.8rem] md:h-[8.3rem]`}>
+            <div onClick={() => setShowCart(false)} className={`fixed left-0 top-0 w-full h-full ${showCart ? 'z-[120] opacity-50' : 'z-[-2] opacity-0'} bg-gray-900  transition-all`} >
+            </div>
+            <CartSidebar cart={[showCart, setShowCart]} />
+            <SearchGlobal showingSearch={showingSearch} setShowingSearch={setShowingSearch} />
             <div className='absolute left-0 top-0 z-40 w-full  px-10 lg:px-20 md:px-15 py-4'>
                 <div ref={sideNavRef} className={`fixed w-full ${showNavs ? "left-0" : "-left-full"} top-0 h-screen bg-gray-800 z-[150] text-white transition-all `}>
                     <p className='flex items-center justify-between  text-white text-2xl p-4 text-center font-semibold'>
                         <span>Navbar</span>
-                        <IoCloseSharp onClick={() => setShowNavs(false)} className='text-3xl text-white cursor-pointer' />
+                        <IoCloseSharp onClick={() => setShowNavs(false)} className='text-xl text-white cursor-pointer' />
                     </p>
                     <NavItemAccordion setShowNavs={setShowNavs} />
                 </div>
@@ -186,19 +182,16 @@ const Navbar = () => {
                             <IoSearch onClick={() => setShowingSearch(prev => !prev)} className='text-2xl cursor-pointer' />
                         </div>
                         <div className='relative'>
-                            <FiShoppingBag onClick={() => setShowCart(prev => !prev)} ref={iconRef} className='text-2xl cursor-pointer' />
+                            <FiShoppingBag  onClick={() => setShowCart(true)} className='text-2xl cursor-pointer' />
                             <span className='absolute -right-2 -bottom-2 bg-green-500 text-white w-4 h-4 text-xs font-semibold grid place-items-center rounded-full'>
                                 4
                             </span>
-                            <DropDownItems cartRef={cartRef} visibility={showCart} classAdd='left-[-8rem] border'>
-                                <CartDropDown />
-                            </DropDownItems> 
                         </div>
-                    </div> 
-                </div> 
+                    </div>
+                </div>
                 <hr />
-                <NavbarPosition setShowingSearch={setShowingSearch} showProfileCart={false} setShowNavs={setShowNavs} classAdd='hidden md:flex py-2 mt-2  justify-center' NavbarNav={NavbarNav} />
-                <NavbarPosition setShowingSearch={setShowingSearch} showNavs={showNavs} setShowNavs={setShowNavs} showProfileCart={true} classAdd={`shadow-sm  fixed top-0 left-0 justify-between py-4  ${stickyClass}`} NavbarNav={NavbarNav} />
+                <NavbarPosition setShowCart={setShowCart} setShowingSearch={setShowingSearch} showProfileCart={false} setShowNavs={setShowNavs} classAdd='hidden md:flex py-2 mt-2  justify-center' NavbarNav={NavbarNav} />
+                <NavbarPosition setShowCart={setShowCart} setShowingSearch={setShowingSearch} showNavs={showNavs} setShowNavs={setShowNavs} showProfileCart={true} classAdd={`shadow-sm  fixed top-0 left-0 justify-between py-4  ${stickyClass}`} NavbarNav={NavbarNav} />
             </div >
         </nav>
 
@@ -207,11 +200,8 @@ const Navbar = () => {
 
 export default Navbar;
 
-const NavbarPosition = ({ setShowingSearch, showNavs, setShowNavs, showProfileCart, NavbarNav, classAdd = '' }) => {
-    const [showCart, setShowCart] = useState(false);
-    const cartRefOther = useRef(null);
-
-    console.log({ showNavs })
+const NavbarPosition = ({ setShowCart, setShowingSearch, showNavs, setShowNavs, showProfileCart, NavbarNav, classAdd = '' }) => {
+ 
     return (
         <div className={`flex justify-between  w-full bg-white items-center px-10 lg:px-20 ${classAdd} duration-500  transition-transform z-50`}>
             <div className='md:hidden w-1/3'>
@@ -242,13 +232,10 @@ const NavbarPosition = ({ setShowingSearch, showNavs, setShowNavs, showProfileCa
                         <IoSearch onClick={() => setShowingSearch(prev => !prev)} className='text-2xl cursor-pointer' />
                     </div>
                     <div className='relative'>
-                        <FiShoppingBag onClick={() => setShowCart(prev => !prev)} className='text-2xl cursor-pointer' />
+                        <FiShoppingBag  onClick={() => setShowCart(true)} className='text-2xl cursor-pointer' />
                         <span className='absolute -right-2 -bottom-2 bg-green-500 text-white w-4 h-4 text-xs font-semibold grid place-items-center rounded-full'>
                             4
                         </span>
-                        <DropDownItems cartRef={cartRefOther} visibility={showCart} classAdd='left-[-8rem] border'>
-                            <CartDropDown />
-                        </DropDownItems>
                     </div>
                 </div>
             }
@@ -330,7 +317,7 @@ const NavItemAccordion = ({ setShowNavs }) => {
             ]
         }
     ]
-    console.log(showAccordion)
+
     return (
         <div>
             {

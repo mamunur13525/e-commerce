@@ -40,7 +40,7 @@ let item = {
 const ProductView = () => {
     const [mainImageShow, setMainImageShow] = useState('https://cdn.shopify.com/s/files/1/2179/9295/products/11_bfd2aa7c-4b01-448f-adcd-d621336fdea5_grande.jpg?v=1500460099')
     const addProductToCart = () => {
-        console.log('add to cart')
+  
     }
     return (
         <div className='container mx-auto mt-1'>
@@ -134,7 +134,7 @@ const DetailAccordion = () => {
             description: 'Yes, absolutely. You can accept mailed cheques or money orders, direct bank transfers, or perhaps have an option to pay for an order in-store. Just give your manual payment method a name and an optional set of instructions for your customers, and they can select it like any other payment option.'
         }
     ]
-    console.log(showAccordion)
+
     return (
         <div>
             {

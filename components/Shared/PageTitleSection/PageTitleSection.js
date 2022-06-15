@@ -7,7 +7,6 @@ const PageTitleSection = ({ title, img }) => {
 
     useEffect(() => {
         setPathAr(pathname.split('/'))
-        console.log(pathname.split('/'))
     }, [])
 
     return (

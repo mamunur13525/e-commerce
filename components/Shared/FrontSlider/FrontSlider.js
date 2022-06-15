@@ -1,11 +1,32 @@
 import React from 'react';
+import { MdOutlineArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 import Slider from "react-slick";
 import { RiHeadphoneLine } from "react-icons/ri";
 import { FiSend } from "react-icons/fi";
 import { BiSupport } from "react-icons/bi";
 import { SiLinktree } from "react-icons/si";
-import { MdOutlineArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
 import Button from '../Button';
+
+
+function SampleNextArrow(props) {
+    const { className, onClick } = props;
+    return (
+        <MdArrowForwardIos
+            className={className}
+            onClick={onClick}
+        />
+    );
+}
+
+function SamplePrevArrow(props) {
+    const { className, onClick } = props;
+    return (
+        <MdOutlineArrowBackIosNew
+            className={className}
+            onClick={onClick}
+        />
+    );
+}
 
 
 const sliderSettings = {
@@ -16,8 +37,8 @@ const sliderSettings = {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 5000,
-    prevArrow: <MdOutlineArrowBackIosNew className='text-red-500' />,
-    nextArrow: <MdArrowForwardIos className='text-red-500' />,
+    prevArrow: <SamplePrevArrow />,
+    nextArrow: <SampleNextArrow />,
 };
 
 let sliderInfos = [

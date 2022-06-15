@@ -21,7 +21,7 @@ export default function Home() {
         <link rel="icon" href="https://i.pinimg.com/736x/70/c0/ba/70c0baafea00b9b892d084e7202d0c61.jpg" />
       </Head>
       <main className=''>
-        <SubscribeModal />
+        {/* <SubscribeModal /> */}
         <Navbar />
         <FrontSlider />
         <ShowingProducts />
