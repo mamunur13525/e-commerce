@@ -94,16 +94,19 @@ const AboutMainSection = () => {
                         <p className='text-center  px-10 lg:px-0 lg:text-left mb-6 pr-10 text-[17px] w-full text-gray-600'>
                             Lorem ipsum dolor sit ameconsecteturadipiscingelit. Curabiturutiaculis arcu. Proin tincidunt, ipsum nec vehicula euismnequnibhpretiumlorem at ornare risus sem et risus.
                         </p>
-                        <div className='text-center  px-10 lg:px-0 lg:text-left px-6 pb-3 mt-8'>
-                            <Slider {...sliderSettings}>
-                                {
-                                    slideImages.map(item => (
-                                        <span key={item.id}>
-                                            <img className='w-[180px]' src={item.img} alt="" />
-                                        </span>
-                                    ))
-                                }
-                            </Slider>
+                        <div className='text-center lg:px-0 lg:text-left px-6 pb-3 mt-8'>
+                            {
+                                Array.isArray(slideImages) &&
+                                <Slider {...sliderSettings}>
+                                    {
+                                        slideImages.map(item => (
+                                            <span key={item.id}>
+                                                <img className='w-[180px]' src={item.img} alt="" />
+                                            </span>
+                                        ))
+                                    }
+                                </Slider>
+                            }
                         </div>
 
                     </div>

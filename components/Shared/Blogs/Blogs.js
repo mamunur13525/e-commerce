@@ -2,6 +2,7 @@ import React from 'react';
 import { bloglists } from '../../../FakeData/FakeData';
 import Slider from "react-slick";
 import { MdOutlineArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
+import { RiFileForbidLine } from 'react-icons/ri';
 
 
 function SampleNextArrow(props) {
@@ -62,16 +63,28 @@ const sliderSettings = {
 };
 
 const Blogs = () => {
+   
     return (
         <div className=' mt-8'>
-            <Slider {...sliderSettings}>
-                {
-                    bloglists && bloglists.map(blog => (
-                        <Blog key={blog.id} blog={blog} />
-                    ))
-                }
-            </Slider>
-        </div>
+            {
+                Array.isArray(bloglists) &&
+                    bloglists.length
+                    ?
+                    <Slider {...sliderSettings}>
+                        {
+                            bloglists.map(blog => (
+                                <Blog key={blog.id} blog={blog} />
+                            ))
+                        }
+                    </Slider>
+                    :
+                    <div className='flex flex-col items-center'>
+                        <img className='w-20' src="https://cdn.iconscout.com/icon/free/png-256/data-not-found-1965034-1662569.png" alt="" />
+                        {/* <RiFileForbidLine className='text-4xl'/> */}
+                        <p className='text-center text-2xl font-light'>No Data!</p>
+                    </div>
+            }
+        </div >
     );
 };
 
@@ -80,9 +93,9 @@ export default Blogs;
 
 const Blog = ({ blog }) => {
     return (
-        <div className='w-[100%] px-3 my-5 cursor-pointer'>
-            <div className='h-fit md:h-[150px] lg:h-[245px]  overflow-hidden'>
-                <img className='w-full hover:scale-110 transition-transform duration-300' src={blog?.img} alt="prduct_image" />
+        <div className='w-[100%] px-3 my-5 cursor-pointer  '>
+            <div className='h-fit md:h-[150px] lg:h-[245px] hover:rounded-3xl overflow-hidden transition-all duration-300'>
+                <img className='w-full hover:scale-110  duration-300' src={blog?.img} alt="prduct_image" />
             </div>
             <div className='w-full'>
                 <p className='mt-2 text-gray-800'>{blog?.publish_date}</p>

@@ -40,7 +40,7 @@ let item = {
 const ProductView = () => {
     const [mainImageShow, setMainImageShow] = useState('https://cdn.shopify.com/s/files/1/2179/9295/products/11_bfd2aa7c-4b01-448f-adcd-d621336fdea5_grande.jpg?v=1500460099')
     const addProductToCart = () => {
-  
+
     }
     return (
         <div className='container mx-auto mt-1'>
@@ -50,15 +50,18 @@ const ProductView = () => {
                         <img className='w-full lg:h-full' src={mainImageShow} alt="image" />
                     </div>
                     <div className='w-[95%] '>
-                        <Slider {...sliderSettings}>
-                            {
-                                item.nestedImages.map((img, ind) => (
-                                    <div key={ind} className={`hover:border border-green-700 w-1/4 h-fit cursor-pointer ${mainImageShow === img ? 'border' : ''}`}>
-                                        <img onClick={() => setMainImageShow(img)} className='h-full' src={img} alt="product  image" />
-                                    </div>
-                                ))
-                            }
-                        </Slider>
+                        {
+                            Array.isArray(item.nestedImages) &&
+                            <Slider {...sliderSettings}>
+                                {
+                                    item.nestedImages.map((img, ind) => (
+                                        <div key={ind} className={`hover:border border-green-700 w-1/4 h-fit cursor-pointer ${mainImageShow === img ? 'border' : ''}`}>
+                                            <img onClick={() => setMainImageShow(img)} className='h-full' src={img} alt="product  image" />
+                                        </div>
+                                    ))
+                                }
+                            </Slider>
+                        }
                     </div>
                 </div>
                 <div className='px-10 w-full lg:w-1/2 mt-10'>
@@ -138,6 +141,7 @@ const DetailAccordion = () => {
     return (
         <div>
             {
+                Array.isArray(data) &&
                 data.map(item => (
                     <div
                         key={item.id}

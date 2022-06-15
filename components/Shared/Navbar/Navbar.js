@@ -75,11 +75,11 @@ const NavbarNav = [
         content: <div className='bg-white border md:border-0 ml-32 md:ml-0 w-[80vw] py-3 px-5'>
             <img className='w-full' src="https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/megamenu_1_image.jpg?v=114805082236215743311501465503" alt="image" />
             <div className='flex justify-between gap-5 mt-5'>
-                {categoryFoods && categoryFoods.map(category => (
+                {Array.isArray(categoryFoods) && categoryFoods.map(category => (
                     <ul className='flex flex-col w-1/4' key={category?.id}>
                         <li className='font-semibold capitalize text-xl border-b text-black pb-2'>{category?.name}</li>
                         {
-                            category.items && category?.items.map(item => (
+                            Array.isArray(category.items) && category?.items.map(item => (
                                 <li key={item?.id} className='font-light capitalize border-b py-2 hover:text-green-700 cursor-pointer'>{item?.name}</li>
                             ))
                         }
@@ -116,7 +116,7 @@ const NavbarNav = [
 const Navbar = () => {
     const [showingSearch, setShowingSearch] = useState(false);
     const [showCart, setShowCart] = useState(false);
-     const [stickyClass, setStickyClass] = useState('-translate-y-20');
+    const [stickyClass, setStickyClass] = useState('-translate-y-20');
     const [showNavs, setShowNavs] = useState(false);
     const sideNavRef = useRef(null);
 
@@ -182,7 +182,7 @@ const Navbar = () => {
                             <IoSearch onClick={() => setShowingSearch(prev => !prev)} className='text-2xl cursor-pointer' />
                         </div>
                         <div className='relative'>
-                            <FiShoppingBag  onClick={() => setShowCart(true)} className='text-2xl cursor-pointer' />
+                            <FiShoppingBag onClick={() => setShowCart(true)} className='text-2xl cursor-pointer' />
                             <span className='absolute -right-2 -bottom-2 bg-green-500 text-white w-4 h-4 text-xs font-semibold grid place-items-center rounded-full'>
                                 4
                             </span>
@@ -201,7 +201,7 @@ const Navbar = () => {
 export default Navbar;
 
 const NavbarPosition = ({ setShowCart, setShowingSearch, showNavs, setShowNavs, showProfileCart, NavbarNav, classAdd = '' }) => {
- 
+
     return (
         <div className={`flex justify-between  w-full bg-white items-center px-10 lg:px-20 ${classAdd} duration-500  transition-transform z-50`}>
             <div className='md:hidden w-1/3'>
@@ -219,7 +219,7 @@ const NavbarPosition = ({ setShowCart, setShowingSearch, showNavs, setShowNavs, 
             <div className='hidden w-full md:block mx-auto'>
                 <ul className="flex justify-center gap-4">
                     {
-                        NavbarNav.map(nav => (
+                        Array.isArray(NavbarNav) && NavbarNav.map(nav => (
                             <NavItem nav={nav} key={nav.id} />
                         ))
                     }
@@ -232,7 +232,7 @@ const NavbarPosition = ({ setShowCart, setShowingSearch, showNavs, setShowNavs, 
                         <IoSearch onClick={() => setShowingSearch(prev => !prev)} className='text-2xl cursor-pointer' />
                     </div>
                     <div className='relative'>
-                        <FiShoppingBag  onClick={() => setShowCart(true)} className='text-2xl cursor-pointer' />
+                        <FiShoppingBag onClick={() => setShowCart(true)} className='text-2xl cursor-pointer' />
                         <span className='absolute -right-2 -bottom-2 bg-green-500 text-white w-4 h-4 text-xs font-semibold grid place-items-center rounded-full'>
                             4
                         </span>
@@ -321,7 +321,8 @@ const NavItemAccordion = ({ setShowNavs }) => {
     return (
         <div>
             {
-                data.map(item => (
+
+                Array.isArray(data) && data.map(item => (
                     <div
                         key={item.id}
                         className='flex flex-col justify-center  px-5'
@@ -337,7 +338,7 @@ const NavItemAccordion = ({ setShowNavs }) => {
                         </div>
                         <ul className={`${showAccordion === item.id ? 'min-h-fit mt-2 mb-3' : 'max-h-0'}  transition-all   overflow-hidden duration-200 px-3`}>
                             {
-                                item.content.map(li => (
+                                Array.isArray(item.content) && item.content.map(li => (
                                     <li
                                         key={li.id}
                                         className='py-2 border-b border-dashed border-gray-100'

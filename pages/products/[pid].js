@@ -69,7 +69,7 @@ export default function ProductWithId() {
                     <h1 className='text-4xl text-center mb-10 '>Upsell Products</h1>
                     <Slider {...sliderSettings}>
                         {
-                            itemLists.map(item => (
+                            Array.isArray(itemLists) && itemLists.map(item => (
                                 <div key={item.id}>
                                     <Product productClass={'w-[200px] h-[250px]'} key={Math.random()} item={item} />
                                 </div>

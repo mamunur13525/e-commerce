@@ -69,7 +69,7 @@ const FrontSlider = () => {
         <div className='h-full  lg:h-screen w-full mx-auto relative'>
             <Slider {...sliderSettings}>
                 {
-                    sliderInfos.length && sliderInfos.map(slideInfo => (
+                    Array.isArray(sliderInfos) && sliderInfos.map(slideInfo => (
                         <div
                             key={slideInfo.id}
                             className={`h-full md:pb-5 lg:h-screen mx-auto  shadow rounded-md relative`}>

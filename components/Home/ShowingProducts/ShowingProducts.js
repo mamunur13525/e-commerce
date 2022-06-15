@@ -32,7 +32,7 @@ const ShowingProducts = ({ classAdd = '' }) => {
                 <h1 className='text-4xl text-center'>Latest Products</h1>
                 <ul className='flex flex-wrap justify-center gap-x-10 gap-y-5 mt-8 px-10'>
                     {
-                        categoryLists && categoryLists.map(cat => (
+                        Array.isArray(categoryLists) && categoryLists.map(cat => (
                             <li onClick={() => setSelectedCategory(cat?.title)} key={cat?.id} className={`text-base hover:text-green-600 uppercase cursor-pointer after:h-[1.8px] after:block after:bg-green-600 after:w-[0] hover:after:w-full after:transition-all ${selectedCategory === cat?.title ? 'text-green-600 after:w-full' : ''}`}>{cat?.title}</li>
                         ))
                     }

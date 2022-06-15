@@ -34,9 +34,10 @@ const ProductLists = ({ productClass = '', searchValue, selectedCategory = '', l
     return (
         <div className='flex flex-wrap sm:justify-evenly justify-center mt-8'>
             {
-                filterProducts.length ? filterProducts.map(item => (
-                    <Product productClass={productClass} key={Math.random()} item={item} />
-                ))
+                Array.isArray(filterProducts) &&
+                    filterProducts.length ? filterProducts.map(item => (
+                        <Product productClass={productClass} key={Math.random()} item={item} />
+                    ))
                     :
                     'No Products Found!'
             }
@@ -64,12 +65,12 @@ export const Product = ({ item, productClass = '' }) => {
     const [mainImageShow, setMainImageShow] = useState(null)
     const router = useRouter()
     const addProductToCart = () => {
-       
+
         setOpenModal(false);
     }
 
     const addProductToFavorite = () => {
-      
+
     }
 
     useEffect(() => {
@@ -91,15 +92,18 @@ export const Product = ({ item, productClass = '' }) => {
                             }
                         </div>
                         <div className='w-[95%] '>
-                            <Slider {...sliderSettings}>
-                                {
-                                    item.nestedImages.map((img, ind) => (
-                                        <div key={ind} className='w-1/4 h-fit cursor-pointer'>
-                                            <img onClick={() => setMainImageShow(img)} className='h-full' src={img} alt="product  image" />
-                                        </div>
-                                    ))
-                                }
-                            </Slider>
+                            {
+                                Array.isArray(item.nestedImages) &&
+                                <Slider {...sliderSettings}>
+                                    {
+                                        item.nestedImages.map((img, ind) => (
+                                            <div key={ind} className='w-1/4 h-fit cursor-pointer'>
+                                                <img onClick={() => setMainImageShow(img)} className='h-full' src={img} alt="product  image" />
+                                            </div>
+                                        ))
+                                    }
+                                </Slider>
+                            }
                         </div>
                     </div>
                     <div className='w-full md:w-1/2 flex items-center'>

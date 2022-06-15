@@ -101,7 +101,7 @@ const Farmer = () => {
             <div className='flex justify-center lg:justify-between flex-wrap px-10 lg:px-0'>
 
                 {
-                    farmers.map(farmer => (
+                    Array.isArray(farmers) && farmers.map(farmer => (
                         <div className='w-full sm:w-1/2 lg:w-1/3 my-3' key={farmer.id}>
                             <div className='flex justify-center'>
                                 <img className='rounded-full hover:drop-shadow-2xl transition-all duration-300' src={farmer.image} alt="" />
@@ -119,6 +119,7 @@ const Farmer = () => {
                                 <div className='mt-5'>
                                     <ul className='list-none flex justify-center gap-3 '>
                                         {
+                                            Array.isArray(farmer.socials_link) &&
                                             farmer.socials_link.map(social => (
                                                 <li className='text-xl' key={social.id}>
                                                     <a rel="noreferrer" className='hover:text-[#80b435]' target='_blank' href={social.link}>

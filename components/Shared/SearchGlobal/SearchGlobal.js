@@ -90,7 +90,7 @@ const SearchGlobal = ({ showingSearch, setShowingSearch }) => {
                             searchValue === '' && !showResults.length && <li className='text-xl text-gray-500 text-center py-6'>Search Products</li>
                         }
                         {
-                            showResults.map(item => (
+                            Array.isArray(showResults) && showResults.map(item => (
                                 <li onClick={() => productClick()} key={item.id} className=' px-4 cursor-pointer my-2 py-3 text-xl hover:bg-gray-100 flex  gap-3'>
                                     <span className='w-16'>
                                         <img className='w-full' src={item?.item_img} alt="" />

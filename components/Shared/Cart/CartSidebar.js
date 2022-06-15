@@ -24,7 +24,7 @@ const CartSidebar = ({ cart }) => {
             </div>
             <div className=' h-[70%] overflow-auto  pl-2 pr-4'>
                 {
-                    cartItems.map(item => (
+                    Array.isArray(cartItems) && cartItems.map(item => (
                         <div key={item} className='flex justify-between items-center py-3 border-b border-gray-100'>
                             <div className='flex gap-2'>
                                 <img className='w-[80px]' src="https://cdn.shopify.com/s/files/1/2179/9295/products/1_small.jpg?v=1500458217" alt="" />
