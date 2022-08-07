@@ -127,7 +127,7 @@ export const Product = ({ item, productClass = '' }) => {
                                     <input className='w-full border-gray-400 border mt-2 bg-transparent h-11 outline-none py-2 px-2' type="number" name="" id="" defaultValue='1' />
                                 </div>
                             </div>
-                            <Button clickFunc={addProductToCart} classAdd='text-white inline-block mb-0 font-normal text-center align-middle cursor-pointer whitespace-no-wrap text-sm rounded bg-[#80b435] hover:bg-[#356d20] select-none rounded-none py-3 w-[10rem] mt-8' >
+                            <Button clickFunc={addProductToCart} classAdd='w-1/2 ml-auto mt-8' >
                                 Add to Cart
                             </Button>
                         </div>

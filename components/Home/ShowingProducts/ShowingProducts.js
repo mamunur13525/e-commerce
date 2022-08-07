@@ -41,7 +41,7 @@ const ShowingProducts = ({ classAdd = '' }) => {
                     <ProductLists productClass='w-[200px] md:w-[250px] h-[250px] md:h-[265px]' selectedCategory={selectedCategory} listProducts={null} />
                 </div>
                 <div className='flex justify-center mt-16'>
-                    <Button classAdd='text-green-600 border border-[#80b435]  bg-white hover:bg-[#80b435] hover:text-white text-xl font-light py-2 w-[10rem]' >
+                    <Button classAdd='w-fit px-10 uppercase' >
                         View All
                     </Button>
                 </div>

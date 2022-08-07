@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { GrClose } from 'react-icons/gr';
-import { RiDeleteBin6Line } from 'react-icons/ri';
+import { RiCloseLine, RiDeleteBin6Line } from 'react-icons/ri';
 import Button from '../Button'
 
 const CartSidebar = ({ cart }) => {
@@ -27,9 +27,26 @@ const CartSidebar = ({ cart }) => {
                 {
                     Array.isArray(cartItems) &&
                         cartItems.length ?
-                        cartItems.map(item => (
-                            <CartItem removeCartItem={removeCartItem} key={item} item={item} />
-                        )) :
+                        <>
+                            {cartItems.map(item => (
+                                <CartItem removeCartItem={removeCartItem} key={item} item={item} />
+                            ))}
+                            <div className=' absolute bottom-0 p-5 w-full right-0'>
+                                <div className='flex justify-between items-center py-4 px-2  uppercase'>
+                                    <p className='font-medium text-lg'>Total Price</p>
+                                    <p className='font-medium text-xl  text-[#4f8700]'>$300.00</p>
+                                </div>
+                                <div className='flex justify-between gap-3 items-center'>
+                                    <Button withBck={false} clickFunc={viewCart} classAdd=''>
+                                        View Cart
+                                    </Button>
+                                    <Button withBck={true} classAdd='l'>
+                                        CheckOut
+                                    </Button>
+                                </div>
+                            </div>
+                        </>
+                        :
                         <div className='h-full grid place-items-center'>
                             <img src="https://shop.unicornstore.in/beam/themes/2019/assets/img/cart_empty.png" alt="" />
                         </div>
@@ -37,20 +54,7 @@ const CartSidebar = ({ cart }) => {
 
             </div>
 
-            <div className=' absolute bottom-0 p-5 w-full right-0'>
-                <div className='flex justify-between items-center py-4 px-2  uppercase'>
-                    <p className='font-medium text-lg'>Total Price</p>
-                    <p className='font-medium text-xl  text-[#4f8700]'>$300.00</p>
-                </div>
-                <div className='flex justify-between gap-3 items-center'>
-                    <Button clickFunc={viewCart} classAdd='hover:text-white py-2 px-4 uppercase w-full'>
-                        View Cart
-                    </Button>
-                    <Button classAdd='bg-green-600 uppercase py-2 hover:bg-white hover:text-[#80b435] text-white w-full'>
-                        CheckOut
-                    </Button>
-                </div>
-            </div>
+
         </div>
     );
 };
@@ -68,7 +72,7 @@ const CartItem = ({ removeCartItem, item }) => {
         if (quantity > 1) setQuantity(prev => prev - 1)
     }
     return (
-        <div className='flex justify-between  shadow bg-gray-50 p-3 py-2 mb-3 rounded-md'>
+        <div className=' select-none flex justify-between  shadow bg-gray-50 p-3 py-2 mb-3 rounded-md'>
             <div className='flex gap-2'>
                 <img className='w-[80px] rounded-md' src="https://cdn.shopify.com/s/files/1/2179/9295/products/1_small.jpg?v=1500458217" alt="" />
                 <div className='flex flex-col'>
@@ -86,7 +90,7 @@ const CartItem = ({ removeCartItem, item }) => {
                 </div>
             </div>
             <div className='flex h-[5rem]   flex-col justify-between items-end'>
-                <RiDeleteBin6Line onClick={() => removeCartItem(item)} className='  hover:animate-pulse  text-gray-600 cursor-pointer rounded-full' />
+                <RiCloseLine onClick={() => removeCartItem(item)} className='  hover:animate-pulse  hover:text-green-800 cursor-pointer rounded-full text-xl' />
                 <p className='text-xl text-[#4f8700] font-medium'>$300.00</p>
             </div>
         </div>

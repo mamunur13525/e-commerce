@@ -105,7 +105,7 @@ const ProductView = () => {
                         </div>
 
                     </div>
-                    <Button clickFunc={addProductToCart} classAdd='text-white inline-block border-white mb-0 font-normal text-center align-middle cursor-pointer whitespace-no-wrap text-lg font-semibold rounded bg-[#80b435] hover:border hover:border-[#80b435] select-none rounded-none py-3 w-[13rem] mt-8 uppercase mb-10 hover:bg-white hover:text-[#80b435] ' >
+                    <Button clickFunc={addProductToCart} classAdd=' uppercase mt-8 w-fit  px-10 ' >
                         Add to Cart
                     </Button>
                     <DetailAccordion />

@@ -28,7 +28,7 @@ const CartDetails = ({ classAdd }) => {
             </div>
             <hr />
             <div className='flex justify-end '>
-                <Button classAdd='text-white inline-block mb-0 font-normal text-center align-middle cursor-pointer whitespace-no-wrap text-sm rounded bg-[#80b435] hover:bg-[#356d20] select-none rounded-none py-[1.1rem] w-[10rem] mt-8 border-[#80b435] uppercase '>
+                <Button classAdd=' uppercase '>
                     Checkout
                 </Button>
             </div>

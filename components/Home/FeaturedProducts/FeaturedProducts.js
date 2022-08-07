@@ -3,7 +3,7 @@ import Button from '../../Shared/Button';
 import ProductLists from '../../Shared/ProductLists/ProductLists';
 
 const FeaturedProducts = ({ classAdd = '' }) => {
-    const [selectedCategory, setSelectedCategory] = useState('All Products')
+    const [selectedCategory, setSelectedCategory] = useState('Popular')
     let categoryLists = [
         {
             id: 0,
@@ -41,7 +41,7 @@ const FeaturedProducts = ({ classAdd = '' }) => {
                     <ProductLists productClass='w-[200px] h-[250px] border-r ' selectedCategory={'All Products'} listProducts={null} />
                 </div>
                 <div className='flex justify-center mt-16'>
-                    <Button classAdd='text-green-600 border border-[#80b435]  bg-white hover:bg-[#80b435] hover:text-white text-xl font-light py-2 w-[10rem]' >
+                    <Button withBck={false} classAdd='w-fit px-14 uppercase'>
                         View All
                     </Button>
                 </div>

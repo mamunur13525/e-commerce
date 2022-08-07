@@ -11,7 +11,7 @@ const BlogSection = ({ classAdd = '' }) => {
                     <Blogs />
                 </div>
                 <div className='flex justify-center mt-16'>
-                    <Button classAdd='text-green-600 border border-[#80b435]  bg-white hover:bg-[#80b435] hover:text-white text-xl font-light py-2 w-[10rem] '>
+                    <Button withBck={false} classAdd='w-fit px-14 uppercase'>
                         See All
                     </Button>
                 </div>

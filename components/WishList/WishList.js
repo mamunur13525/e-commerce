@@ -48,7 +48,7 @@ const WishlistItem = () => {
                 </span>
             </td>
             <td className="">
-                <Button>
+                <Button className='uppercase'>
                     Add to  Cart
                 </Button>
             </td>
