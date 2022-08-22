@@ -8,6 +8,8 @@ import Button from '../Button';
 import { itemLists } from '../../../FakeData/FakeData';
 import Slider from "react-slick";
 import { useRouter } from 'next/router';
+import { useContext } from 'react';
+import { CartItemsContext } from '../../../pages/_app';
 
 
 const ProductLists = ({ productClass = '', searchValue, selectedCategory = '', listProducts = null }) => {
@@ -61,11 +63,12 @@ const sliderSettings = {
 };
 
 export const Product = ({ item, productClass = '' }) => {
+    const [cartItems, setCartItems] = useContext(CartItemsContext);
     const [openModal, setOpenModal] = useState(false);
     const [mainImageShow, setMainImageShow] = useState(null)
     const router = useRouter()
     const addProductToCart = () => {
-
+        setCartItems(prev => [...prev, item])
         setOpenModal(false);
     }
 

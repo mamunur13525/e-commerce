@@ -78,7 +78,7 @@ const FrontSlider = () => {
                                     <h1 className='mt-10     font-sans font-light text-4xl md:text-6xl lg:text-7xl text-green-600 drop-shadow-2xl uppercase'>{slideInfo.title}</h1>
                                     {/* <p className=' w-7/12 mx-auto font-sans text-xl md:text-3xl mt-1 md:mt-3 capitalize'>{slideInfo.subTitle}</p> */}
                                     <p className='mx-auto w-10/12 md:w-7/12 mt-1 md:mt-10 cursor-pointer text-xl'>{slideInfo.description}</p>
-                                    <Button withBck={false} classAdd='w-fit mt-10 px-10 ' >
+                                    <Button withBck={false} classAdd='max-w-fit mt-10 px-10 ' >
                                         Shop Now
                                     </Button>
                                 </div>

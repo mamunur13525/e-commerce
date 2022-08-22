@@ -41,7 +41,7 @@ const FeaturedProducts = ({ classAdd = '' }) => {
                     <ProductLists productClass='w-[200px] h-[250px] border-r ' selectedCategory={'All Products'} listProducts={null} />
                 </div>
                 <div className='flex justify-center mt-16'>
-                    <Button withBck={false} classAdd='w-fit px-14 uppercase'>
+                    <Button withBck={false} classAdd='max-w-fit px-20 uppercase'>
                         View All
                     </Button>
                 </div>

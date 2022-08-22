@@ -20,7 +20,7 @@ const SalesOffer = () => {
                         <div>
                             <p className="w-full text-center py-10 bg-white font-light font-sans"><span> Expired</span></p>
                             <div className='flex justify-end mt-5'>
-                                <Button withBck={true} classAdd='w-fit px-14 uppercase'>
+                                <Button withBck={true} classAdd='max-w-fit px-14 uppercase'>
                                     Shop Now
                                 </Button>
                             </div>

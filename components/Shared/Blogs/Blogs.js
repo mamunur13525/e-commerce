@@ -1,8 +1,7 @@
 import React from 'react';
-import { bloglists } from '../../../FakeData/FakeData';
+import { MdArrowForwardIos, MdOutlineArrowBackIosNew } from 'react-icons/md';
 import Slider from "react-slick";
-import { MdOutlineArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
-import { RiFileForbidLine } from 'react-icons/ri';
+import { bloglists } from '../../../FakeData/FakeData';
 
 
 function SampleNextArrow(props) {
@@ -91,9 +90,9 @@ const Blogs = () => {
 export default Blogs;
 
 
-const Blog = ({ blog }) => {
+export const Blog = ({ blog }) => {
     return (
-        <div className='w-[100%] px-3 my-5 cursor-pointer  '>
+        <div  className='w-[100%] px-3 my-5 cursor-pointer  '>
             <div className='h-fit md:h-[150px] lg:h-[245px] hover:rounded-3xl overflow-hidden transition-all duration-300'>
                 <img className='w-full hover:scale-110  duration-300' src={blog?.img} alt="prduct_image" />
             </div>

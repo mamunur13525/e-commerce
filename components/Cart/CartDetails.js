@@ -62,11 +62,11 @@ const CartItem = () => {
             </td>
             <td className="">
                 <div className="w-fit ml-3">
-                    <button onClick={decreaseQuantity} type="button" className="js-qty__adjust js-qty__adjust--minus icon-fallback-text" data-id="" data-qty="0">
+                    <button onClick={decreaseQuantity} type="button" className="" data-id="" data-qty="0">
                         <span className="text-xl">−</span>
                     </button>
                     <input type="text" className="w-fit max-w-[2rem] text-center focus:outline-none" min="1" data-id="" aria-label="quantity" pattern="[0-9]*" name="updates[]" value={quantity} />
-                    <button onClick={() => setQuantity(prev => prev + 1)} type="button" className="js-qty__adjust js-qty__adjust--plus icon-fallback-text" data-id="" data-qty="11">
+                    <button onClick={() => setQuantity(prev => prev + 1)} type="button" className="" data-id="" data-qty="11">
                         <span className="fa fa-plus" aria-hidden="true"></span>
                         <span className="fallback-text">+</span>
                     </button>

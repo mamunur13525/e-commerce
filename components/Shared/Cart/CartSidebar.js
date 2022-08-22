@@ -1,11 +1,13 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { GrClose } from 'react-icons/gr';
 import { RiCloseLine, RiDeleteBin6Line } from 'react-icons/ri';
+import { CartItemsContext } from '../../../pages/_app';
 import Button from '../Button'
 
 const CartSidebar = ({ cart }) => {
-    const [cartItems, setCartItems] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    const [cartItems, setCartItems] = useContext(CartItemsContext);
     let [showCart, setShowCart] = cart;
     const router = useRouter();
     const viewCart = () => {

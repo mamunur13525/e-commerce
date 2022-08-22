@@ -1,16 +1,18 @@
-import React, { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
-import { CgProfile } from 'react-icons/cg';
-import { BsTelephone } from 'react-icons/bs';
-import { FiShoppingBag } from 'react-icons/fi';
-import { IoSearch, IoCloseSharp } from 'react-icons/io5';
-import { GrClose } from 'react-icons/gr';
-import { RiBarChartHorizontalLine } from 'react-icons/ri';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AiOutlinePlus } from 'react-icons/ai';
+import { BsTelephone } from 'react-icons/bs';
+import { CgProfile } from 'react-icons/cg';
+import { FiShoppingBag } from 'react-icons/fi';
+import { GrClose } from 'react-icons/gr';
+import { IoCloseSharp, IoSearch } from 'react-icons/io5';
+import { RiBarChartHorizontalLine } from 'react-icons/ri';
 // import { IoCloseSharp } from 'react-icons/ai';
 import { useRouter } from 'next/router';
-import SearchGlobal from '../SearchGlobal/SearchGlobal';
+import { CartItemsContext } from '../../../pages/_app';
 import CartSidebar from '../Cart/CartSidebar';
+import Dropdown from '../Dropdown/Dropdown';
+import SearchGlobal from '../SearchGlobal/SearchGlobal';
 
 let categoryFoods = [
     {
@@ -119,6 +121,7 @@ const Navbar = () => {
     const [stickyClass, setStickyClass] = useState('-translate-y-20');
     const [showNavs, setShowNavs] = useState(false);
     const sideNavRef = useRef(null);
+    const [cartItems] = useContext(CartItemsContext);
 
 
 
@@ -144,103 +147,172 @@ const Navbar = () => {
     }, [showCart])
 
     return (
-        <nav className={`relative shadow-sm bg-white border-gray-200 h-[4.8rem] md:h-[8.3rem]`}>
-            <div onClick={() => setShowCart(false)} className={`fixed left-0 top-0 w-full h-full ${showCart ? 'z-[120] opacity-50' : 'z-[-2] opacity-0'} bg-gray-900  transition-all`} >
+      <nav
+        className={`relative shadow-sm bg-white border-gray-200 h-[4.8rem] md:h-[8.3rem]`}
+      >
+        <div
+          onClick={() => setShowCart(false)}
+          className={`fixed left-0 top-0 w-full h-full ${
+            showCart ? "z-[120] opacity-50" : "z-[-2] opacity-0"
+          } bg-gray-900  transition-all`}
+        ></div>
+        <CartSidebar cart={[showCart, setShowCart]} />
+        <SearchGlobal
+          showingSearch={showingSearch}
+          setShowingSearch={setShowingSearch}
+        />
+        <div className="absolute left-0 top-0 z-40 w-full  px-10 lg:px-20 md:px-15 py-4">
+          <div
+            ref={sideNavRef}
+            className={`fixed w-full ${
+              showNavs ? "left-0" : "-left-full"
+            } top-0 h-screen bg-gray-800 z-[150] text-white transition-all `}
+          >
+            <p className="flex items-center justify-between  text-white text-2xl p-4 text-center font-semibold">
+              <span>Navbar</span>
+              <IoCloseSharp
+                onClick={() => setShowNavs(false)}
+                className="text-xl text-white cursor-pointer"
+              />
+            </p>
+            <NavItemAccordion setShowNavs={setShowNavs} />
+          </div>
+          <div className="container flex justify-between items-center mx-auto mb-3">
+            <div className="w-1/3">
+              <div className="md:hidden">
+                <GrClose
+                  onClick={() => setShowNavs(false)}
+                  className={`${
+                    showNavs ? "" : "hidden"
+                  }  cursor-pointer text-[25px]`}
+                />
+                <RiBarChartHorizontalLine
+                  onClick={() => setShowNavs(true)}
+                  className={`${
+                    showNavs ? "hidden" : ""
+                  }  cursor-pointer text-[25px]`}
+                />
+              </div>
+              <div className="hidden md:flex gap-1 items-center">
+                <CgProfile />
+                <Dropdown
+                  title={{title:"My Account",css:'border-none',icon:false}}
+                  menuItems={[{ id: 0,name:'my profile' }, { id: 1, name:'settings' }, { id: 2,name:'sing out' }]}
+                />
+              </div>
+              <div className="hidden md:flex gap-1 items-center">
+                <BsTelephone />
+                <span className="text-green-500">+8801935-015460</span>
+              </div>
             </div>
-            <CartSidebar cart={[showCart, setShowCart]} />
-            <SearchGlobal showingSearch={showingSearch} setShowingSearch={setShowingSearch} />
-            <div className='absolute left-0 top-0 z-40 w-full  px-10 lg:px-20 md:px-15 py-4'>
-                <div ref={sideNavRef} className={`fixed w-full ${showNavs ? "left-0" : "-left-full"} top-0 h-screen bg-gray-800 z-[150] text-white transition-all `}>
-                    <p className='flex items-center justify-between  text-white text-2xl p-4 text-center font-semibold'>
-                        <span>Navbar</span>
-                        <IoCloseSharp onClick={() => setShowNavs(false)} className='text-xl text-white cursor-pointer' />
-                    </p>
-                    <NavItemAccordion setShowNavs={setShowNavs} />
-                </div>
-                <div className="container flex justify-between items-center mx-auto mb-3">
-                    <div className='w-1/3'>
-                        <div className='md:hidden'>
-                            <GrClose onClick={() => setShowNavs(false)} className={`${showNavs ? '' : 'hidden'}  cursor-pointer text-[25px]`} />
-                            <RiBarChartHorizontalLine onClick={() => setShowNavs(true)} className={`${showNavs ? 'hidden' : ''}  cursor-pointer text-[25px]`} />
-                        </div>
-                        <div className='hidden md:flex gap-1 items-center'>
-                            <CgProfile />
-                            My Account
-                        </div>
-                        <div className='hidden md:flex gap-1 items-center'>
-                            <BsTelephone />
-                            <span className='text-green-500'>+8801935-015460</span>
-                        </div>
-                    </div>
-                    <Link href="/" className='w-auto' passHref>
-                        <div className="flex items-center gap-3 cursor-pointer">
-                            <img src="https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/h1_logo1.png?v=53464895439087604121500261105" className="h-12" alt="Flowbite Logo" />
-                        </div>
-                    </Link>
-                    <div className='flex justify-end gap-4 w-1/3 '>
-                        <div className='relative'>
-                            <IoSearch onClick={() => setShowingSearch(prev => !prev)} className='text-2xl cursor-pointer' />
-                        </div>
-                        <div className='relative'>
-                            <FiShoppingBag onClick={() => setShowCart(true)} className='text-2xl cursor-pointer' />
-                            <span className='absolute -right-2 -bottom-2 bg-green-500 text-white w-4 h-4 text-xs font-semibold grid place-items-center rounded-full'>
-                                4
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <hr />
-                <NavbarPosition setShowCart={setShowCart} setShowingSearch={setShowingSearch} showProfileCart={false} setShowNavs={setShowNavs} classAdd='hidden md:flex py-2 mt-2  justify-center' NavbarNav={NavbarNav} />
-                <NavbarPosition setShowCart={setShowCart} setShowingSearch={setShowingSearch} showNavs={showNavs} setShowNavs={setShowNavs} showProfileCart={true} classAdd={`shadow-sm  fixed top-0 left-0 justify-between py-4  ${stickyClass}`} NavbarNav={NavbarNav} />
-            </div >
-        </nav>
-
+            <Link href="/" className="w-auto" passHref>
+              <div className="flex items-center gap-3 cursor-pointer">
+                <img
+                  src="https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/h1_logo1.png?v=53464895439087604121500261105"
+                  className="h-12"
+                  alt="Flowbite Logo"
+                />
+              </div>
+            </Link>
+            <div className="flex justify-end gap-4 w-1/3 ">
+              <div className="relative">
+                <IoSearch
+                  onClick={() => setShowingSearch((prev) => !prev)}
+                  className="text-2xl cursor-pointer"
+                />
+              </div>
+              <div className="relative">
+                <FiShoppingBag
+                  onClick={() => setShowCart(true)}
+                  className="text-2xl cursor-pointer"
+                />
+                {cartItems?.length === 0 ? null : (
+                  <span className="absolute -right-2 -bottom-2 bg-green-500 text-white w-4 h-4 text-xs font-semibold grid place-items-center rounded-full">
+                    {cartItems?.length}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+          <hr />
+          <NavbarPosition
+            setShowCart={setShowCart}
+            setShowingSearch={setShowingSearch}
+            showProfileCart={false}
+            setShowNavs={setShowNavs}
+            classAdd="hidden md:flex py-2 mt-2  justify-center"
+            NavbarNav={NavbarNav}
+          />
+          <NavbarPosition
+            setShowCart={setShowCart}
+            setShowingSearch={setShowingSearch}
+            showNavs={showNavs}
+            setShowNavs={setShowNavs}
+            showProfileCart={true}
+            classAdd={`shadow-sm  fixed top-0 left-0 justify-between py-4  ${stickyClass}`}
+            NavbarNav={NavbarNav}
+          />
+        </div>
+      </nav>
     );
 };
 
 export default Navbar;
 
 const NavbarPosition = ({ setShowCart, setShowingSearch, showNavs, setShowNavs, showProfileCart, NavbarNav, classAdd = '' }) => {
+    const [cartItems] = useContext(CartItemsContext);
 
     return (
-        <div className={`flex justify-between  w-full bg-white items-center px-10 lg:px-20 ${classAdd} duration-500  transition-transform z-50`}>
-            <div className='md:hidden w-1/3'>
-                <RiBarChartHorizontalLine onClick={() => setShowNavs(true)} className={`cursor-pointer text-[25px]`} />
+      <div
+        className={`flex justify-between  w-full bg-white items-center px-10 lg:px-20 ${classAdd} duration-500  transition-transform z-50`}
+      >
+        <div className="md:hidden w-1/3">
+          <RiBarChartHorizontalLine
+            onClick={() => setShowNavs(true)}
+            className={`cursor-pointer text-[25px]`}
+          />
+        </div>
+        {showProfileCart && (
+          <Link href="/" passHref>
+            <div className="cursor-pointer w-1/3">
+              <img
+                src="https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/h1_logo1.png?v=53464895439087604121500261105"
+                className="h-12  w-fit md:h-10"
+                alt="Flowbite Logo"
+              />
+              {/* <span className=" whitespace-nowrap text-4xl">Fresh Food</span> */}
             </div>
-            {
-                showProfileCart &&
-                <Link href="/" passHref>
-                    <div className="cursor-pointer w-1/3">
-                        <img src="https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/h1_logo1.png?v=53464895439087604121500261105" className="h-12  w-fit md:h-10" alt="Flowbite Logo" />
-                        {/* <span className=" whitespace-nowrap text-4xl">Fresh Food</span> */}
-                    </div>
-                </Link>
-            }
-            <div className='hidden w-full md:block mx-auto'>
-                <ul className="flex justify-center gap-4">
-                    {
-                        Array.isArray(NavbarNav) && NavbarNav.map(nav => (
-                            <NavItem nav={nav} key={nav.id} />
-                        ))
-                    }
-                </ul>
+          </Link>
+        )}
+        <div className="hidden w-full md:block mx-auto">
+          <ul className="flex justify-center gap-4">
+            {Array.isArray(NavbarNav) &&
+              NavbarNav.map((nav) => <NavItem nav={nav} key={nav.id} />)}
+          </ul>
+        </div>
+        {showProfileCart && (
+          <div className="flex justify-end gap-4 w-1/3 ">
+            <div className="relative">
+              <IoSearch
+                onClick={() => setShowingSearch((prev) => !prev)}
+                className="text-2xl cursor-pointer"
+              />
             </div>
-            {
-                showProfileCart &&
-                <div className='flex justify-end gap-4 w-1/3 '>
-                    <div className='relative'>
-                        <IoSearch onClick={() => setShowingSearch(prev => !prev)} className='text-2xl cursor-pointer' />
-                    </div>
-                    <div className='relative'>
-                        <FiShoppingBag onClick={() => setShowCart(true)} className='text-2xl cursor-pointer' />
-                        <span className='absolute -right-2 -bottom-2 bg-green-500 text-white w-4 h-4 text-xs font-semibold grid place-items-center rounded-full'>
-                            4
-                        </span>
-                    </div>
-                </div>
-            }
-        </div >
-    )
+            <div className="relative">
+              <FiShoppingBag
+                onClick={() => setShowCart(true)}
+                className="text-2xl cursor-pointer"
+              />
+              {cartItems?.length === 0 ? null : (
+                <span className="absolute -right-2 -bottom-2 bg-green-500 text-white w-4 h-4 text-xs font-semibold grid place-items-center rounded-full">
+                  {cartItems?.length}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
 }
 
 const NavItem = ({ nav }) => {

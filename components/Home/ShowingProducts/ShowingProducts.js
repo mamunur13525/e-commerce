@@ -26,6 +26,8 @@ const ShowingProducts = ({ classAdd = '' }) => {
             title: 'Other products'
         }
     ]
+
+    console.log('render  the  components')
     return (
         <div className={`bg-white md:mt-20 py-10 md:py-20 ${classAdd}`}>
             <div className='container mx-auto'>
@@ -41,7 +43,7 @@ const ShowingProducts = ({ classAdd = '' }) => {
                     <ProductLists productClass='w-[200px] md:w-[250px] h-[250px] md:h-[265px]' selectedCategory={selectedCategory} listProducts={null} />
                 </div>
                 <div className='flex justify-center mt-16'>
-                    <Button classAdd='w-fit px-10 uppercase' >
+                    <Button classAdd='max-w-fit px-20 uppercase' >
                         View All
                     </Button>
                 </div>

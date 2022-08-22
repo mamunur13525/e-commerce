@@ -105,7 +105,7 @@ const ProductView = () => {
                         </div>
 
                     </div>
-                    <Button clickFunc={addProductToCart} classAdd=' uppercase mt-8 w-fit  px-10 ' >
+                    <Button clickFunc={addProductToCart} classAdd='uppercase mt-8 max-w-fit  px-10 ' >
                         Add to Cart
                     </Button>
                     <DetailAccordion />

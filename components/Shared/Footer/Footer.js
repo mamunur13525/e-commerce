@@ -67,7 +67,7 @@ const Footer = () => {
                                 <input type="email" placeholder="Place enter your email" name="" id="" className="w-full border bg-white py-3 px-2 text-sm text-gray-400 font-light focus:outline-none" />
                             </div>
                             <div>
-                                <Button classAdd="flex  items-center gap-2 w-fit px-10">
+                                <Button classAdd="flex  items-center gap-2 max-w-fit px-10">
                                     Subscribe  <BsArrowRight />
                                 </Button>
                             </div>
