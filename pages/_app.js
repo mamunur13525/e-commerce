@@ -1,16 +1,16 @@
-import { createContext, useState } from 'react'
+import { Toaster } from 'react-hot-toast'
 import '../styles/globals.css'
 
-export const CartItemsContext = createContext();
-
 function MyApp({ Component, pageProps }) {
-  const [cartItems, setCartItems] = useState([]);
-  
+
   return (
-    <CartItemsContext.Provider value={[cartItems, setCartItems]}>
-    
+    <>
       <Component {...pageProps} />
-    </CartItemsContext.Provider>
+      <Toaster
+        position="top-center"
+      // reverseOrder={true}
+      />
+    </>
   )
 }
 

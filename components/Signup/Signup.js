@@ -1,12 +1,9 @@
 import { useRouter } from 'next/router';
 import React from 'react';
-import { useForm } from 'react-hook-form';
 import { FormBox } from '../Login/Login';
-import Button from '../Shared/Button';
 
 const Signup = () => {
     const router = useRouter();
-
     const inputFeilds = [
         {
             id: 0,
@@ -33,12 +30,12 @@ const Signup = () => {
     return (
         <div className='bg-no-repeat bg-cover bg-right bg-[url("https://cdn.shopify.com/s/files/1/0033/7956/0537/files/New_Project_9.jpg?v=1570870688")]'>
             <div className="container mx-auto">
-                <div className='py-20'>
-                    <div className="w-10/12 mx-auto md:mx-0 md:w-7/12 lg:w-5/12 shadow-lg">
+                <div className='py-20 '>
+                    <div className="w-[28rem]  rounded-sm mx-auto md:mx-0  shadow-lg">
                         <div className='w-full bg-white p-10'>
                             <p className='text-4xl font-thin  text-center mb-10'>
                                 <span>Sign Up </span>
-                                <span className='text-base font-normal cursor-pointer' onClick={() => router.push('login')}> Log in</span>
+                                <span className='text-base text-gray-500 font-normal cursor-pointer' onClick={() => router.push('login')}> / Log in</span>
                             </p>
                             <FormBox inputFeilds={inputFeilds} />
                             <p className="text-center text-gray-500 text-xs mt-5">

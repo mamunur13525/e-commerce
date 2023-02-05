@@ -15,6 +15,7 @@ export const itemLists = [
             'https://cdn.shopify.com/s/files/1/2179/9295/products/7_131028d3-ab5d-4f57-9720-f4409cff4ded_grande.jpg?v=1500459572'
         ],
         base_price: 400.00,
+        quantity: 1,
         weight_category: 'kg',
         category: 'fruits',
         discount: 10,
@@ -35,6 +36,7 @@ export const itemLists = [
             'https://cdn.shopify.com/s/files/1/2179/9295/products/7_131028d3-ab5d-4f57-9720-f4409cff4ded_grande.jpg?v=1500459572'
         ],
         base_price: 183.00,
+        quantity: 1,
         weight_category: 'kg',
         category: 'vegetables',
         discount: 8,
@@ -55,6 +57,7 @@ export const itemLists = [
             'https://cdn.shopify.com/s/files/1/2179/9295/products/7_131028d3-ab5d-4f57-9720-f4409cff4ded_grande.jpg?v=1500459572'
         ],
         base_price: 354.00,
+        quantity: 1,
         weight_category: 'kg',
         category: 'vegetables',
         discount: 10,
@@ -75,6 +78,7 @@ export const itemLists = [
             'https://cdn.shopify.com/s/files/1/2179/9295/products/7_131028d3-ab5d-4f57-9720-f4409cff4ded_grande.jpg?v=1500459572'
         ],
         base_price: 368.00,
+        quantity: 1,
         weight_category: 'kg',
         category: 'nuts',
         discount: 10,
@@ -96,6 +100,7 @@ export const itemLists = [
             'https://cdn.shopify.com/s/files/1/2179/9295/products/7_131028d3-ab5d-4f57-9720-f4409cff4ded_grande.jpg?v=1500459572'
         ],
         base_price: 305.00,
+        quantity: 1,
         weight_category: 'kg',
         category: 'nuts',
         discount: 10,
@@ -116,6 +121,7 @@ export const itemLists = [
             'https://cdn.shopify.com/s/files/1/2179/9295/products/7_131028d3-ab5d-4f57-9720-f4409cff4ded_grande.jpg?v=1500459572'
         ],
         base_price: 72.00,
+        quantity: 1,
         weight_category: 'kg',
         category: 'nuts',
         discount: 10,
@@ -136,6 +142,7 @@ export const itemLists = [
             'https://cdn.shopify.com/s/files/1/2179/9295/products/7_131028d3-ab5d-4f57-9720-f4409cff4ded_grande.jpg?v=1500459572'
         ],
         base_price: 95.00,
+        quantity: 1,
         weight_category: 'kg',
         category: 'vegetables',
         discount: 10,
@@ -156,6 +163,7 @@ export const itemLists = [
             'https://cdn.shopify.com/s/files/1/2179/9295/products/7_131028d3-ab5d-4f57-9720-f4409cff4ded_grande.jpg?v=1500459572'
         ],
         base_price: 195.00,
+        quantity: 1,
         weight_category: 'kg',
         category: 'vegetables',
         discount: 10,
@@ -167,6 +175,7 @@ export const itemLists = [
         item_name: 'Stayberry',
         item_img: 'https://cdn.shopify.com/s/files/1/2179/9295/products/16_grande.jpg?v=1500459950',
         base_price: 208.00,
+        quantity: 1,
         nestedImages: [
             'https://cdn.shopify.com/s/files/1/2179/9295/products/11_bfd2aa7c-4b01-448f-adcd-d621336fdea5_grande.jpg?v=1500460099',
             'https://cdn.shopify.com/s/files/1/2179/9295/products/14_c2b85c63-76e4-441b-9cf4-6af58ef57974_grande.jpg?v=1500460080',
@@ -196,6 +205,7 @@ export const itemLists = [
             'https://cdn.shopify.com/s/files/1/2179/9295/products/7_131028d3-ab5d-4f57-9720-f4409cff4ded_grande.jpg?v=1500459572'
         ],
         base_price: 75.00,
+        quantity: 1,
         weight_category: 'kg',
         category: 'fruits',
         discount: 10,
@@ -216,6 +226,7 @@ export const itemLists = [
             'https://cdn.shopify.com/s/files/1/2179/9295/products/7_131028d3-ab5d-4f57-9720-f4409cff4ded_grande.jpg?v=1500459572'
         ],
         base_price: 105.00,
+        quantity: 1,
         weight_category: 'kg',
         category: 'fruits',
         discount: 10,
@@ -236,6 +247,7 @@ export const itemLists = [
             'https://cdn.shopify.com/s/files/1/2179/9295/products/7_131028d3-ab5d-4f57-9720-f4409cff4ded_grande.jpg?v=1500459572'
         ],
         base_price: 65.00,
+        quantity: 1,
         weight_category: 'kg',
         category: 'fruits',
         discount: 10,
@@ -256,6 +268,7 @@ export const itemLists = [
             'https://cdn.shopify.com/s/files/1/2179/9295/products/7_131028d3-ab5d-4f57-9720-f4409cff4ded_grande.jpg?v=1500459572'
         ],
         base_price: 65.00,
+        quantity: 1,
         weight_category: 'kg',
         category: 'fruits',
         discount: 10,

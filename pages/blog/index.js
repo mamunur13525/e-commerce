@@ -1,16 +1,13 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import { useContext } from 'react'
 import { Blog } from '../../components/Shared/Blogs/Blogs'
 import Footer from '../../components/Shared/Footer/Footer'
 import Navbar from '../../components/Shared/Navbar/Navbar'
 import PageTitleSection from '../../components/Shared/PageTitleSection/PageTitleSection'
 import { bloglists } from '../../FakeData/FakeData'
-import { CartItemsContext } from '../_app'
 
 export default function Home() {
-    const [cartItems,setCartItems] =  useContext(CartItemsContext);
-    
+ 
     return (
       <div>
         <Head>

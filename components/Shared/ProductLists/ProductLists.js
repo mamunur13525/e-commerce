@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { IoSearch } from 'react-icons/io5';
-import { BsBagPlus } from 'react-icons/bs';
+import { BsBagPlus, BsCheck2All, BsFillBagCheckFill } from 'react-icons/bs';
+import { MdFavorite } from 'react-icons/md';
 import { MdFavoriteBorder, MdOutlineArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
 import 'react-responsive-modal/styles.css';
 import { Modal } from 'react-responsive-modal';
@@ -8,8 +9,8 @@ import Button from '../Button';
 import { itemLists } from '../../../FakeData/FakeData';
 import Slider from "react-slick";
 import { useRouter } from 'next/router';
-import { useContext } from 'react';
-import { CartItemsContext } from '../../../pages/_app';
+import { cartStore, favoriteStore } from '../../../store/createStore';
+import { toast } from 'react-hot-toast';
 
 
 const ProductLists = ({ productClass = '', searchValue, selectedCategory = '', listProducts = null }) => {
@@ -63,22 +64,45 @@ const sliderSettings = {
 };
 
 export const Product = ({ item, productClass = '' }) => {
-    const [cartItems, setCartItems] = useContext(CartItemsContext);
     const [openModal, setOpenModal] = useState(false);
     const [mainImageShow, setMainImageShow] = useState(null)
     const router = useRouter()
+
+    const cartItems = cartStore((state) => (state.items));
+    const addToCart = cartStore((state) => (state.addToCart));
+    const removeItemToCart = cartStore((state) => (state.removeToCart));
+    const favoriteList = favoriteStore((state) => (state.items));
+    const addToFavorite = favoriteStore((state) => (state.addToFavorite));
+    const removeItemToFavorite = favoriteStore((state) => (state.removeToFavorite));
+
     const addProductToCart = () => {
-        setCartItems(prev => [...prev, item])
+        toast.success('Add to Cart ❤')
+        addToCart(item)
+        setOpenModal(false);
+    }
+    const removeItem = () => {
+        toast.error('Remove to Cart!')
+        removeItemToCart(item.id)
+        setOpenModal(false);
+    }
+    const removeItemFav = () => {
+        toast.error('Remove to Favorite!')
+        removeItemToFavorite(item.id)
         setOpenModal(false);
     }
 
     const addProductToFavorite = () => {
-
+        toast.success('Add to Favorite ❤')
+        addToFavorite(item)
     }
 
     useEffect(() => {
         setMainImageShow(item.item_img)
     }, [])
+
+
+    const isItemOnCart = cartItems.find(itm => itm.id === item.id)
+    const isItemOnFavoriteList = favoriteList.find(itm => itm.id === item.id)
     return (
         <div className={`animate-waving-hand mx-auto my-2 relative group overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer ${productClass} `
         }>
@@ -91,7 +115,7 @@ export const Product = ({ item, productClass = '' }) => {
                         <div className='w-[70%] mx-auto'>
                             {
                                 mainImageShow !== null &&
-                                <img className='w-full' src={mainImageShow || ''} alt="product  image" />
+                                <img className='w-full' src={mainImageShow || ''} alt="product_image" />
                             }
                         </div>
                         <div className='w-[95%] '>
@@ -147,17 +171,21 @@ export const Product = ({ item, productClass = '' }) => {
                     </div>
                 </div>
             </div>
-            {/* 
-            position: absolute;
-    width: 96%;
-    top: 50%;
-    right: 0;
-    transform: translate(2%,-50%);
-     */}
             <div className='absolute left-0 top-[50%] w-[96%] translate-x-[2%] translate-y-[-50%] grid place-items-center group'>
                 <div className='w-5/6 flex justify-center border rounded-full shadow-md bg-white py-3 translate-y-10 invisible  opacity-0 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300'>
-                    <BsBagPlus onClick={addProductToCart} className='border-r py-1 w-1/3 flex justify-center text-[29px] hover:text-green-600' />
-                    <MdFavoriteBorder onClick={addProductToFavorite} className='border-r py-1 w-1/3 flex justify-center text-[29px] hover:text-green-600' />
+                    {
+                        isItemOnCart ?
+                            <BsFillBagCheckFill onClick={removeItem} className='border-r py-1 w-1/3 flex justify-center text-[29px]  text-green-600' title='already add on cart' />
+                            :
+                            <BsBagPlus onClick={addProductToCart} className='border-r py-1 w-1/3 flex justify-center text-[29px] hover:text-green-600' />
+                    }
+                    {
+                        isItemOnFavoriteList ?
+                            <MdFavorite onClick={removeItemFav} className='border-r py-1 w-1/3 flex justify-center text-[32px]  text-red-600' title='already add on cart' />
+                            :
+                            <MdFavoriteBorder onClick={addProductToFavorite} className='border-r py-1 w-1/3 flex justify-center text-[32px] hover:text-red-600' />
+                    }
+
                     <IoSearch onClick={() => setOpenModal(true)} className=' py-1 w-1/3 flex justify-center text-[29px] hover:text-green-600' />
                 </div>
             </div>

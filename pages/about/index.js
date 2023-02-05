@@ -1,4 +1,3 @@
-import { useContext, useEffect, useState } from 'react'
 import Head from 'next/head'
 import AboutMainSection from '../../components/About/AboutMainSection/AboutMainSection'
 import Footer from '../../components/Shared/Footer/Footer'
@@ -6,11 +5,11 @@ import Navbar from '../../components/Shared/Navbar/Navbar'
 import PageTitleSection from '../../components/Shared/PageTitleSection/PageTitleSection'
 import ChoseUs from '../../components/Shared/ChoseUs/ChoseUs'
 import Farmer from '../../components/About/Farmers/Farmer'
-import { CartItemsContext } from '../_app'
+import { cartStore } from '../../store/createStore'
+
 
 export default function Home() {
-    const [cartItems,setCartItems] =  useContext(CartItemsContext);
-    console.log({cartItems})
+
     return (
         <div>
             <Head>
