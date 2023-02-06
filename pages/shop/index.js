@@ -1,14 +1,12 @@
 import Head from 'next/head'
-import AboutMainSection from '../../components/About/AboutMainSection/AboutMainSection'
 import Footer from '../../components/Shared/Footer/Footer'
 import Navbar from '../../components/Shared/Navbar/Navbar'
 import PageTitleSection from '../../components/Shared/PageTitleSection/PageTitleSection'
-import ChoseUs from '../../components/Shared/ChoseUs/ChoseUs'
-import Farmer from '../../components/About/Farmers/Farmer'
+import ShopContent from '../../components/Shared/Shop/MainContent/ShopContent'
 
 
-export default function Home() {
-
+export default function Index() {
+  
     return (
         <div>
             <Head>
@@ -22,16 +20,18 @@ export default function Home() {
                 <Navbar />
                 <PageTitleSection
                     img='https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/breadcrumb_image_5.jpg?v=26308687731726529481500869779'
-                    title='About Us.'
+                    title='Shop'
                 />
-                <AboutMainSection />
-                <div className='bg-gray-50'>
-                    <ChoseUs
-                        title='Why Choose Us'
-                        image='https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/choose_us_image.png?v=170831453923618876001500869385'
-                    />
+
+                <div className='bg-gray-50 '>
+                    <div className='container mx-auto  py-20'>
+                        <ShopContent
+                            title='Why Choose Us'
+                            image='https://cdn.shopify.com/s/files/1/2179/9295/t/5/assets/choose_us_image.png?v=170831453923618876001500869385'
+                        />
+                    </div>
                 </div>
-                <Farmer />
+
                 <Footer />
             </main>
         </div>

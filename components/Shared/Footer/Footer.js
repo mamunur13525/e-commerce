@@ -28,7 +28,7 @@ const Footer = () => {
             <div className='navImage'>
             </div>
             <div className="bg-gray-100">
-                <div className="container mx-auto pb-8 pt-12 px-10">
+                <div className="container mx-auto pb-8 pt-12">
                     <div className="w-full flex flex-wrap flex-between">
                         <div className="w-full md:w-1/2 lg:w-3/12 mb-3">
                             <h1 className="text-[#80b435] text-xl mb-5">About  Us</h1>

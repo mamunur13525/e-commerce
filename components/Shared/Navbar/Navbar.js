@@ -7,7 +7,6 @@ import { FiShoppingBag } from 'react-icons/fi';
 import { GrClose } from 'react-icons/gr';
 import { IoCloseSharp, IoSearch } from 'react-icons/io5';
 import { RiBarChartHorizontalLine } from 'react-icons/ri';
-// import { IoCloseSharp } from 'react-icons/ai';
 import { useRouter } from 'next/router';
 import CartSidebar from '../Cart/CartSidebar';
 import Dropdown from '../Dropdown/Dropdown';
@@ -122,7 +121,6 @@ const Navbar = () => {
   const [showNavs, setShowNavs] = useState(false);
   const sideNavRef = useRef(null);
   const cartItems = cartStore((state) => (state.items));
-
 
 
   useEffect(() => {
@@ -257,6 +255,7 @@ export default Navbar;
 
 const NavbarPosition = ({ setShowCart, setShowingSearch, showNavs, setShowNavs, showProfileCart, NavbarNav, classAdd = '' }) => {
   const cartItems = cartStore((state) => (state.items));
+  const { pathname } = useRouter();
 
 
   return (
@@ -314,7 +313,8 @@ const NavbarPosition = ({ setShowCart, setShowingSearch, showNavs, setShowNavs, 
 
 const NavItem = ({ nav }) => {
   const [dropShow, setDropShow] = useState(false);
-  let pathname = '/'
+  const { pathname } = useRouter();
+
   return (
     <li
       onMouseEnter={() => setDropShow(true)}

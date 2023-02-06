@@ -11,6 +11,7 @@ import Slider from "react-slick";
 import { useRouter } from 'next/router';
 import { cartStore, favoriteStore } from '../../../store/createStore';
 import { toast } from 'react-hot-toast';
+import CustomModal from '../CustomModal/CustomModal';
 
 
 const ProductLists = ({ productClass = '', searchValue, selectedCategory = '', listProducts = null }) => {
@@ -56,11 +57,9 @@ const sliderSettings = {
     lazyLoad: true,
     speed: 500,
     slidesToShow: 3,
-    slidesToScroll: 3,
     swipeToSlide: true,
-    Infinity: true,
-    prevArrow: <MdOutlineArrowBackIosNew className='text-red-500' />,
-    nextArrow: <MdArrowForwardIos className='text-red-500' />,
+    // prevArrow: <MdOutlineArrowBackIosNew className='text-red-500' />,
+    // nextArrow: <MdArrowForwardIos className='text-red-500' />,
 };
 
 export const Product = ({ item, productClass = '' }) => {
@@ -106,10 +105,10 @@ export const Product = ({ item, productClass = '' }) => {
     return (
         <div className={`animate-waving-hand mx-auto my-2 relative group overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer ${productClass} `
         }>
-            <Modal classNames={{
-                overlay: 'customOverlay',
-                modal: 'w-full my-2!important  h-fit max-w-[90%!important] md:max-w-[75%!important] md:max-w-[90%!important] lg:max-w-[75%!important] h-fit transition-all duration-1000',
-            }} open={openModal} onClose={() => setOpenModal(false)} center>
+
+            <CustomModal
+                customClass='w-full  h-fit max-w-[90%!important] md:max-w-[75%!important] md:max-w-[90%!important] !rounded lg:max-w-[75%!important] h-fit py-0'
+                isOpen={openModal} setIsOpen={setOpenModal}>
                 <div className='flex flex-col md:flex-row justify-between h-full'>
                     <div className='w-full md:w-1/2 relative h-full'>
                         <div className='w-[70%] mx-auto'>
@@ -143,7 +142,7 @@ export const Product = ({ item, productClass = '' }) => {
                                 <div className='w-1/2'>
                                     <p className='font-bold text-lg text-gray-900 uppercase'>Size</p>
                                     <select className='w-full border-gray-400 border mt-2 bg-transparent h-11 outline-none cursor-pointer py-2 px-2' name="" id="">
-                                        <option className='cursor-pointer' defaultValue="1.5" selected>1.5</option>
+                                        <option className='cursor-pointer' defaultValue="1.5">1.5</option>
                                         <option className='cursor-pointer' defaultValue="2.3">2.3</option>
                                         <option className='cursor-pointer' defaultValue="3.2">3.2</option>
                                         <option className='cursor-pointer' defaultValue="6.3">6.3</option>
@@ -160,7 +159,7 @@ export const Product = ({ item, productClass = '' }) => {
                         </div>
                     </div>
                 </div>
-            </Modal>
+            </CustomModal>
             <div onClick={() => router.push(`products/${item?.id}`)}>
                 <img className='w-full group-hover:scale-110 transition-transform duration-300' src={item?.item_img} alt="prduct_image" />
                 <div className='absolute bottom-4 h-12  w-full px-4'>
