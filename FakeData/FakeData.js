@@ -1,4 +1,27 @@
 
+export let categoryLists = [
+    {
+        id: 0,
+        title: 'Popular'
+    },
+    {
+        id: 1,
+        title: 'New Arrival'
+    },
+    {
+        id: 2,
+        title: 'Special'
+    },
+    {
+        id: 3,
+        title: 'on Sale'
+    },
+    {
+        id: 4,
+        title: 'Top Rated'
+    }
+]
+
 export const itemLists = [
     {
         id: 0,

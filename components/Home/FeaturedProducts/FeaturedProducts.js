@@ -1,31 +1,11 @@
 import React, { useState } from 'react';
+import { categoryLists } from '../../../FakeData/FakeData';
 import Button from '../../Shared/Button';
 import ProductLists from '../../Shared/ProductLists/ProductLists';
 
 const FeaturedProducts = ({ classAdd = '' }) => {
     const [selectedCategory, setSelectedCategory] = useState('Popular')
-    let categoryLists = [
-        {
-            id: 0,
-            title: 'Popular'
-        },
-        {
-            id: 1,
-            title: 'New Arrival'
-        },
-        {
-            id: 2,
-            title: 'Special'
-        },
-        {
-            id: 3,
-            title: 'on Sale'
-        },
-        {
-            id: 4,
-            title: 'Top Rated'
-        }
-    ]
+
     return (
         <div className={`bg-white lg:py-10 ${classAdd}`}>
             <div className='container mx-auto'>
