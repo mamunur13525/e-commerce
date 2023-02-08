@@ -11,11 +11,7 @@ const CartSidebar = ({ cart }) => {
     const router = useRouter();
     const cartItems = cartStore((state) => (state.items));
 
-    const viewCart = () => {
-        router.push('/cart')
-    }
     let cartShow = showCart ? 'translate-x-0' : 'translate-x-full'
-
 
     const removeCartItem = (id) => {
         removeItemOnCart(id)
@@ -43,10 +39,10 @@ const CartSidebar = ({ cart }) => {
                                         })}</p>
                                 </div>
                                 <div className='flex justify-between gap-3 items-center'>
-                                    <Button withBck={false} clickFunc={viewCart} classAdd=''>
+                                    <Button withBck={false} clickFunc={() => router.push('/cart')} classAdd='!w-full'>
                                         View Cart
                                     </Button>
-                                    <Button withBck={true} classAdd='l'>
+                                    <Button withBck={true} clickFunc={() => router.push('/checkout')} classAdd='!w-full'>
                                         CheckOut
                                     </Button>
                                 </div>

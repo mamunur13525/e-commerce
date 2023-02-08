@@ -21,8 +21,8 @@ const ShopContent = () => {
     }, [search])
 
     return (
-        <div className='flex justify-between gap-5'>
-            <div className='w-[250px] h-fit bg-white p-3 pb-8 border-r shadow'>
+        <div className=' bg-green-200 flex justify-between gap-2'>
+            <div className='w-[380px] h-fit bg-white p-3 pb-8 border-r shadow'>
                 <p className='mb-6 text-xl uppercase'>Filter:</p>
                 <FilterSidebar />
             </div>
