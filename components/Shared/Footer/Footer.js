@@ -27,8 +27,8 @@ const Footer = () => {
         <div className='relative mt-40'>
             <div className='navImage'>
             </div>
-            <div className="bg-gray-100">
-                <div className="container mx-auto pb-8 pt-12">
+            <div className="bg-gray-100 ">
+                <div className="container mx-auto pb-8 pt-12  px-10 md:px-0">
                     <div className="w-full flex flex-wrap flex-between">
                         <div className="w-full md:w-1/2 lg:w-3/12 mb-3">
                             <h1 className="text-[#80b435] text-xl mb-5">About  Us</h1>
@@ -75,7 +75,7 @@ const Footer = () => {
                     </div>
                 </div>
                 <hr />
-                <div className="container py-4 px-10 mx-auto flex flex-wrap justify-between items-center text-sm font-light mb-3">
+                <div className="container py-4 px-10 md:px-0 mx-auto flex flex-wrap justify-between items-center text-sm font-light mb-3">
                     <span className="text-gray-500 mb-3 md:mb-0">
                         Copyright ©2017 Fresh Food-All Rights  Reserved
                     </span>

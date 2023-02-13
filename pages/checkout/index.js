@@ -1,13 +1,29 @@
 import Head from 'next/head'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useEffect, useRef, useState } from 'react'
+import { useForm, useFormState } from 'react-hook-form'
 import { BsCheckCircleFill } from 'react-icons/bs'
-import OrderDetails from '../../components/Cart/OrderDetails'
+import Button from '../../components/Shared/Button'
+import CustomModal from '../../components/Shared/CustomModal/CustomModal'
 import Footer from '../../components/Shared/Footer/Footer'
 import Navbar from '../../components/Shared/Navbar/Navbar'
 import PageTitleSection from '../../components/Shared/PageTitleSection/PageTitleSection'
+import { cartStore } from '../../store/createStore'
+import SucessFullyGif from '../../images/successful.gif';
+import Image from 'next/image'
+import { useRouter } from 'next/router'
+import ReactToPrint from 'react-to-print';
+import React from 'react';
 
 export default function Index() {
+    const { register, setValue, handleSubmit, formState: { errors } } = useForm();
+    const [openModal, setOpenModal] = useState(false);
+    const router = useRouter()
+
+    //Form Submission
+    const onSubmit = data => {
+        console.log(data)
+        setOpenModal(true)
+    };
 
     return (
         <div>
@@ -26,11 +42,32 @@ export default function Index() {
                 />
                 <div className="bg-gray-50 px-10 py-20 rounded-lg relative container mx-auto flex justify-between gap-16 mt-10 mb-20 min-h-[30rem]">
                     <div className="w-[50%]">
-                        <CheckoutForm />
+                        <button onClick={() => setOpenModal(true)}>Open</button>
+                        <CustomModal
+                            customclassName='w-full  h-fit  !rounded-sm lg:max-w-[400px!important] h-fit  pr-4'
+                            isOpen={openModal} setIsOpen={setOpenModal}>
+                            <p className='text-center text-green-700  text-3xl my-2'>  Payment SuccessFully </p>
+                            <div className='flex justify-center'>
+                                <Image className='' width={100} height={80} src={SucessFullyGif} alt="my gif" />
+                            </div>
+                            <div className='mt-16 w-full' >
+                                <PrintableArea router={router} />
+                            </div>
+                        </CustomModal>
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            <CheckoutForm setValue={setValue} register={register} errors={errors} />
+                            <Button
+                                type='submit'
+                                classAdd='my-5'>
+                                Pay
+                            </Button>
+                        </form>
                     </div>
-                    <div className='w-[50%]'>
-                        <OrderDetails />
+                    <div className='w-[500px] border-l pl-5 '>
+                        <CheckoutOrderSummery />
                     </div>
+
+
                 </div>
 
                 <Footer />
@@ -40,15 +77,84 @@ export default function Index() {
 }
 
 
-const CheckoutForm = () => {
-    const { register, handleSubmit, watch, formState: { errors } } = useForm();
+class ComponentToPrint extends React.Component {
+    render() {
+        return (
+            <table>
+                <tr>
+                    <th>column 1</th>
+                    <th>column 2</th>
+                    <th>column 3</th>
+                </tr>
+                <tbody>
+                    <tr>
+                        <td>data 1</td>
+                        <td>data 2</td>
+                        <td>data 3</td>
+                    </tr>
+                    <tr>
+                        <td>data 1</td>
+                        <td>data 2</td>
+                        <td>data 3</td>
+                    </tr>
+                    <tr>
+                        <td>data 1</td>
+                        <td>data 2</td>
+                        <td>data 3</td>
+                    </tr>
+                </tbody>
+            </table>
+        );
+    }
+}
 
-    const onSubmit = data => {
-        console.log({ data })
-    };
+class PrintableArea extends React.Component {
+    render() {
+        return (
+            <div>
+                <ComponentToPrint ref={el => (this.componentRef = el)} />
+                <ReactToPrint
+                    trigger={() => <Button>Download</Button>}
+                    content={() => this.componentRef}
+                />
+            </div>
+        );
+    }
+}
+
+
+const CheckoutOrderSummery = () => {
+    const allCartItems = cartStore((state) => (state.items))
+
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className=" w-full ">
-            <h1 className='mb-5'>Contact information</h1>
+        <div>
+            <div className='px-5'>
+                <h1 className='mb-5 text-2xl'>Order Summary</h1>
+                <p className='italic'>Shipping and additionnal costs are calculated based on values you have entered</p>
+            </div>
+            <p className=' py-5  px-5 bg-white border-b mt-10 flex justify-between items-center'>
+                <span className='font-medium'>Total Products:</span>
+                <span>
+                    {allCartItems?.length} Items
+                </span>
+            </p>
+            <div className="w-full py-5 flex justify-between items-center bg-white px-5">
+                <span className='font-medium'>
+                    Total Price
+                </span>
+                <span>
+                    {allCartItems.length ? allCartItems.map(itm => itm.base_price * itm.quantity).reduce((prev, curr) => prev + curr) : 0}
+                </span>
+            </div>
+        </div>
+    )
+}
+
+const CheckoutForm = ({ setValue, register, errors }) => {
+
+    return (
+        <div className=" w-full ">
+            <h1 className='mb-5 text-2xl'>Contact information</h1>
             <div className="w-full">
                 <div className='flex justify-between gap-4 mb-2'>
                     <FormInput
@@ -85,7 +191,7 @@ const CheckoutForm = () => {
                     label='Password'
                     errors={errors}
                 />
-                <p className="text-gray-600 text-xs italic">Make it as long and as crazy as you'd like</p>
+                <p className="text-gray-600 text-xs italic">Make it as long and as crazy as you`d like</p>
             </div>
             <div className="mb-2 mt-4">
                 <FormInput
@@ -135,17 +241,22 @@ const CheckoutForm = () => {
                 </div>
                 <div className='w-1/2 flex flex-col'>
                     <p className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2 '>Country</p>
-                    <select className='w-full py-2 border  px-3 rounded-lg bg-white' name="" id="">
+                    <select {...register('country', { required: `Country is required!` })} className={`w-full py-2 border  px-3 rounded-lg bg-white ${errors['country'] ? 'border-red-300' : 'border-gray-200'}`} name="country" id="country">
+                        <option value="">Select Country</option>
                         <option value="bangladesh">Bangladesh</option>
-                        <option value="bangladesh">Bangladesh</option>
-                        <option value="bangladesh">Bangladesh</option>
-                        <option value="bangladesh">Bangladesh</option>
-                        <option value="bangladesh">Bangladesh</option>
-                        <option value="bangladesh">Bangladesh</option>
-                        <option value="bangladesh">Bangladesh</option>
-                        <option value="bangladesh">Bangladesh</option>
-                        <option value="bangladesh">Bangladesh</option>
+                        <option value="pakistan">Pakistan</option>
+                        <option value="india">India</option>
+                        <option value="afganistan">Afganistan</option>
+                        <option value="malasia">Malasia</option>
+                        <option value="usa">United State of America</option>
+                        <option value="uk">UK</option>
+                        <option value="singapur">Singapur</option>
                     </select>
+                    {console.log({ errors })}
+                    {
+                        errors.country &&
+                        <p className="text-red-500 text-xs italic mb-4">{errors?.message || 'this field is required'}</p>
+                    }
                 </div>
             </div>
             <div className='flex justify-between gap-4 mb-2'>
@@ -183,10 +294,10 @@ const CheckoutForm = () => {
                 />
             </div>
             <hr className='my-8' />
-            <DeliveryMethod />
+            <DeliveryMethod setValue={setValue} register={register} />
             <hr className='my-8' />
             <PaymentOptions />
-        </form>
+        </div >
     )
 }
 
@@ -233,7 +344,7 @@ const PaymentOptions = () => {
     )
 }
 
-const DeliveryMethod = () => {
+const DeliveryMethod = ({ setValue, register }) => {
     const [activeMethod, setActiveMethod] = useState(1);
 
     const methods = [
@@ -250,6 +361,13 @@ const DeliveryMethod = () => {
             price: '16.00'
         },
     ]
+    useEffect(() => {
+        register('delivery_method')
+    }, [])
+
+    useEffect(() => {
+        setValue('delivery_method', methods[activeMethod])
+    }, [activeMethod])
     return (
         <>
             <h1 className='mb-5'>Delivery methods</h1>
@@ -282,6 +400,7 @@ const FormInput = ({ errors = {}, labelCss = '', register, placeholder = '', typ
                 {label}
             </label>
             <Input
+
                 register={register}
                 placeholder={placeholder}
                 type={type}
@@ -292,7 +411,7 @@ const FormInput = ({ errors = {}, labelCss = '', register, placeholder = '', typ
             />
             {
                 errors[name] &&
-                <p className="text-red-500 text-xs italic">{errors?.message}</p>
+                <p className="text-red-500 text-xs italic mb-4">{errors[name].message || 'this field is required'}</p>
             }
         </div>
     )
@@ -301,10 +420,9 @@ const FormInput = ({ errors = {}, labelCss = '', register, placeholder = '', typ
 const Input = ({ register = () => { }, inputCss = '', placeholder = '', type = '', required = false, name = '', isErr = false }) => {
     return (
         <input
-            {...register(name, { required, message: `${name} is required!` })}
+            {...register(name, { required: `${name} is required!` })}
             className={`appearance-none block w-full bg-white text-gray-700 border ${isErr ? 'border-red-300' : 'border-gray-200'} rounded-lg py-2 px-4 mb-3 leading-tight focus:outline-none focus:bg-white ${inputCss}`}
             placeholder={placeholder}
-            required={required}
             type={type}
             name={name}
             id={name}

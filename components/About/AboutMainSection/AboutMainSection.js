@@ -1,41 +1,8 @@
 import React from 'react';
 import SectionTitle from '../../Shared/SectionTitle/SectionTitle';
-import Slider from "react-slick";
-import { MdOutlineArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
-
-
-function SampleNextArrow(props) {
-    const { className, onClick } = props;
-    return (
-        <MdArrowForwardIos
-            className={className}
-            onClick={onClick}
-        />
-    );
-}
-
-function SamplePrevArrow(props) {
-    const { className, onClick } = props;
-    return (
-        <MdOutlineArrowBackIosNew
-            className={className}
-            onClick={onClick}
-        />
-    );
-}
+import SliderCarousel from '../../Shared/Slider/SliderCarousel';
 
 const AboutMainSection = () => {
-    const sliderSettings = {
-        infinite: true,
-        speed: 500,
-        slidesToShow: 3,
-        slidesToScroll: 3,
-        infinite: true,
-        swipeToSlide: true,
-        nextArrow: <SampleNextArrow />,
-        prevArrow: <SamplePrevArrow />
-    }
-
     const slideImages = [
         {
             id: 0,
@@ -97,15 +64,23 @@ const AboutMainSection = () => {
                         <div className='text-center lg:px-0 lg:text-left px-6 pb-3 mt-8'>
                             {
                                 Array.isArray(slideImages) &&
-                                <Slider {...sliderSettings}>
+                                <SliderCarousel
+                                    arrowSize={'3rem'}
+                                    speed={500}
+                                    infinite={true}
+                                    slidesToShow={3}
+                                    autoplay={true}
+                                    autoplaySpeed={5000}
+                                    arrowMove='.0rem'
+                                >
                                     {
                                         slideImages.map(item => (
-                                            <span key={item.id}>
+                                            <div className='pr-3' key={item.id}>
                                                 <img className='w-[180px]' src={item.img} alt="" />
-                                            </span>
+                                            </div>
                                         ))
                                     }
-                                </Slider>
+                                </SliderCarousel>
                             }
                         </div>
 

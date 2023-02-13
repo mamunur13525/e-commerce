@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { IoSearch } from 'react-icons/io5';
-import { BsBagPlus, BsCheck2All, BsFillBagCheckFill } from 'react-icons/bs';
+import { BsBagPlus, BsFillBagCheckFill } from 'react-icons/bs';
 import { MdFavorite } from 'react-icons/md';
-import { MdFavoriteBorder, MdOutlineArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
+import { MdFavoriteBorder } from 'react-icons/md';
 import 'react-responsive-modal/styles.css';
-import { Modal } from 'react-responsive-modal';
 import Button from '../Button';
 import { itemLists } from '../../../FakeData/FakeData';
-import Slider from "react-slick";
 import { useRouter } from 'next/router';
 import { cartStore, favoriteStore } from '../../../store/createStore';
 import { toast } from 'react-hot-toast';
 import CustomModal from '../CustomModal/CustomModal';
+import SliderCarousel from '../Slider/SliderCarousel';
 
 
 const ProductLists = ({ productClass = '', searchValue, selectedCategory = '', listProducts = null }) => {
@@ -107,20 +106,30 @@ export const Product = ({ item, productClass = '' }) => {
         }>
 
             <CustomModal
-                customClass='w-full  h-fit max-w-[90%!important] md:max-w-[75%!important] md:max-w-[90%!important] !rounded lg:max-w-[75%!important] h-fit py-0'
+                customClass='w-full  h-fit max-w-[90%!important] md:max-w-[75%!important] md:max-w-[90%!important] !rounded lg:max-w-[75%!important] h-fit  pr-4'
                 isOpen={openModal} setIsOpen={setOpenModal}>
-                <div className='flex flex-col md:flex-row justify-between h-full'>
-                    <div className='w-full md:w-1/2 relative h-full'>
+                <div className='flex flex-col md:flex-row justify-between h-full '>
+                    <div className='w-full md:w-1/2 relative flex flex-col justify-between py-5'>
                         <div className='w-[70%] mx-auto'>
-                            {
-                                mainImageShow !== null &&
-                                <img className='w-full' src={mainImageShow || ''} alt="product_image" />
-                            }
+                            <div className='h-[265px] scale-110 flex justify-center '>
+                                {
+                                    mainImageShow !== null &&
+                                    <img className=' h-full' src={mainImageShow || ''} alt="product_image" />
+                                }
+                            </div>
                         </div>
-                        <div className='w-[95%] '>
+                        <div className='w-[95%] h-[30%]'>
                             {
                                 Array.isArray(item.nestedImages) &&
-                                <Slider {...sliderSettings}>
+                                <SliderCarousel
+                                    arrowSize={'3rem'}
+                                    speed={500}
+                                    infinite={true}
+                                    slidesToShow={3}
+                                    autoplay={true}
+                                    autoplaySpeed={5000}
+                                    arrowMove='.5rem'
+                                >
                                     {
                                         item.nestedImages.map((img, ind) => (
                                             <div key={ind} className='w-1/4 h-fit cursor-pointer'>
@@ -128,11 +137,11 @@ export const Product = ({ item, productClass = '' }) => {
                                             </div>
                                         ))
                                     }
-                                </Slider>
+                                </SliderCarousel>
                             }
                         </div>
                     </div>
-                    <div className='w-full md:w-1/2 flex items-center'>
+                    <div className='pl-5 pr-1 w-full md:w-1/2 flex items-center'>
                         <div className='py-5'>
                             <h1 className='hover:text-green-600 text-4xl mb-2 leading-[50px] pb-5 uppercase font-normal cursor-pointer'>{item?.item_name}</h1>
                             <hr className='bg-gray-300' />

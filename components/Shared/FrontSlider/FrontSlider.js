@@ -1,46 +1,12 @@
 import React from 'react';
-import { MdOutlineArrowBackIosNew, MdArrowForwardIos } from "react-icons/md";
-import Slider from "react-slick";
 import { RiHeadphoneLine } from "react-icons/ri";
 import { FiSend } from "react-icons/fi";
 import { BiSupport } from "react-icons/bi";
 import { SiLinktree } from "react-icons/si";
 import Button from '../Button';
 import { useRouter } from 'next/router';
+import SliderCarousel from '../Slider/SliderCarousel';
 
-
-function SampleNextArrow(props) {
-    const { className, onClick } = props;
-    return (
-        <MdArrowForwardIos
-            className={className}
-            onClick={onClick}
-        />
-    );
-}
-
-function SamplePrevArrow(props) {
-    const { className, onClick } = props;
-    return (
-        <MdOutlineArrowBackIosNew
-            className={className}
-            onClick={onClick}
-        />
-    );
-}
-
-
-const sliderSettings = {
-    infinite: true,
-    fade: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 5000,
-    prevArrow: <SamplePrevArrow />,
-    nextArrow: <SampleNextArrow />,
-};
 
 let sliderInfos = [
     {
@@ -67,10 +33,19 @@ let sliderInfos = [
 ]
 const FrontSlider = () => {
     const router = useRouter();
-    
+
     return (
         <div className='h-full  lg:h-screen w-full mx-auto relative'>
-            <Slider {...sliderSettings}>
+            <SliderCarousel
+                speed={500}
+                fade={true}
+                infinite={true}
+                slidesToScroll={1}
+                slidesToShow={1}
+                autoplay={true}
+                autoplaySpeed={5000}
+                arrowSize='4rem'
+            >
                 {
                     Array.isArray(sliderInfos) && sliderInfos.map(slideInfo => (
                         <div
@@ -93,7 +68,7 @@ const FrontSlider = () => {
                         </div >
                     ))
                 }
-            </Slider >
+            </SliderCarousel >
             <div className='w-full lg:absolute left-0 -bottom-16 '>
                 <div className='flex flex-wrap justify-center bg-white w-5/6 mx-auto lg:shadow-md rounded-sm py-1'>
                     <div className='border-r-0 sm:border-r my-3 w-1/2 md:w-1/3 lg:w-1/4 h-full text-center flex flex-col  gap-5 items-center px-3 py-2 cursor-pointer group'>

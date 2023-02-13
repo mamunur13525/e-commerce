@@ -24,8 +24,21 @@ const favoriteStore = create(devtools((set) => ({
 })))
 
 
+const checkoutStore = create(devtools((set) => ({
+    data: {},
+    addToStore: (item) => set((state) => ({ data: [...state.data, item] })),
+    removeAllData: () => set((state) => ({ data: {} }))
+})))
+
+const useProgressStore = create(devtools((set) => ({
+    isAnimating: false,
+    setIsAnimating: (isAnimating) => set(() => ({ isAnimating }))
+})))
+
 
 export {
     cartStore,
-    favoriteStore
+    favoriteStore,
+    checkoutStore,
+    useProgressStore
 }
