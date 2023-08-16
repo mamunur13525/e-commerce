@@ -303,6 +303,7 @@ export const itemLists = [
 export const bloglists = [
     {
         id: 0,
+        slug:'learn_organic_farms',
         title: 'Learn On Organic Farms',
         publish_date: '19 july 2020',
         posted_by: 'Joe Haj',
@@ -319,6 +320,7 @@ export const bloglists = [
     },
     {
         id: 1,
+        slug:'delicious_summer_foods',
         title: 'Delicious Summer  Foods',
         publish_date: '19 july 2020',
         posted_by: 'Joe Haj',
@@ -336,6 +338,7 @@ export const bloglists = [
     },
     {
         id: 2,
+        slug:'advantage_organic_meet',
         title: 'Advantage of Organic Meet',
         publish_date: '19 july 2020',
         posted_by: 'Joe Haj',
@@ -352,6 +355,7 @@ export const bloglists = [
     },
     {
         id: 3,
+        slug:'learn_organic_farms',
         title: 'Learn On Organic Farms',
         publish_date: '19 july 2020',
         posted_by: 'Joe Haj',
@@ -368,6 +372,7 @@ export const bloglists = [
     },
     {
         id: 4,
+        slug:'delicious_summer_foods',
         title: 'Delicious Summer  Foods',
         publish_date: '19 july 2020',
         posted_by: 'Joe Haj',
@@ -384,6 +389,7 @@ export const bloglists = [
     },
     {
         id: 5,
+        slug:'advantage_organic_meet2',
         title: 'Advantage of Organic Meet',
         publish_date: '19 july 2020',
         posted_by: 'Joe Haj',
