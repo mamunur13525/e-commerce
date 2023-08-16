@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { AiOutlineCheck } from 'react-icons/ai';
 import { RiDeleteBin5Line } from 'react-icons/ri';
@@ -135,7 +135,7 @@ const CouponApply = ({ couponCode, setCouponCode }) => {
                     <AiOutlineCheck onClick={couponApply} className='text-green-600 cursor-pointer' />
                 </div>
             }
-            {coupon && <span>"{coupon}"</span>}
+            {coupon && <span>&quot;{coupon}&quot;</span>}
             {coupon && <RiDeleteBin5Line onClick={() => { setCouponCode(0); setCoupon('') }} className='text-red-600 cursor-pointer' />}
 
         </div>

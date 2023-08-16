@@ -1,6 +1,6 @@
 import Head from 'next/head'
-import Navbar from '../../components/Shared/Navbar/Navbar'
 import Footer from '../../components/Shared/Footer/Footer'
+import Navbar from '../../components/Shared/Navbar/Navbar'
 
 export default function Home() {
 
@@ -30,7 +30,7 @@ const PageNotFound = () => {
                     <img src="https://demo.alura-studio.com/orgafresh/wp-content/themes/orgafresh/assets/images/404.jpg" alt="" />
                 </div>
                 <h1 className='uppercase text-5xl font-bold'>Page not found</h1>
-                <p className='text-2xl mt-5'>Can't find what you need? Take a moment and do a search below!</p>
+                <p className='text-2xl mt-5'>Can&apos;t find what you need? Take a moment and do a search below!</p>
             </div>
         </section>
 
