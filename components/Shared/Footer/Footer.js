@@ -24,7 +24,7 @@ const Footer = () => {
 
 
     return (
-        <div className='relative mt-40'>
+        <div className='relative mt-52'>
             <div className='navImage'>
             </div>
             <div className="bg-gray-100 ">
