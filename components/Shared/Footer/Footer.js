@@ -4,6 +4,7 @@ import { FaPinterestP } from 'react-icons/fa';
 import { IoLogoTwitter, IoLogoInstagram } from 'react-icons/io5';
 import { ImFacebook } from 'react-icons/im';
 import { BsArrow90DegUp, BsArrowRight } from 'react-icons/bs';
+import Link from 'next/link';
 
 const Footer = () => {
     const [scrollUpShow, setScrollUpShow] = useState(false)
@@ -41,7 +42,9 @@ const Footer = () => {
                             <ul className="list-none flex flex-col gap-3 text-gray-600">
                                 <li className="cursor-pointer text-sm hover:text-[#80b435]">Delivery</li>
                                 <li className="cursor-pointer text-sm hover:text-[#80b435]">Legal Notice</li>
-                                <li className="cursor-pointer text-sm hover:text-[#80b435]">Terms &amp; Conditions</li>
+                                <Link href='/terms' passHref>
+                                    <li className="cursor-pointer text-sm hover:text-[#80b435]">Terms &amp; Conditions</li>
+                                </Link>
                                 <li className="cursor-pointer text-sm hover:text-[#80b435]">About Us</li>
                                 <li className="cursor-pointer text-sm hover:text-[#80b435]">Secure Payment</li>
                                 <li className="cursor-pointer text-sm hover:text-[#80b435]">Our Stores</li>
@@ -82,8 +85,12 @@ const Footer = () => {
                     <div className="flex flex-wrap gap-4">
                         <ul className="flex items-center gap-3 text-gray-500 ">
                             <li>Contact us</li>
-                            <li>Term of Use Privacy</li>
-                            <li>Policy</li>
+                            <Link href="/terms" passHref>
+                                <li>Term of Use Privacy</li>
+                            </Link>
+                            <Link href="/policy" passHref>
+                                <li>Policy</li>
+                            </Link>
                             <li>Site Map</li>
                         </ul>
                         <span className="hidden  md:block w-1 mx-3 border-r border-gray-400">

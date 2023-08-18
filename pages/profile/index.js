@@ -12,7 +12,7 @@ export default function Profile() {
         <div>
             <Navbar />
             <div className="flex justify-center">
-                <div className='md:flex md:mt-10 md:pr-3 lg:justify-center w-full lg:w-[1150px]'>
+                <div className='md:flex md:mt-10 md:pr-3 lg:justify-center w-full lg:w-[1150px] xl:w-[1350px]'>
                     <div className='md:w-2/5 lg:w-1/4 md:border-r md:border-slate-300'>
                         <div className="flex flex-col items-center m-10 lg:m-5">
                             <img className="w-56 h-56 border rounded-full object-cover" src="https://cdn.shopify.com/s/files/1/2179/9295/files/images-choose_grande.jpg?v=1500449615" alt="Profile Picture" />
