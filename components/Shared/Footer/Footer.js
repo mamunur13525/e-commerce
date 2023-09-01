@@ -42,9 +42,9 @@ const Footer = () => {
                             <ul className="list-none flex flex-col gap-3 text-gray-600">
                                 <li className="cursor-pointer text-sm hover:text-[#80b435]">Delivery</li>
                                 <li className="cursor-pointer text-sm hover:text-[#80b435]">Legal Notice</li>
-                                <Link href='/terms' passHref>
-                                    <li className="cursor-pointer text-sm hover:text-[#80b435]">Terms &amp; Conditions</li>
-                                </Link>
+                                {/* <Link href='/terms' passHref> */}
+                                    <li className="cursor-pointer text-sm hover:text-[#80b435]"><Link href={'/terms'} passHref>Terms &amp; Conditions</Link></li>
+                                {/* </Link> */}
                                 <li className="cursor-pointer text-sm hover:text-[#80b435]">About Us</li>
                                 <li className="cursor-pointer text-sm hover:text-[#80b435]">Secure Payment</li>
                                 <li className="cursor-pointer text-sm hover:text-[#80b435]">Our Stores</li>
@@ -85,12 +85,8 @@ const Footer = () => {
                     <div className="flex flex-wrap gap-4">
                         <ul className="flex items-center gap-3 text-gray-500 ">
                             <li>Contact us</li>
-                            <Link href="/terms" passHref>
-                                <li>Term of Use Privacy</li>
-                            </Link>
-                            <Link href="/policy" passHref>
-                                <li>Policy</li>
-                            </Link>
+                            <li><Link href={'/terms'} passHref>Term of Use Privacy</Link></li>
+                            <li><Link href={'/policy'} passHref>Policy</Link></li>
                             <li>Site Map</li>
                         </ul>
                         <span className="hidden  md:block w-1 mx-3 border-r border-gray-400">

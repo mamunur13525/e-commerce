@@ -199,7 +199,7 @@ const Navbar = () => {
     >
       <div
         onClick={() => setShowCart(false)}
-        className={`fixed left-0 top-0 w-full h-full ${
+        className={`fixed left-0 top-0 w-full h-full pointer-events-none ${
           showCart ? "z-[120] opacity-50" : "z-[-2] opacity-0"
         } bg-gray-900  transition-all`}
       ></div>
@@ -245,9 +245,9 @@ const Navbar = () => {
               <Dropdown
                 title={{ title: "My Account", css: "border-none", icon: false }}
                 menuItems={[
-                  { id: 0, name: "my profile" },
-                  { id: 1, name: "settings" },
-                  { id: 2, name: "sing out" }
+                  { id: 0, name: "my profile", link:'/profile' },
+                  { id: 1, name: "settings", link:'/setting' },
+                  { id: 2, name: "sign out", link:'/sign-out' }
                 ]}
               />
             </div>

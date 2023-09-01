@@ -4,6 +4,7 @@ import Button from '../Shared/Button';
 import Slider from "react-slick";
 import { MdOutlineArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
 import { AiOutlinePlus } from 'react-icons/ai';
+import MagnifyImage from '../Shared/MagnifyImage/MagnifyImage';
 
 
 const sliderSettings = {
@@ -48,6 +49,7 @@ const ProductView = () => {
                 <div className='w-full lg:w-1/2'>
                     <div className='lg:h-[40rem] relative '>
                         <img className='w-full lg:h-full' src={mainImageShow} alt="image" />
+                        {/* <MagnifyImage imageClass="w-full lg:h-full" imageLink={mainImageShow} alt="Product Image" /> */}
                     </div>
                     <div className='w-[95%] '>
                         {

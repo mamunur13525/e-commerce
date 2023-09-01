@@ -1,17 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 
-const RatingFilter = () => {
-    const [rating, setRating] = useState(4);
+const RatingFilter = ({ products, setRatingData }) => {
+    const [rating, setRating] = useState(5);
 
-    console.log({ rating })
+    useEffect(() => {
+        if(products) {
+            setRatingData(products.filter(product => parseInt(product.rating) <= rating))
+        }
+    }, [rating])
     return (
         <div>
             <p className='flex items-center flex-wrap justify-between'>
                 <span>Rating</span>
                 {
                     rating ?
-                        <span className='cursor-pointer' onClick={() => setRating(0)}>clear</span>
+                        <span className='cursor-pointer' onClick={() => setRating(5)}>clear</span>
                         :
                         null
                 }
