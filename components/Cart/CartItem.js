@@ -5,7 +5,6 @@ import { GrClose } from 'react-icons/gr';
 import { cartStore } from '../../store/createStore';
 
 const CartItem = ({ cart, num }) => {
-    console.log({ cart })
     const increaseItemQuantity = cartStore((state) => (state.increaseQuantity))
     const decreaseItemQuantity = cartStore((state) => (state.decreaseItemQuantity))
     const removeItemOnCart = cartStore((state) => (state.removeToCart))

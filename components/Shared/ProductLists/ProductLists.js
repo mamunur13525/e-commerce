@@ -13,7 +13,7 @@ import CustomModal from '../CustomModal/CustomModal';
 import SliderCarousel from '../Slider/SliderCarousel';
 
 
-const ProductLists = ({ productClass = '', searchValue, selectedCategory = '', listProducts = null }) => {
+const ProductLists = ({ productClass = '', searchValue, selectedCategory = '', listProducts = null, showAll = false }) => {
     const [filterProducts, setFilterProducts] = useState([]);
     useEffect(() => {
         if (!searchValue === '') {
@@ -38,7 +38,7 @@ const ProductLists = ({ productClass = '', searchValue, selectedCategory = '', l
         <div className='flex flex-wrap sm:justify-evenly justify-center mt-8'>
             {
                 Array.isArray(filterProducts) &&
-                    filterProducts.length ? filterProducts.map(item => (
+                    filterProducts.length ? filterProducts.slice(0, (showAll ? filterProducts.length : 9)).map(item => (
                         <Product productClass={productClass} key={Math.random()} item={item} />
                     ))
                     :

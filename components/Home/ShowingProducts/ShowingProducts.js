@@ -4,6 +4,8 @@ import ProductLists from '../../Shared/ProductLists/ProductLists';
 
 const ShowingProducts = ({ classAdd = '' }) => {
     const [selectedCategory, setSelectedCategory] = useState('All Products')
+    const [showAll, setShowAll] = useState(false)
+
     let categoryLists = [
         {
             id: 0,
@@ -27,7 +29,6 @@ const ShowingProducts = ({ classAdd = '' }) => {
         }
     ]
 
-    console.log('render  the  components')
     return (
         <div className={`bg-white md:mt-20 py-10 md:py-20 ${classAdd}`}>
             <div className='container mx-auto'>
@@ -40,13 +41,16 @@ const ShowingProducts = ({ classAdd = '' }) => {
                     }
                 </ul>
                 <div>
-                    <ProductLists productClass='w-[200px] md:w-[250px] h-[250px] md:h-[265px]' selectedCategory={selectedCategory} listProducts={null} />
+                    <ProductLists productClass='w-[200px] md:w-[250px] h-[250px] md:h-[265px]' selectedCategory={selectedCategory} listProducts={null} showAll={showAll} />
                 </div>
-                <div className='flex justify-center mt-16'>
-                    <Button classAdd='max-w-fit px-20 uppercase' >
-                        View All
-                    </Button>
-                </div>
+                {
+                    showAll === false &&
+                    <div onClick={() => setShowAll(true)} className='flex justify-center mt-16'>
+                        <Button classAdd='max-w-fit px-20 uppercase' >
+                            View All
+                        </Button>
+                    </div>
+                }
             </div>
         </div>
     );

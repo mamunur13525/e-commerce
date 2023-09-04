@@ -23,7 +23,7 @@ const PriceRange = ({ maxPrice, products, setPriceData }) => {
             <p className='flex items-center justify-between'>
                 <span>Price Range</span>
                 {
-                    priceRange ?
+                    priceRange != maxPrice ?
                         <span className='cursor-pointer' onClick={() => setPriceRange(maxPrice)}>clear</span>
                         :
                         null

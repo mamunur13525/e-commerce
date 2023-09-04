@@ -15,11 +15,9 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
 
     const handleRouteON = (url) => {
-      console.log('route change ON', url)
       setIsAnimating(true)
     }
     const handleRouteOff = (url) => {
-      console.log('route change Off', url)
       setIsAnimating(false)
     }
 

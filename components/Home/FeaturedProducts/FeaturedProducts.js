@@ -5,6 +5,7 @@ import ProductLists from '../../Shared/ProductLists/ProductLists';
 
 const FeaturedProducts = ({ classAdd = '' }) => {
     const [selectedCategory, setSelectedCategory] = useState('Popular')
+    const [showAll, setShowAll] = useState(false)
 
     return (
         <div className={`bg-white lg:py-10 ${classAdd}`}>
@@ -18,13 +19,16 @@ const FeaturedProducts = ({ classAdd = '' }) => {
                     }
                 </ul>
                 <div>
-                    <ProductLists productClass='w-[200px] h-[250px] border-r ' selectedCategory={'All Products'} listProducts={null} />
+                    <ProductLists productClass='w-[200px] h-[250px] ' selectedCategory={'All Products'} listProducts={null} showAll={showAll} />
                 </div>
-                <div className='flex justify-center mt-16'>
-                    <Button withBck={false} classAdd='max-w-fit px-20 uppercase'>
-                        View All
-                    </Button>
-                </div>
+                {
+                    showAll === false &&
+                    <div onClick={() => setShowAll(true)} className='flex justify-center mt-16'>
+                        <Button withBck={false} classAdd='max-w-fit px-20 uppercase'>
+                            View All
+                        </Button>
+                    </div>
+                }
             </div>
         </div>
     );

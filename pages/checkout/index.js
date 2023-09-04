@@ -21,7 +21,6 @@ export default function Index() {
 
     //Form Submission
     const onSubmit = data => {
-        console.log(data)
         setOpenModal(true)
     };
 
@@ -252,7 +251,6 @@ const CheckoutForm = ({ setValue, register, errors }) => {
                         <option value="uk">UK</option>
                         <option value="singapur">Singapur</option>
                     </select>
-                    {console.log({ errors })}
                     {
                         errors.country &&
                         <p className="text-red-500 text-xs italic mb-4">{errors?.message || 'this field is required'}</p>

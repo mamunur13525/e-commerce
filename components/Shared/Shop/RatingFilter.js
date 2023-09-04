@@ -14,7 +14,7 @@ const RatingFilter = ({ products, setRatingData }) => {
             <p className='flex items-center flex-wrap justify-between'>
                 <span>Rating</span>
                 {
-                    rating ?
+                    rating != 5 ?
                         <span className='cursor-pointer' onClick={() => setRating(5)}>clear</span>
                         :
                         null
