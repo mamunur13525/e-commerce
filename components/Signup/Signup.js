@@ -6,10 +6,17 @@ const Signup = () => {
     const router = useRouter();
     const inputFeilds = [
         {
+            id: 10,
+            name: 'name',
+            placeholder: "Fullname",
+            title: 'Full Name',
+            type: 'text'
+        },
+        {
             id: 0,
-            name: 'user_name',
-            placeholder: "UserName",
-            title: 'User Name',
+            name: 'email',
+            placeholder: "Email",
+            title: 'Email',
             type: 'email'
         },
         {
@@ -20,7 +27,7 @@ const Signup = () => {
             type: 'password'
         },
         {
-            id: 1,
+            id: 2,
             name: 'confirm_password',
             placeholder: "Confirm  Password",
             title: 'Confirm  Password',
@@ -37,7 +44,7 @@ const Signup = () => {
                                 <span>Sign Up </span>
                                 <span className='text-base text-gray-500 font-normal cursor-pointer' onClick={() => router.push('login')}> / Log in</span>
                             </p>
-                            <FormBox inputFeilds={inputFeilds} />
+                            <FormBox inputFeilds={inputFeilds} submitBtn="Register" apiType="register" />
                             <p className="text-center text-gray-500 text-xs mt-5">
                                 &copy;2020 Acme Corp. All rights reserved.
                             </p>

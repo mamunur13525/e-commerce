@@ -6,11 +6,13 @@ import { useProgressStore } from '../store/createStore';
 import '../styles/globals.css'
 import { useNProgress } from '@tanem/react-nprogress'
 import Progress from '../components/Shared/ProgressAnimation/Progress';
+import { SessionProvider } from "next-auth/react"
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const isAnimating = useProgressStore((state) => (state.isAnimating));
   const setIsAnimating = useProgressStore((state) => (state.setIsAnimating));
   const router = useRouter();
+
 
   useEffect(() => {
 
@@ -37,7 +39,9 @@ function MyApp({ Component, pageProps }) {
         <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js' />
       </Head>
       <Progress isAnimating={isAnimating} key={0} />
-      <Component {...pageProps} />
+      <SessionProvider session={session}>
+        <Component {...pageProps} />
+      </SessionProvider>
       <Toaster
         position="top-center"
       />
