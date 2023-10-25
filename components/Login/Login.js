@@ -1,3 +1,5 @@
+'use client'
+
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -56,7 +58,6 @@ export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType }) => 
     const [loading, setLoading] = useState(false)
 
     const {data: session} = useSession()
-    console.log(session)
 
     useEffect(() => {
         if(inputData) {
@@ -68,24 +69,57 @@ export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType }) => 
     }, [inputData])
 
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
-    const onSubmit = (data) => {
+    const onSubmit = async (data) => {
         if(apiType === 'signin') {
-            const res = signIn(`credentials`, {...formData, apiType, redirect: false})
+            setError('')
+            await fetch('api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(res => res.json())
+            .then(result => {
+                if(result.error) {
+                    setError(result.error)
+                }
+                else {
+                    setError('')
+                    signIn(`credentials`, {name: result.name, email: result.email, redirect: false})
+                }
+            })
         }
-        else if(apiType === 'register') {
+        else if (apiType === 'register') {
             if(formData.password === formData.confirm_password) {
                 setError('')
-                const res = signIn(`credentials`, {...formData, apiType, redirect: false})
+                await fetch('api/register', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(res => res.json())
+                .then(result => {
+                    if(result.error) {
+                        setError(result.error)
+                    }
+                    else {
+                        setError('')
+                        const response = signIn(`credentials`, {name: result.name, email: result.email, redirect: false})
+                    }
+                })
             }
             else {
-                setError('Password did not match')
+                setError('Password did not match.')
             }
         }
     }
     return (
         <>{
             inputFeilds.length &&
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form id='input_form' onSubmit={handleSubmit(onSubmit)}>
                 {
                     inputFeilds.map(field => (
                         <div key={field.id} className="">

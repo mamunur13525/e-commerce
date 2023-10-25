@@ -15,30 +15,9 @@ export const authOptions = {
       credentials: {},
 
       async authorize(credentials) {
-        const { apiType } = credentials
-        if(apiType === 'signin') {
-          fetch('http://localhost:5000/signin', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(credentials)
-          })
-          .then(res => res.json())
-          .then(result => {
-            // console.log({result})
-            // return {name: 'maruf'}
-            const user = {name: 'Maruf2'}
-            return (user)
-          })
-          // const user = {name: 'Maruf'}
-          // return user
-        }
-        else if(apiType === 'register') {
-          const user = { name: 'register' }
-          return user
-        }
-        else {
-          return null
-        }
+        const { name, email } = credentials
+
+        return {name, email}
       }
     }),
   ],

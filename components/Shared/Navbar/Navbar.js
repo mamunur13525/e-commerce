@@ -12,6 +12,7 @@ import { cartStore } from "../../../store/createStore";
 import CartSidebar from "../Cart/CartSidebar";
 import Dropdown from "../Dropdown/Dropdown";
 import SearchGlobal from "../SearchGlobal/SearchGlobal";
+import { useSession } from "next-auth/react";
 
 let categoryFoods = [
   {
@@ -193,6 +194,7 @@ const Navbar = () => {
     }
   }, [showCart]);
 
+  const {data: session} = useSession()
   return (
     <nav
       className={`relative shadow-sm bg-white border-gray-200 h-[4.8rem] md:h-[8.3rem]`}
@@ -242,15 +244,24 @@ const Navbar = () => {
             </div>
             <div className="hidden md:flex gap-1 items-center">
               <CgProfile />
-              <Dropdown
+              {
+                session?.user?.email ? <Dropdown
                 title={{ title: "My Account", css: "border-none", icon: false }}
                 menuItems={[
                   { id: 0, name: "my profile", navigateLink: "/profile" },
                   { id: 1, name: "settings" },
-                  { id: 2, name: "sign in", navigateLink: "/login" },
-                  { id: 2, name: "sign out" }
+                  { id: 2, name: "sign out", special: 'signout' }
                 ]}
               />
+              :
+              <Dropdown
+                title={{ title: "My Account", css: "border-none", icon: false }}
+                menuItems={[
+                  { id: 1, name: "settings" },
+                  { id: 2, name: "sign in", navigateLink: "/login" }
+                ]}
+              />
+              }
             </div>
               <a
                 href="tel:+8801935-015460"

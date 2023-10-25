@@ -1,87 +1,84 @@
-import { IKContext, IKUpload } from "imagekitio-react";
-import  crypto from 'crypto';
+import { createContext, useEffect, useState } from "react";
 
-export default function ImageUpload() {
-    const onUploadStart = (evt) => {
-        console.log('Started', evt);
-    };
-      
-    const onUploadProgress = (evt) => {
-        console.log('Progress: ', evt);
-    };
-    
-    const onError = (err) => {
-        console.log('Error');
-        console.log(err);
-    };
-    
-    const onSuccess = (res) => {
-        console.log('Success');
-        console.log(res);
-    };
+// Create a context to manage the script loading state
+const CloudinaryScriptContext = createContext();
 
+function ImageUpload({ multiple, crop, setImageData, btnName, btnClass }) {
+  const [loaded, setLoaded] = useState(false);
 
-    // Your ImageKit API Secret
-const apiSecret = 'private_ISvM6qaaDBDRWI/ghLkbGWuC22Q=';
+  const [cloudName] = useState("dltuyk98s");
+  const [uploadPreset] = useState("product");
 
-// Generate a unique token for the request
-const token = Date.now().toString();
+  const [uwConfig] = useState({
+      cloudName,
+      uploadPreset,
+      cropping: crop?.value, //add a cropping step
+      // showAdvancedOptions: true,  //add advanced options (public_id and tag)
+      // sources: [ "local", "url"], // restrict the upload sources to URL and local files
+      multiple: multiple?.value,  //restrict upload to a single file
+      // folder: "products", //upload files to the specified folder
+      // tags: ["users", "profile"], //add the given tags to the uploaded files
+      // context: {alt: "user_uploaded"}, //add the given context data to the uploaded files
+      clientAllowedFormats: ["images", "img", 'png', 'jpg', 'jpeg', 'JPG', 'JPEG', 'PNG', 'svg', 'SVG'], //restrict uploading to image files only
+      // maxImageFileSize: 2000000,  //restrict file size to less than 2MB
+      // maxImageWidth: 2000, //Scales the image down to a width of 2000 pixels before uploading
+      // theme: "purple", //change to a purple theme
+  });
 
-// Calculate the expire timestamp (e.g., 1 hour from now)
-const expireTimestamp = Math.floor(Date.now() / 1000) + 3600;
-const signature = crypto
-  .createHmac('sha1', apiSecret)
-  .update(`${token}:${expireTimestamp}`)
-  .digest('hex');
+  useEffect(() => {
+    // Check if the script is already loaded
+    if (!loaded) {
+      const uwScript = document.getElementById("uw");
+      if (!uwScript) {
+        // If not loaded, create and load the script
+        const script = document.createElement("script");
+        script.setAttribute("async", "");
+        script.setAttribute("id", "uw");
+        script.src = "https://upload-widget.cloudinary.com/global/all.js";
+        script.addEventListener("load", () => setLoaded(true));
+        document.body.appendChild(script);
+      } else {
+        // If already loaded, update the state
+        setLoaded(true);
+      }
+    }
+  }, [loaded]);
 
+  const initializeCloudinaryWidget = () => {
+    if (loaded) {
+      var myWidget = window.cloudinary.createUploadWidget(
+        uwConfig,
+        (error, result) => {
+          if (!error && result && result.event === "success") {
+            setImageData(result.info.url);
+          }
+        }
+      );
 
-    return (
-        <div>
-            <IKContext 
-                publicKey="public_oMtSciIGjj/z2sxDOGfO2y4i6zw="
-                urlEndpoint="https://ik.imagekit.io/znex04bydzr"
-                transformationPosition="path"
-                authenticationEndpoint="http://localhost:5000/auth"
-                authenticator={() => {
-                    return new Promise((resolve, reject) => {
-                      // Your logic to generate security parameters (signature, token, and expire) here
-                      // You can use async operations here if needed
-                      const apiSecret = 'private_izCjd5CX4N9PMXyij3FHS4fMshE=';
+      document.getElementById("upload_widget").addEventListener(
+        "click",
+        function () {
+          myWidget.open();
+        },
+        false
+      );
+    }
+  };
 
-                      // Generate a unique token for the request
-                      const token = 'public_oSTvOZ1m6vd3fl2zrtqZG6M9tjs=';
-
-                      // Calculate the expire timestamp (e.g., 1 hour from now)
-                      const expireTimestamp = Math.floor((Date.now() + 3600 * 1000) / 1000); // 3600 seconds in 1 hour
-
-                      const signature = crypto
-                          .createHmac('sha1', apiSecret)
-                          .update(`${token}:${expireTimestamp}`)
-                          .digest('hex');
-
-                      const securityParameters = {
-                        signature: signature,
-                        token: token,
-                        expire: expireTimestamp,
-                      };
-                  
-                      if (securityParameters) {
-                        resolve(securityParameters);
-                      } else {
-                        reject(new Error('Failed to generate security parameters'));
-                      }
-                    }); 
-                  }}
-
-            >
-                <IKUpload
-                    folder={"/team_e_commerce_products"}
-                    onError={onError}
-                    onSuccess={onSuccess}
-                    onUploadStart={onUploadStart}
-                    onUploadProgress={onUploadProgress}
-                />
-            </IKContext>
-        </div>
-    )
+  return (
+    <CloudinaryScriptContext.Provider value={{ loaded }}>
+      <span
+        id="upload_widget"
+        className={`cloudinary-button ${btnClass} text-center`}
+        onClick={initializeCloudinaryWidget}
+      >
+        {
+          btnName ? btnName : 'Upload Image'
+        }
+      </span>
+    </CloudinaryScriptContext.Provider>
+  );
 }
+
+export default ImageUpload;
+export { CloudinaryScriptContext };

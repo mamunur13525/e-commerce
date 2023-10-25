@@ -1,5 +1,6 @@
 /* This example requires Tailwind CSS v2.0+ */
 import { Menu, Transition } from '@headlessui/react';
+import { signOut } from 'next-auth/react';
 import { Fragment } from 'react';
 import { BsChevronDown } from 'react-icons/bs';
 
@@ -8,6 +9,13 @@ function classNames(...classes) {
 }
 
 export default function Dropdown({title={}, menuItems=[]}) {
+
+  const dropdownEventHandler = (e, data) => {
+    e.preventDefault()
+    if(data === 'signout') {
+      signOut()
+    }
+  }
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
@@ -33,6 +41,22 @@ export default function Dropdown({title={}, menuItems=[]}) {
         <Menu.Items className="origin-top-left absolute left-0 mt-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="py-1">
             {menuItems.map((item) => (
+              
+                item?.special ? 
+                <Menu.Item key={item.id}>
+                {({ active }) => (
+                  <a
+                    onClick={e => dropdownEventHandler(e, item.special)}
+                    className={classNames(
+                      active ? "bg-gray-100 text-gray-900 cursor-pointer" : "text-gray-700",
+                      "block px-4 py-2 text-sm cursor-pointer"
+                    )}
+                  >
+                    {item.name}
+                  </a>
+                )}
+              </Menu.Item>
+              :
               <Menu.Item key={item.id}>
                 {({ active }) => (
                   <a
@@ -46,6 +70,7 @@ export default function Dropdown({title={}, menuItems=[]}) {
                   </a>
                 )}
               </Menu.Item>
+              
             ))}
           </div>
         </Menu.Items>

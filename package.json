@@ -9,12 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@cloudinary/react": "^1.11.2",
+    "@cloudinary/url-gen": "^1.12.0",
     "@headlessui/react": "^1.6.6",
     "@tanem/react-nprogress": "^5.0.27",
+    "axios": "^1.5.1",
     "build": "^0.1.4",
     "crypto": "^1.0.1",
     "force": "^0.0.3",
-    "imagekitio-react": "^3.0.0",
+    "mongodb": "^6.2.0",
+    "mongoose": "^7.6.3",
     "next": "^12.1.6",
     "next-auth": "^4.23.2",
     "nprogress": "^0.2.0",
