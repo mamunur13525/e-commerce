@@ -1,13 +1,11 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 
-const RatingFilter = ({ products, setRatingData }) => {
+const RatingFilter = ({ setFilterRating }) => {
     const [rating, setRating] = useState(5);
 
     useEffect(() => {
-        if(products) {
-            setRatingData(products.filter(product => parseInt(product.rating) <= rating))
-        }
+        setFilterRating(rating)
     }, [rating])
     return (
         <div>

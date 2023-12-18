@@ -57,7 +57,7 @@ export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType }) => 
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
 
-    const {data: session} = useSession()
+    const {data: session2} = useSession()
 
     useEffect(() => {
         if(inputData) {

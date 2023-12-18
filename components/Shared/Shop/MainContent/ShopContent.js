@@ -8,14 +8,31 @@ import TopFilter from '../TopFilter';
 import Sidebar from '../../SideBar/Sidebar';
 import { GiSettingsKnobs } from "react-icons/gi";
 import DetailedProduct from '../../DetailedProduct/DetailedProduct';
-
+import InfiniteScroll from 'react-infinite-scroll-component';
+import Spinner from '../../Loader/Spinner';
+import { useRouter } from 'next/router';
+import { queryStore } from '../../../../store/createStore';
 
 const ShopContent = () => {
-    const [filterData, setFilterData] = useState([])
-    const [searchData, setSearchData] = useState([])
-    const [search, setSearch] = useState('');
+    const router = useRouter()
+    const [firstRender, setFirstRender] = useState(false)
+    const queryData = queryStore((state) => (state.data))
+
+    const [productsData, setProductsData] = useState([])
     const [sortType, setSortType] = useState('grid')
-    const [newFilteredData, setNewFilteredData] = useState([])
+    const [offset, setOffset] = useState(0)
+    const [allLoaded, setAllLoaded] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [reloadData, setReloadData] = useState(0)
+    const [maxPrice, setMaxPrice] = useState(100)
+    const [searchValue, setSearchValue] = useState('')
+    const [searchQuery, setSearchQuery] = useState({name: 'search', value: null})
+    
+    // filters
+    const [filterPrice, setFilterPrice] = useState(0)
+    const [filterRating, setFilterRating] = useState(5)
+    const [filterCategory, setFilterCategory] = useState(['vegetables', 'fruits', 'nuts'])
+
 
     const changeSortType = () => {
         if(sortType === 'grid') {
@@ -26,48 +43,113 @@ const ShopContent = () => {
         }
     }
 
+    // handling querys
     useEffect(() => {
-        if (search) {
-            const filter = itemLists.filter(itm => itm.item_name.toLowerCase().includes(search.toLowerCase()))
-            setSearchData([...filter])
-        } else {
-            setSearchData([...itemLists])
-        }
-    }, [search])
+        queryHandler({name: 'search', value: searchQuery.value || null})
+    }, [searchQuery])
 
-    useEffect(() => {
-        let commonData = []; // Create an array for common items in another two arrays.
-        for (let i = 0; i < searchData.length; i++) {
-            for (let j = 0; j < filterData.length; j++) {
-                if (searchData[i].id == filterData[j].id) { // If the item is common in both arrays
-                    commonData.push(searchData[i]); // Push common items to the array
-                }
+    const queryHandler = (data) => {
+        if(firstRender === true) {
+            const newRouter = {...router}
+            if(data.value === null) {
+                delete newRouter.query[data.name]
+                router.push(newRouter)
+            }
+            else {
+                newRouter.query[data.name] = data.value
+                router.push(newRouter)
             }
         }
-        setNewFilteredData(commonData)
+    }
+    useEffect(() => {
+        setFirstRender(true)
+    }, [])
 
-    }, [searchData, filterData])
+    // search handler
+    const searchValueHandler = (data) => {
+        setOffset(0)
+        setProductsData([])
+        setSearchValue(data)
+        setReloadData(Math.random())
+    }
+
+    // filter handler
+    useEffect(() => {
+        if(!searchValue) {
+            setOffset(0)
+            setProductsData([])
+            setReloadData(Math.random())
+        }
+    }, [filterPrice, filterRating, filterCategory])
+
+
+    // getting products data
+    useEffect(() => {
+        setLoading(true)
+        try {
+            fetch('/api/filter-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({offset, limit: 10, search: searchValue ? true : false, searchValue, filterPrice, filterRating, filterCategory})
+            })
+            .then(res => res.json())
+            .then(result => {
+                setProductsData([...productsData, ...result.data])
+                setAllLoaded(result.allLoaded)
+                setMaxPrice(result.maxPrice)
+                setLoading(false)
+            })
+        } catch (error) {
+            alert(error.message || 'Something went wrong. Please reload the page.')
+        }
+    }, [offset, reloadData, searchValue])
+
+    const reloadDataHandler = (e) => {
+        e.preventDefault()
+        setOffset(0)
+        setProductsData([])
+        setAllLoaded(false)
+        setLoading(true)
+        setReloadData(Math.random())
+    }
 
     return (
         <div className='flex justify-between gap-2'>
             <div className='w-[380px] h-fit bg-white p-3 pb-8 border-r shadow hidden md:block'>
-                <FilterSidebar products={itemLists} setFilterData={setFilterData} />
+                <FilterSidebar queryHandler={queryHandler} maxPrice={maxPrice} setFilterPrice={setFilterPrice} setFilterRating={setFilterRating} setFilterCategory={setFilterCategory} />
             </div>
             <div className='w-full bg-white'>
-                <TopFilter sortType={sortType} changeSortType={changeSortType} sortDisplay={true} setSearch={setSearch} itemLists={newFilteredData} filter={<Sidebar btnName={<div className='flex text-lg items-center'>Filter <GiSettingsKnobs className='ml-2' /></div>} btnClass="text-2xl p-1 rounded-sm hover:bg-slate-200 duration-200" data={<FilterSidebar products={itemLists} setFilterData={setFilterData} />} />} />
-                <div className='flex flex-wrap sm:justify-evenly justify-center mt-8'>
-                    {
-                        Array.isArray(newFilteredData) &&
-                            newFilteredData.length ? newFilteredData.map(item => (
-                                sortType === 'grid' ?
-                                <Product productClass={'w-[200px] md:w-[250px] h-[250px] md:h-[265px]'} key={Math.random()} item={item} />
-                                :
-                                <DetailedProduct productClass={'w-[200px] md:w-[250px] h-[250px] md:h-[265px]'} key={Math.random()} item={item} />
-                            ))
-                            :
-                            'No Products Found!'
-                    }
-                </div>
+                <TopFilter setSearchQuery={setSearchQuery} reloadDataHandler={reloadDataHandler} resultText={`Products Loaded: ${productsData?.length}`} loading={loading} sortType={sortType} changeSortType={changeSortType} sortDisplay={true} setSearchValue={searchValueHandler} itemLists={productsData} filter={<Sidebar btnName={<div className='flex text-lg items-center'>Filter <GiSettingsKnobs className='ml-2' /></div>} btnClass="text-2xl p-1 rounded-sm hover:bg-slate-200 duration-200" data={<FilterSidebar queryHandler={queryHandler} maxPrice={maxPrice} setFilterPrice={setFilterPrice} setFilterRating={setFilterRating} setFilterCategory={setFilterCategory} />} />} />
+
+                {   productsData &&
+                    <InfiniteScroll
+                        dataLength={productsData.length} //This is important field to render the next data
+                        next={() => setOffset(offset + 10)}
+                        hasMore={!allLoaded}
+                    >
+                        <div className='flex flex-wrap sm:justify-evenly justify-center mt-8'>
+                            {
+                                Array.isArray(productsData) &&
+                                    productsData != [] ? productsData.map(item => (
+                                        sortType === 'grid' ?
+                                        <Product productClass={'w-[200px] md:w-[250px] h-[250px] md:h-[265px]'} key={Math.random()} item={item} />
+                                        :
+                                        <DetailedProduct productClass={'w-[200px] md:w-[250px] h-[250px] md:h-[265px]'} key={Math.random()} item={item} />
+                                    ))
+                                    :
+                                    'No Products Found!'
+                            }
+                        </div>
+                    </InfiniteScroll>
+                }
+                {
+                    loading === true && <div className='w-full flex justify-center mt-5'><Spinner /></div>
+                }
+                {
+                    loading === false && allLoaded && <h1 className='mt-5 text-center text-lg font-medium'>There is no product left to show.</h1>
+                }
             </div>
         </div>
     );

@@ -8,7 +8,7 @@ import { FiShoppingBag } from "react-icons/fi";
 import { GrClose } from "react-icons/gr";
 import { IoCloseSharp, IoSearch } from "react-icons/io5";
 import { RiBarChartHorizontalLine } from "react-icons/ri";
-import { cartStore } from "../../../store/createStore";
+import { UserData, cartStore } from "../../../store/createStore";
 import CartSidebar from "../Cart/CartSidebar";
 import Dropdown from "../Dropdown/Dropdown";
 import SearchGlobal from "../SearchGlobal/SearchGlobal";
@@ -163,6 +163,7 @@ const NavbarNav = [
     )
   }
 ];
+
 const Navbar = () => {
   const [showingSearch, setShowingSearch] = useState(false);
   const [showCart, setShowCart] = useState(false);
@@ -170,6 +171,9 @@ const Navbar = () => {
   const [showNavs, setShowNavs] = useState(false);
   const sideNavRef = useRef(null);
   const cartItems = cartStore((state) => state.items);
+
+  const router = useRouter()
+  
 
   useEffect(() => {
     window.addEventListener("scroll", stickNavbar);
@@ -194,14 +198,40 @@ const Navbar = () => {
     }
   }, [showCart]);
 
+  
+
+  // getting user data
+  const setUserData = UserData((state) => (state.setUserData))
+  const userData = UserData((state) => (state.data))
   const {data: session} = useSession()
+
+  useEffect(() => {
+      if(session?.user?.email && session.user.email !== userData.email) {
+          fetch('api/user-data', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({email: session.user.email})
+          })
+          .then(res => res.json())
+          .then(userResult => {
+              if(userResult?.error) {
+                  alert(userResult.error)
+              }
+              else {
+                  setUserData(userResult)
+              }
+          })
+      }
+  }, [session?.user?.email])
   return (
     <nav
       className={`relative shadow-sm bg-white border-gray-200 h-[4.8rem] md:h-[8.3rem]`}
     >
       <div
         onClick={() => setShowCart(false)}
-        className={`fixed left-0 top-0 w-full h-full ${
+        className={`fixed pointer-events-none left-0 top-0 w-full h-full ${
           showCart ? "z-[120] opacity-50" : "z-[-2] opacity-0"
         } bg-gray-900  transition-all`}
       ></div>

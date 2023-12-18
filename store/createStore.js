@@ -12,7 +12,7 @@ const updateQuantity = (items, proId, quantity) => {
 const cartStore = create(devtools((set) => ({
     items: [],
     addToCart: (item) => set((state) => ({ items: [...state.items, item] })),
-    removeToCart: (proId) => set((state) => ({ items: state.items.filter(itm => itm.id !== proId) })),
+    removeToCart: (proId) => set((state) => ({ items: state.items.filter(itm => itm._id !== proId) })),
     increaseQuantity: (proId, quantity) => set((state) => ({ items: updateQuantity(state.items, proId, quantity) })),
     decreaseItemQuantity: (proId, quantity) => set((state) => ({ items: updateQuantity(state.items, proId, quantity) }))
 })))
@@ -20,7 +20,7 @@ const cartStore = create(devtools((set) => ({
 const favoriteStore = create(devtools((set) => ({
     items: [],
     addToFavorite: (item) => set((state) => ({ items: [...state.items, item] })),
-    removeToFavorite: (proId) => set((state) => ({ items: state.items.filter(itm => itm.id !== proId) })),
+    removeToFavorite: (proId) => set((state) => ({ items: state.items.filter(itm => itm._id !== proId) })),
 })))
 
 
@@ -35,10 +35,22 @@ const useProgressStore = create(devtools((set) => ({
     setIsAnimating: (isAnimating) => set(() => ({ isAnimating }))
 })))
 
+const UserData = create(devtools((set) => ({
+    data: {},
+    setUserData: (newData) => set((state) => ({data: newData}))
+})))
+
+const queryStore = create(devtools((set) => ({
+    data: {},
+    setQuery: (newQuerys) => set(state => ({data: newQuerys}))
+})))
+
 
 export {
     cartStore,
     favoriteStore,
     checkoutStore,
-    useProgressStore
+    useProgressStore,
+    UserData,
+    queryStore
 }

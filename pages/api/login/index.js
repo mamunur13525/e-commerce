@@ -9,7 +9,7 @@ export default async function POST(req, res) {
 
     if(user) {
         if(user.password == password) {
-            res.send({name: user.name, email: user.email})
+            res.send({name: user.fullName, email: user.email})
         }
         else {
             res.send({error: 'Provided password is incorrect'})

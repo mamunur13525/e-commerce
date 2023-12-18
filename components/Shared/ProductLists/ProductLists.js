@@ -13,7 +13,7 @@ import CustomModal from '../CustomModal/CustomModal';
 import SliderCarousel from '../Slider/SliderCarousel';
 
 
-const ProductLists = ({ productClass = '', searchValue, selectedCategory = '', listProducts = null, showAll = false }) => {
+const ProductLists = ({ productClass = '', searchValue, selectedCategory = '', listProducts = null, data }) => {
     const [filterProducts, setFilterProducts] = useState([]);
     useEffect(() => {
         if (!searchValue === '') {
@@ -37,8 +37,8 @@ const ProductLists = ({ productClass = '', searchValue, selectedCategory = '', l
     return (
         <div className='flex flex-wrap sm:justify-evenly justify-center mt-8'>
             {
-                Array.isArray(filterProducts) &&
-                    filterProducts.length ? filterProducts.slice(0, (showAll ? filterProducts.length : 9)).map(item => (
+                Array.isArray(data) &&
+                data.length ? data.map(item => (
                         <Product productClass={productClass} key={Math.random()} item={item} />
                     ))
                     :
@@ -80,12 +80,12 @@ export const Product = ({ item, productClass = '' }) => {
     }
     const removeItem = () => {
         toast.error('Remove to Cart!')
-        removeItemToCart(item.id)
+        removeItemToCart(item._id)
         setOpenModal(false);
     }
     const removeItemFav = () => {
         toast.error('Remove to Favorite!')
-        removeItemToFavorite(item.id)
+        removeItemToFavorite(item._id)
         setOpenModal(false);
     }
 
@@ -99,10 +99,10 @@ export const Product = ({ item, productClass = '' }) => {
     }, [])
 
 
-    const isItemOnCart = cartItems.find(itm => itm.id === item.id)
-    const isItemOnFavoriteList = favoriteList.find(itm => itm.id === item.id)
+    const isItemOnCart = cartItems.find(itm => itm._id === item._id)
+    const isItemOnFavoriteList = favoriteList.find(itm => itm._id === item._id)
     return (
-        <div className={`animate-waving-hand mx-auto my-2 relative group overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer ${productClass} `
+        <div className={`animate-waving-hand mx-1 my-2 relative group overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer ${productClass} `
         }>
 
             <CustomModal
@@ -145,7 +145,7 @@ export const Product = ({ item, productClass = '' }) => {
                         <div className='py-5'>
                             <h1 className='hover:text-green-600 text-4xl mb-2 leading-[50px] pb-5 uppercase font-normal cursor-pointer'>{item?.item_name}</h1>
                             <hr className='bg-gray-300' />
-                            <p className='my-5'><span className='inline-block text-3xl font-normal line-through text-gray-600 align-bottom mr-2'>{item?.currency === 'usd' && '$'}{item?.base_price}.00</span> <span className='text-green-700 inline-block align-bottom m-0 text-4xl'>{item?.currency === 'usd' && '$'}{item?.base_price - (item?.base_price / item?.discount)}.00</span></p>
+                            <p className='my-5'><span className='inline-block text-3xl font-normal line-through text-gray-600 align-bottom mr-2'>{item?.currency === 'usd' ? '$' : '৳'}{item?.base_price}</span> <span className='text-green-700 inline-block align-bottom m-0 text-4xl'>{item?.currency === 'usd' ? '$' : '৳'}{Math.round(item?.base_price - (item?.base_price / item?.discount))}</span></p>
                             <p className='text-gray-700 mt-5 mb-5'>{item?.description}</p>
                             <div className='flex justify-between gap-3'>
                                 <div className='w-1/2'>
@@ -169,13 +169,13 @@ export const Product = ({ item, productClass = '' }) => {
                     </div>
                 </div>
             </CustomModal>
-            <div onClick={() => router.push(`products/${item?.id}`)}>
+            <div onClick={() => router.push(`/products/${item?._id}`)}>
                 <img className='w-full group-hover:scale-110 transition-transform duration-300' src={item?.item_img} alt="prduct_image" />
                 <div className='absolute bottom-4 h-12  w-full px-4'>
                     <h1 className='text-xl font-medium group-hover:text-green-600 transition-all'>{item?.item_name}</h1>
                     <div className='flex gap-1 items-end'>
-                        <span className='text-gray-500 line-through tracking-tighter'>{item?.currency === 'usd' && '$'}{item?.base_price}.00</span>
-                        <span className='text-green-600 text-xl font-medium tracking-tight'>{item?.currency === 'usd' && '$'}{item?.base_price - (item?.base_price / item?.discount)}.00</span>
+                        <span className='text-gray-500 line-through tracking-tighter'>{item?.currency === 'usd' ? '$' : '৳'}{item?.base_price}</span>
+                        <span className='text-green-600 text-xl font-medium tracking-tight'>{item?.currency === 'usd' ? '$' : '৳'}{Math.round(item?.base_price - (item?.base_price / item?.discount))}</span>
                     </div>
                 </div>
             </div>

@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '../../Shared/Button';
 import ProductLists from '../../Shared/ProductLists/ProductLists';
 
 const ShowingProducts = ({ classAdd = '' }) => {
-    const [selectedCategory, setSelectedCategory] = useState('All Products')
-    const [showAll, setShowAll] = useState(false)
+    const [selectedCategory, setSelectedCategory] = useState('All')
+    const [productsData, setProductsData] = useState(null)
+    const [loading, setLoading] = useState(false)
+    const [offset, setOffset] = useState(0)
+    const [allLoaded, setAllLoaded] = useState(false)
 
     let categoryLists = [
         {
             id: 0,
-            title: 'All Products'
+            title: 'All'
         },
         {
             id: 1,
@@ -23,11 +26,36 @@ const ShowingProducts = ({ classAdd = '' }) => {
             id: 3,
             title: 'nuts'
         },
-        {
-            id: 4,
-            title: 'Other products'
-        }
     ]
+
+    useEffect(() => {
+        setLoading(true)
+        setAllLoaded(false)
+        try {
+            fetch('api/products-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({category: selectedCategory, offset: offset})
+            })
+            .then(res => res.json())
+            .then(result => {
+                if(!result.error) {
+                    if(productsData === null) {
+                        setProductsData(result.data)
+                    }
+                    else {
+                        setProductsData([...productsData, ...result.data])
+                    }
+                    setAllLoaded(result.allLoaded)
+                    setLoading(false)
+                }
+            })
+        } catch (error) {
+            alert('Something went wrong while loading data. Please reload the page.')
+        }
+    }, [selectedCategory, offset])
 
     return (
         <div className={`bg-white md:mt-20 py-10 md:py-20 ${classAdd}`}>
@@ -36,20 +64,26 @@ const ShowingProducts = ({ classAdd = '' }) => {
                 <ul className='flex flex-wrap justify-center gap-x-10 gap-y-5 mt-8 px-10'>
                     {
                         Array.isArray(categoryLists) && categoryLists.map(cat => (
-                            <li onClick={() => setSelectedCategory(cat?.title)} key={cat?.id} className={`text-base hover:text-green-600 uppercase cursor-pointer after:h-[1.8px] after:block after:bg-green-600 after:w-[0] hover:after:w-full after:transition-all ${selectedCategory === cat?.title ? 'text-green-600 after:w-full' : ''}`}>{cat?.title}</li>
+                            <li onClick={() => {
+                                setSelectedCategory(cat?.title)
+                                setOffset(0)
+                                setProductsData(null)
+                            }} key={cat?.id} className={`text-base hover:text-green-600 uppercase cursor-pointer after:h-[1.8px] after:block after:bg-green-600 after:w-[0] hover:after:w-full after:transition-all ${selectedCategory === cat?.title ? 'text-green-600 after:w-full' : ''}`}>{cat?.title}</li>
                         ))
                     }
                 </ul>
+                {
+                    loading && <span className='text-center block mt-2 mb-2 text-lg'>Loading...</span>
+                }
                 <div>
-                    <ProductLists productClass='w-[200px] md:w-[250px] h-[250px] md:h-[265px]' selectedCategory={selectedCategory} listProducts={null} showAll={showAll} />
+                    {productsData !== null && <ProductLists productClass='w-[200px] md:w-[250px] h-[250px] md:h-[265px]' selectedCategory={selectedCategory} listProducts={null} data={productsData} />}
                 </div>
                 {
-                    showAll === false &&
-                    <div onClick={() => setShowAll(true)} className='flex justify-center mt-16'>
+                    !loading && (!allLoaded && <div onClick={() => setOffset(offset + 10)} className='flex justify-center mt-16'>
                         <Button classAdd='max-w-fit px-20 uppercase' >
-                            View All
+                            Show More
                         </Button>
-                    </div>
+                    </div>)
                 }
             </div>
         </div>

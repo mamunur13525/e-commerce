@@ -10,7 +10,6 @@ import SalesOffer from '../components/Home/SalesOffer/SalesOffer'
 import FeaturedProducts from '../components/Home/FeaturedProducts/FeaturedProducts'
 
 export default function Home() {
-
   return (
     <div>
       <Head>

@@ -31,12 +31,12 @@ export default function DetailedProduct({ item, productClass = '' }) {
     }
     const removeItem = () => {
         toast.error('Remove to Cart!')
-        removeItemToCart(item.id)
+        removeItemToCart(item._id)
         setOpenModal(false);
     }
     const removeItemFav = () => {
         toast.error('Remove to Favorite!')
-        removeItemToFavorite(item.id)
+        removeItemToFavorite(item._id)
         setOpenModal(false);
     }
 
@@ -50,14 +50,14 @@ export default function DetailedProduct({ item, productClass = '' }) {
     }, [])
 
 
-    const isItemOnCart = cartItems.find(itm => itm.id === item.id)
-    const isItemOnFavoriteList = favoriteList.find(itm => itm.id === item.id)
+    const isItemOnCart = cartItems.find(itm => itm._id === item._id)
+    const isItemOnFavoriteList = favoriteList.find(itm => itm._id === item._id)
     return (
         <div className='m-2 mb-3 w-full animate-waving-hand'>
             <div className='hover:shadow-lg border border-white shadow-sm hover:border-slate-100 duration-200 rounded-md bg-white w-full flex flex-col items-center p-3 sm:flex-row sm:items-start'>
-                <img onClick={() => router.push(`products/${item?.id}`)} className='w-80 sm:w-56 md:w-48 lg:w-56 cursor-pointer' src={item.item_img} alt="" />
+                <img onClick={() => router.push(`products/${item?._id}`)} className='w-80 sm:w-56 md:w-48 lg:w-56 cursor-pointer' src={item.item_img} alt="" />
                 <div className='self-start'>
-                    <h1 onClick={() => router.push(`products/${item?.id}`)} className='text-2xl font-semibold cursor-pointer inline-block'>{item.item_name}</h1>
+                    <h1 onClick={() => router.push(`products/${item?._id}`)} className='text-2xl font-semibold cursor-pointer inline-block'>{item.item_name}</h1>
                     <div className='flex items-end'>
                         <p className='text-lg font-semibold text-slate-500 line-through'>${item.base_price}</p>
                         <p className='text-2xl ml-4 font-semibold text-green-500'>${(item.base_price - (item.base_price * item.discount) / 100)}</p>

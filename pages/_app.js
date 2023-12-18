@@ -1,18 +1,27 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router'
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Toaster } from 'react-hot-toast'
-import { useProgressStore } from '../store/createStore';
+import { queryStore, useProgressStore } from '../store/createStore';
 import '../styles/globals.css'
 import { useNProgress } from '@tanem/react-nprogress'
 import Progress from '../components/Shared/ProgressAnimation/Progress';
-import { SessionProvider } from "next-auth/react"
+import { SessionProvider, useSession } from "next-auth/react"
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const isAnimating = useProgressStore((state) => (state.isAnimating));
   const setIsAnimating = useProgressStore((state) => (state.setIsAnimating));
   const router = useRouter();
 
+  const setQuery = queryStore((state) => (state.setQuery))
+  const queryRef = useRef(false)
+
+  useEffect(() => {
+    if(Object.keys(router.query).length > 0 && queryRef.current === false){
+        setQuery(router.query)
+        queryRef.current = true
+    }
+  }, [router])  
 
   useEffect(() => {
 

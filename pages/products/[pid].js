@@ -6,8 +6,82 @@ import Slider from "react-slick";
 import { MdOutlineArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
 import { itemLists } from '../../FakeData/FakeData';
 import { Product } from '../../components/Shared/ProductLists/ProductLists';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import Spinner from '../../components/Shared/Loader/Spinner';
 
-export default function ProductWithId() {
+
+
+export async function getServerSideProps({params}) {
+    const res = await fetch('http://localhost:3000/api/single-product', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({productId: params.pid})
+    })
+    const productData = await res.json()
+
+    const similarProductsRes = await fetch('http://localhost:3000/api/similar-products', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({category: productData.category, offset: 0, limit: 10})
+    })
+    const similarProductsData = await similarProductsRes.json()
+    
+    return { props: { productData, pid: params.pid, similarProductsData: similarProductsData.data, allLoaded: similarProductsData.allLoaded } }
+}
+
+export default function ProductWithId({productData, pid, similarProductsData, allLoaded: primaryAllLoaded}) {
+    const router = useRouter()
+    const [similarProducts, setSimilarProducts] = useState(similarProductsData || [])
+    const [offset, setOffset] = useState(0)
+    const [loadMore, setLoadMore] = useState(false)
+    const [allLoaded, setAllLoaded]= useState(primaryAllLoaded || false)
+    console.log(similarProducts)
+
+    useEffect(() => {
+        if(similarProductsData) {
+            setSimilarProducts(similarProductsData)
+            setOffset(0)
+            setAllLoaded(primaryAllLoaded)
+        }
+        else {
+            setSimilarProducts([])
+            setOffset(0)
+        }
+    }, [pid])
+
+    const loadMoreHandler = (e) => {
+        e.preventDefault()
+
+        if(productData?.category) {
+            setLoadMore(true)
+            const newOffset = offset + 10
+            try {
+                fetch('/api/similar-products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({category: productData.category, offset: newOffset, limit: 10})
+                })
+                .then(res => res.json())
+                .then( result => {
+                    setSimilarProducts([...similarProducts, ...result.data])
+                    setAllLoaded(result.allLoaded)
+                    setOffset(newOffset)
+                    setLoadMore(false)
+                })
+            } catch (error) {
+                setLoadMore(false)
+                alert('Something went wrong.')
+            }
+        }
+    }
+
     const sliderSettings = {
         lazyLoad: true,
         speed: 500,
@@ -50,7 +124,7 @@ export default function ProductWithId() {
                     initialSlide: 1
                 }
             }
-
+    
         ]
     };
     return (
@@ -64,10 +138,10 @@ export default function ProductWithId() {
             </Head>
             <main className=''>
                 <Navbar />
-                <ProductView />
+                <ProductView productData={productData} />
                 <div className='container mx-auto py-20'>
-                    <h1 className='text-4xl text-center mb-10 '>Upsell Products</h1>
-                    <Slider {...sliderSettings}>
+                    <h1 className='text-4xl text-center mb-10 underline '>Similar Products</h1>
+                    {/* <Slider {...sliderSettings}>
                         {
                             Array.isArray(itemLists) && itemLists.map(item => (
                                 <div key={item.id}>
@@ -75,7 +149,17 @@ export default function ProductWithId() {
                                 </div>
                             ))
                         }
-                    </Slider>
+                    </Slider> */}
+                    <div className='flex flex-wrap justify-center'>
+                        {
+                            similarProducts?.map(product => <Product productClass={'w-[18%] h-[280px]'} key={Math.random()} item={product} />)
+                        }
+                    </div>
+                    <div className='w-full flex justify-center mt-2'>
+                        {
+                            loadMore ? <Spinner/> : !allLoaded && <button onClick={loadMoreHandler} className='px-5 py-2 text-white bg-green-500 rounded-sm'>Load More</button> 
+                        }
+                    </div>
                 </div>
                 <Footer />
             </main>
