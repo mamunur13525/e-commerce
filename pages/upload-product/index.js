@@ -35,7 +35,7 @@ const selectData = [
 export default function UploadProduct() {
     const [inputData, setInputData] = useState({})
     const [formData, setFormData] = useState({})
-    console.log(formData)
+    
     useEffect(() => {
         if(inputData) {
             const newData = {...formData}

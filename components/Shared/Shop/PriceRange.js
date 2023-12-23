@@ -1,10 +1,20 @@
 import debounce from 'lodash.debounce';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useState } from 'react';
+import { queryStore } from '../../../store/createStore';
 
 const PriceRange = ({ maxPrice, setFilterPrice }) => {
-    const [priceRange, setPriceRange] = useState(maxPrice || 0)
+    const [priceRange, setPriceRange] = useState(100)
     const [max, setMax] = useState(maxPrice || 100)
+    const queryData = queryStore((state) => (state.data))
+    const queryRef = useRef(false)
+
+    useEffect(() => {
+        if(queryData?.price && queryRef.current === false) {
+            setPriceRange(queryData.price)
+            queryRef.current = true
+        }
+    }, [queryData?.price])
 
     useEffect(() => {
         // setFilterPrice(parseInt(priceRange))
@@ -13,11 +23,15 @@ const PriceRange = ({ maxPrice, setFilterPrice }) => {
 
     useEffect(() => {
         setMax(maxPrice)
-        setPriceRange(maxPrice)
+        if(priceRange === 100) {
+            setPriceRange(maxPrice)
+        }
     }, [maxPrice])
 
     const searchDebounce = useMemo(() => {
-        return debounce(e => {setFilterPrice(e)}, 500);
+        return debounce(e => {
+            setFilterPrice(e)
+        }, 500);
     }, []);
     return (
         <>

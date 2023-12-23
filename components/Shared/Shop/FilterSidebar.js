@@ -16,7 +16,7 @@ const FilterSidebar = ({ maxPrice, setFilterPrice, setFilterRating, setFilterCat
                 <ColorFilter />
             </div>
             <div>
-                <RatingFilter setFilterRating={setFilterRating}/>
+                <RatingFilter queryHandler={queryHandler} setFilterRating={setFilterRating}/>
             </div>
             <div>
                 <CategoryFilter queryHandler={queryHandler} setFilterCategory={setFilterCategory}/>

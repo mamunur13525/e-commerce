@@ -40,7 +40,6 @@ export default function ProductWithId({productData, pid, similarProductsData, al
     const [offset, setOffset] = useState(0)
     const [loadMore, setLoadMore] = useState(false)
     const [allLoaded, setAllLoaded]= useState(primaryAllLoaded || false)
-    console.log(similarProducts)
 
     useEffect(() => {
         if(similarProductsData) {

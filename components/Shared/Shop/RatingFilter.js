@@ -1,11 +1,27 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useState } from 'react';
+import { queryStore } from '../../../store/createStore';
 
-const RatingFilter = ({ setFilterRating }) => {
+const RatingFilter = ({ setFilterRating, queryHandler }) => {
+    const queryData = queryStore((state) => (state.data))
     const [rating, setRating] = useState(5);
+    const queryRef = useRef(false)
+
+    useEffect(() => {
+        if(queryData?.rate && queryRef.current === false) {
+            setRating(queryData.rate)
+            queryRef.current = true
+        }
+    }, [queryData?.rate])
 
     useEffect(() => {
         setFilterRating(rating)
+        if(rating === 5) {
+            queryHandler({name: 'rate', value: null})
+        }
+        else {
+            queryHandler({name: 'rate', value: rating})
+        }
     }, [rating])
     return (
         <div>
@@ -20,18 +36,10 @@ const RatingFilter = ({ setFilterRating }) => {
             </p>
             <div className="flex items-center gap-1">
                 {
-                    [...Array(rating).keys()].map(itm => (
-                        <RateSvg setRating={setRating} key={itm} num={itm} fill={true} />
+                    [...Array(5).keys()].map(itm => (
+                        <RateSvg setRating={setRating} key={itm} num={itm} fill={itm < rating ? true : false} />
                     ))
                 }
-
-                {
-                    rating < 5 &&
-                    [...Array(5 - Number(rating)).keys()].map(itm => (
-                        <RateSvg setRating={setRating} key={itm} num={rating + itm} fill={false} />
-                    ))
-                }
-
             </div>
         </div>
     );

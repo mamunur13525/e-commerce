@@ -29,7 +29,7 @@ const ShopContent = () => {
     const [searchQuery, setSearchQuery] = useState({name: 'search', value: null})
     
     // filters
-    const [filterPrice, setFilterPrice] = useState(0)
+    const [filterPrice, setFilterPrice] = useState(100)
     const [filterRating, setFilterRating] = useState(5)
     const [filterCategory, setFilterCategory] = useState(['vegetables', 'fruits', 'nuts'])
 
@@ -47,6 +47,15 @@ const ShopContent = () => {
     useEffect(() => {
         queryHandler({name: 'search', value: searchQuery.value || null})
     }, [searchQuery])
+
+    useEffect(() => {
+        if(parseInt(maxPrice) === parseInt(filterPrice)) {
+            queryHandler({name: 'price', value: null})
+        }
+        else {
+            queryHandler({name: 'price', value: filterPrice})
+        }
+    }, [filterPrice])
 
     const queryHandler = (data) => {
         if(firstRender === true) {
