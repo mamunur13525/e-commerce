@@ -13,6 +13,7 @@ export default function Dropdown({title={}, menuItems=[]}) {
   const dropdownEventHandler = (e, data) => {
     e.preventDefault()
     if(data === 'signout') {
+      localStorage.setItem('user', null)
       signOut()
     }
   }

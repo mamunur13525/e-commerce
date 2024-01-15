@@ -26,8 +26,8 @@ const TopFilter = ({ setSearchValue, itemLists, filter, sortDisplay, sortType, c
                         {/* {
                             sortType === 'grid' ? <BsGrid3X3Gap className='p-2 w-10 h-10' /> : <BsListTask className='p-2 w-10 h-10' />
                         } */}
-                        <BsGrid3X3Gap className={`p-2 w-[41.5px] h-[41.5px] absolute left-0 top-0 opacity-0 duration-200 ${sortType === 'grid' && 'opacity-100'}`} />
-                        <BsListTask className={`p-2 w-[41.5px] h-[41.5px] absolute left-0 top-0 opacity-0 duration-200 ${sortType === 'detailed' && 'opacity-100'}`} />
+                        <BsGrid3X3Gap className={`p-2 w-[41.5px] h-[41.5px] absolute left-0 top-0 opacity-0 duration-200 ${sortType === 'detailed' && 'opacity-100'}`} />
+                        <BsListTask className={`p-2 w-[41.5px] h-[41.5px] absolute left-0 top-0 opacity-0 duration-200 ${sortType === 'grid' && 'opacity-100'}`} />
                     </div>
                 }
                 <SelectList

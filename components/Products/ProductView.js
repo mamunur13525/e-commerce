@@ -4,6 +4,7 @@ import Button from '../Shared/Button';
 import Slider from "react-slick";
 import { MdOutlineArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
 import { AiOutlinePlus } from 'react-icons/ai';
+import { cartStore } from '../../store/createStore';
 
 
 const sliderSettings = {
@@ -21,9 +22,19 @@ const ProductView = ({ productData }) => {
     const [mainImageShow, setMainImageShow] = useState(productData.item_img)
     const [newNestedImages, setNewNestedImages] = useState([productData.item_img, ...productData.nestedImages])
     const {item_name: name, description, base_price: price, quantity, discount, rating, weight_category, currency} = productData
+    const addToCart = cartStore((state) => (state.addToCart))
+    const [newQuantity, setNewQuantity] = useState(1)
 
     const addProductToCart = () => {
-
+        if(!newQuantity) {
+            setNewQuantity(1)
+        }
+        if(parseInt(newQuantity) > parseInt(quantity)) {
+            alert('Quantity can not exceed the original Quantity')
+        }
+        else {
+            addToCart(productData, !newQuantity ? 1 : newQuantity)
+        }
     }
 
     useEffect(() => {
@@ -82,8 +93,8 @@ const ProductView = ({ productData }) => {
                     </p>
                     <div className='flex flex-wrap justify-between '>
                         <div className='w-1/2 mt-3'>
-                            <p className='font-bold text-lg text-gray-900 uppercase'>Quantity</p>
-                            <input className='w-full border-gray-200 border mt-2 bg-transparent outline-none py-4 px-2' type="number" name="" id="" defaultValue='1' />
+                            <p className='font-bold text-lg text-gray-900 uppercase'>Quantity - {quantity}</p>
+                            <input value={newQuantity} onChange={(e) => setNewQuantity(e.target.value)} className='w-full border-gray-200 border mt-2 bg-transparent outline-none py-4 px-2' type="number" name="" id="" min={0} max={quantity} required />
                         </div>
 
                     </div>

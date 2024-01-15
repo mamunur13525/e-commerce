@@ -3,18 +3,52 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { GrClose } from 'react-icons/gr';
 import { RiCloseLine, RiDeleteBin6Line } from 'react-icons/ri';
-import { cartStore } from '../../../store/createStore';
+import { UserData, cartStore } from '../../../store/createStore';
 import Button from '../Button'
 
 const CartSidebar = ({ cart }) => {
     let [showCart, setShowCart] = cart;
+    const clearCart = cartStore((state) => (state.clearCart))
+    const userData = UserData((state) => (state.data))
     const router = useRouter();
     const cartItems = cartStore((state) => (state.items));
+    const [subTotal, setSubTotal] = useState(0)
+    const [tax, setTax] = useState(0)
+    const [total, setTotal] = useState(0)
 
     let cartShow = showCart ? 'translate-x-0' : 'translate-x-full'
 
     const removeCartItem = (id) => {
         removeItemOnCart(id)
+    }
+
+    useEffect(() => {
+        let subt = cartItems.length ? cartItems.map(itm => (itm.base_price - (itm.base_price / itm.discount)) * itm.ordered_quantity).reduce((prev, curr) => prev + curr) : 0
+        setSubTotal(parseFloat(subt).toFixed(2))
+        setTax((parseFloat((5 * subt) / 100)).toFixed(2))
+        setTotal(parseFloat(subt + ((5 * subt) / 100)).toFixed(2))
+    }, [cartItems])
+
+
+    const checkout = async (e) => {
+        e.preventDefault()
+        if(userData.email) {
+            await fetch('api/order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({user_details: userData, product_details: cartItems, subtotal: subTotal, tax: tax, total: total})
+            })
+            .then(res => res.json())
+            .then(result => {
+                clearCart()
+                router.push('/profile')
+            })
+        }
+        else {
+            router.push('/login')
+        }
     }
     return (
         <div className={`${cartShow} transition-transform duration-500 shadow-xl border-l fixed right-0 top-0  h-full z-[125] w-96  pt-0 bg-white`}>
@@ -28,21 +62,26 @@ const CartSidebar = ({ cart }) => {
                         cartItems.length ?
                         <>
                             {cartItems.map(item => (
-                                <CartItem removeCartItem={removeCartItem} key={item.id} item={item} />
+                                <CartItem removeCartItem={removeCartItem} key={item._id} item={item} />
                             ))}
                             <div className='bg-white absolute bottom-0 px-4 pt-2 pb-3 shadow-sm w-full right-0'>
-                                <div className='flex justify-between items-center pb-4 px-2  uppercase'>
+                                <div className='flex justify-between items-center pb-0 px-2  uppercase'>
+                                    <p className=' font-medium text-md'>Sub Total</p>
+                                    <p className=' font-medium text-lg  text-[#4f8700]'>{cartItems[0]?.currency === 'taka' ? '৳' : '$'} {subTotal}</p>
+                                </div>
+                                <div className='flex justify-between items-center pb-2 px-2  uppercase'>
+                                    <p className=' font-medium text-md'>Tax</p>
+                                    <p className=' font-medium text-lg  text-[#4f8700]'>{cartItems[0]?.currency === 'taka' ? '৳' : '$'} {tax}</p>
+                                </div>
+                                <div className='flex justify-between items-center pb-4 px-2  uppercase border-t'>
                                     <p className='font-medium text-lg'>Total Price</p>
-                                    <p className='font-medium text-xl  text-[#4f8700]'>${
-                                        cartItems.map(itm => itm?.base_price * itm?.quantity).reduce((prev, curr) => {
-                                            return prev + curr
-                                        })}</p>
+                                    <p className='font-medium text-xl  text-[#4f8700]'>{cartItems[0]?.currency === 'taka' ? '৳' : '$'} {total}</p>
                                 </div>
                                 <div className='flex justify-between gap-3 items-center'>
                                     <Button withBck={false} clickFunc={() => router.push('/cart')} classAdd='!w-full'>
                                         View Cart
                                     </Button>
-                                    <Button withBck={true} clickFunc={() => router.push('/checkout')} classAdd='!w-full'>
+                                    <Button withBck={true} clickFunc={checkout} classAdd='!w-full'>
                                         CheckOut
                                     </Button>
                                 </div>
@@ -73,11 +112,13 @@ const CartItem = ({ item }) => {
         toast.error('Remove to Cart!')
     }
     const increaseQuantity = () => {
-        increaseItemQuantity(item.id, item.quantity + 1)
+        if(item.quantity > item.ordered_quantity) {
+            increaseItemQuantity(item._id, item.ordered_quantity + 1)
+        }
     }
     const decreaseQuantity = () => {
-        if (item.quantity > 1) {
-            decreaseItemQuantity(item.id, item.quantity - 1)
+        if (item.ordered_quantity > 1) {
+            decreaseItemQuantity(item._id, item.ordered_quantity - 1)
         }
     }
     return (
@@ -93,7 +134,7 @@ const CartItem = ({ item }) => {
                         <div onClick={decreaseQuantity} className='border h-6 w-6 rounded text-xl flex items-center justify-center cursor-pointer shadow hover:bg-gray-100'>
                             <span className='pb-1'>-</span>
                         </div>
-                        <p className='text-[15px] uppercase'>{item?.quantity}</p>
+                        <p className='text-[15px] uppercase'>{item?.ordered_quantity}</p>
                         <div onClick={increaseQuantity} className='border h-6 w-6 rounded text-xl flex items-center justify-center cursor-pointer shadow hover:bg-gray-100'>
                             <span className='pb-1'>+</span>
                         </div>
@@ -101,10 +142,10 @@ const CartItem = ({ item }) => {
                 </div>
             </div>
             <div className='flex h-[5rem]   flex-col justify-between items-end'>
-                <RiCloseLine onClick={() => removeItem(item.id)} className='  hover:animate-pulse  hover:text-green-800 cursor-pointer rounded-full text-xl' />
+                <RiCloseLine onClick={() => removeItem(item._id)} className='  hover:animate-pulse  hover:text-green-800 cursor-pointer rounded-full text-xl' />
                 <p className='text-xl text-[#4f8700] font-medium'>
-                    {item?.currency === 'usd' && '$'}
-                    {item?.base_price * item?.quantity}
+                    {item?.currency === 'taka' ? '৳' : '$'}
+                    {(item.base_price - (item.base_price / item.discount)) * item.ordered_quantity}
                 </p>
             </div>
         </div>

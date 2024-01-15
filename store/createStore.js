@@ -4,17 +4,22 @@ import { devtools } from 'zustand/middleware'
 
 const updateQuantity = (items, proId, quantity) => {
     let cloneArr = [...items];
-    let objIndex = cloneArr.findIndex((obj => obj.id == proId));
-    if (objIndex !== -1) cloneArr[objIndex].quantity = quantity;
+    let objIndex = cloneArr.findIndex((obj => obj._id == proId));
+    if (objIndex !== -1) cloneArr[objIndex].ordered_quantity = quantity;
     return cloneArr;
 }
 
 const cartStore = create(devtools((set) => ({
     items: [],
-    addToCart: (item) => set((state) => ({ items: [...state.items, item] })),
+    addToCart: (item, quantity = 1) => {
+        const newItem = {...item}
+        newItem.ordered_quantity = quantity
+        set((state) => ({ items: [...state.items, newItem] }))
+    },
     removeToCart: (proId) => set((state) => ({ items: state.items.filter(itm => itm._id !== proId) })),
     increaseQuantity: (proId, quantity) => set((state) => ({ items: updateQuantity(state.items, proId, quantity) })),
-    decreaseItemQuantity: (proId, quantity) => set((state) => ({ items: updateQuantity(state.items, proId, quantity) }))
+    decreaseItemQuantity: (proId, quantity) => set((state) => ({ items: updateQuantity(state.items, proId, quantity) })),
+    clearCart: () => set((state) => ({ items: [] }))
 })))
 
 const favoriteStore = create(devtools((set) => ({

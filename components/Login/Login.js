@@ -56,8 +56,14 @@ export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType }) => 
     const [inputData, setInputData] = useState({}) 
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
+    const [prevPath, setPrevPath] = useState(null)
+    const router = useRouter()
 
     const {data: session2} = useSession()
+
+    useEffect(() => {
+        setPrevPath(localStorage.getItem('path') || null)
+    }, [])
 
     useEffect(() => {
         if(inputData) {
@@ -87,6 +93,12 @@ export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType }) => 
                 else {
                     setError('')
                     signIn(`credentials`, {name: result.name, email: result.email, redirect: false})
+                    if(prevPath) {
+                        router.push(prevPath)
+                    }
+                    else {
+                        router.push('/profile')
+                    }
                 }
             })
         }
@@ -107,7 +119,13 @@ export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType }) => 
                     }
                     else {
                         setError('')
-                        const response = signIn(`credentials`, {name: result.name, email: result.email, redirect: false})
+                        signIn(`credentials`, {name: result.name, email: result.email, redirect: false})
+                        if(prevPath) {
+                            router.push(prevPath)
+                        }
+                        else {
+                            router.push('/profile')
+                        }
                     }
                 })
             }

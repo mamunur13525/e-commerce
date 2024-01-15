@@ -2,7 +2,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router'
 import { useEffect, useRef } from 'react';
 import { Toaster } from 'react-hot-toast'
-import { queryStore, useProgressStore } from '../store/createStore';
+import { cartStore, queryStore, useProgressStore } from '../store/createStore';
 import '../styles/globals.css'
 import { useNProgress } from '@tanem/react-nprogress'
 import Progress from '../components/Shared/ProgressAnimation/Progress';
@@ -12,6 +12,8 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const isAnimating = useProgressStore((state) => (state.isAnimating));
   const setIsAnimating = useProgressStore((state) => (state.setIsAnimating));
   const router = useRouter();
+  const cartItem = cartStore((state) => (state.items))
+  console.log(cartItem)
 
   const setQuery = queryStore((state) => (state.setQuery))
   const queryRef = useRef(false)
@@ -22,6 +24,15 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
         queryRef.current = true
     }
   }, [router])  
+
+  useEffect(() => {
+    console.log(router.asPath)
+    if(router.asPath !== '/login') {
+      if(router.asPath !== '/signup') {
+        localStorage.setItem('path', router.asPath)
+      }
+    }
+  }, [router?.asPath])
 
   useEffect(() => {
 
