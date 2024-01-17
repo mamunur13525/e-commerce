@@ -7,19 +7,22 @@ export default async function POST(req, res) {
     
 
     await connectMongoDB()
+    const response = await Order.create(body)
+
     const user = await User.findOne({email: body.user_details.email})
-    const newUserData = {...user}
-    if(newUserData._doc.orders[0]) {
-        newUserData._doc.orders = [...user.orders, body]
+    const orderID = response._id.toString()
+    const newUserData = {...user._doc}
+    if(newUserData.orders[0]) {
+        newUserData.orders = [...user.orders, orderID]
     }
     else {
-        newUserData._doc.orders = [body]
+        newUserData.orders = [orderID]
     }
 
+    
 
-    await User.findOneAndUpdate({email: body.user_details.email}, {orders: newUserData._doc.orders})
-    const response = await Order.create(body)
-    if(response) {
+    const userResponse = await User.findOneAndUpdate({email: body.user_details.email}, {orders: newUserData.orders})
+    if(userResponse) {
         res.send({status: 'success'})
     }
 }

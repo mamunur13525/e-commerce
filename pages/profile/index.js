@@ -1,27 +1,55 @@
 import { useEffect, useState } from 'react';
-import { FaHome, FaKey, FaUserAlt } from 'react-icons/fa';
+import { FaHome, FaKey, FaList, FaUserAlt } from 'react-icons/fa';
 import Account from '../../components/Shared/Profile/Account';
 import Navbar from '../../components/Shared/Navbar/Navbar';
 import Footer from '../../components/Shared/Footer/Footer';
 import ChangePassword from '../../components/Shared/Profile/ChangePassword';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import Orders from '../../components/Shared/Profile/Orders';
+import { UserData } from '../../store/createStore';
 
 
 export default function Profile() {
     const [selectList, setSelectList] = useState('account')
-    const {data: session} = useSession()
+    const {data: session, status: sessionStatus} = useSession()
     const router = useRouter()
 
     useEffect(() => {
-        if(!session?.user?.email) {
+        if(sessionStatus === 'unauthenticated') {
             router.push('/login')
         }
-    }, [session?.user?.email])
+    }, [sessionStatus])
+
+    // getting user data
+    const setUserData = UserData((state) => (state.setUserData))
+    const userData = UserData((state) => (state.data))
+
+    useEffect(() => {
+        if(sessionStatus === 'authenticated') {
+            fetch('api/user-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({email: session.user.email})
+            })
+            .then(res => res.json())
+            .then(userResult => {
+                console.log(userResult)
+                if(userResult?.error) {
+                    alert(userResult.error)
+                }
+                else {
+                    setUserData(userResult)
+                }
+            })
+        }
+    }, [sessionStatus])
     return (
         <>
             {
-                !session?.user?.email ? 'Redirecting...' :
+                sessionStatus === 'unauthenticated' ? 'Redirecting...' :
                 <div>
                     <Navbar />
                     <div className="flex justify-center">
@@ -44,6 +72,10 @@ export default function Profile() {
                                         <FaUserAlt className='mr-3' />
                                         <h2 className='text-lg'>Security</h2>
                                     </div>
+                                    {userData?.orders?.length > 0 && <div onClick={() => setSelectList('orders')} className={`flex h-12 items-center px-5 py-4 cursor-pointer ${selectList === 'orders' ? 'bg-[#80b435] border-none text-white' : 'text-black border-b'} `}>
+                                        <FaList className='mr-3' />
+                                        <h2 className='text-lg'>Orders</h2>
+                                    </div>}
                                 </div>
                             </div>
                             {
@@ -54,6 +86,9 @@ export default function Profile() {
                             }
                             {
                                 selectList === 'security' && <ChangePassword css="md:w-3/5 lg:3/4 px-5 md:px-0 md:pl-8 opacity-0 pointer-events-none hidden md:block" />
+                            }
+                            {
+                                selectList === 'orders' && <Orders css="md:w-3/5 lg:3/4 mx-5 md:mx-0 md:pl-8 mt-10 lg:mt-0" />
                             }
                         </div>
                     </div>

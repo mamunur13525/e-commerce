@@ -15,6 +15,7 @@ const CartSidebar = ({ cart }) => {
     const [subTotal, setSubTotal] = useState(0)
     const [tax, setTax] = useState(0)
     const [total, setTotal] = useState(0)
+    const [loading, setLoading] = useState(false)
 
     let cartShow = showCart ? 'translate-x-0' : 'translate-x-full'
 
@@ -32,22 +33,27 @@ const CartSidebar = ({ cart }) => {
 
     const checkout = async (e) => {
         e.preventDefault()
-        if(userData.email) {
-            await fetch('api/order', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({user_details: userData, product_details: cartItems, subtotal: subTotal, tax: tax, total: total})
-            })
-            .then(res => res.json())
-            .then(result => {
-                clearCart()
-                router.push('/profile')
-            })
-        }
-        else {
-            router.push('/login')
+        if(!loading) {
+            setLoading(true)
+            if(userData.email) {
+                await fetch('api/order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({user_details: userData, product_details: cartItems, subtotal: subTotal, tax: tax, total: total})
+                })
+                .then(res => res.json())
+                .then(result => {
+                    setLoading(false)
+                    clearCart()
+                    router.push('/profile')
+                })
+            }
+            else {
+                setLoading(false)
+                router.push('/login')
+            }
         }
     }
     return (
@@ -81,8 +87,8 @@ const CartSidebar = ({ cart }) => {
                                     <Button withBck={false} clickFunc={() => router.push('/cart')} classAdd='!w-full'>
                                         View Cart
                                     </Button>
-                                    <Button withBck={true} clickFunc={checkout} classAdd='!w-full'>
-                                        CheckOut
+                                    <Button withBck={true} clickFunc={checkout} classAdd={`!w-full ${loading && 'cursor-not-allowed'}`}>
+                                        {loading ? '.....' : 'CheckOut'}
                                     </Button>
                                 </div>
                             </div>

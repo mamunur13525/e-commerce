@@ -22,7 +22,8 @@ export default function Account({ css }) {
             placeholder: "First Name",
             title: 'First Name',
             type: 'text',
-            required: true
+            required: true,
+            disabled: true
         },
         {
             id: 2,
@@ -30,7 +31,8 @@ export default function Account({ css }) {
             placeholder: "LastName",
             title: 'Last Name',
             type: 'text',
-            required: true
+            required: true,
+            disabled: true
         },
         {
             id: 10,
@@ -39,6 +41,7 @@ export default function Account({ css }) {
             title: 'Full Name',
             type: 'text',
             required: true,
+            disabled: true,
             disabled: true
         },
         {
@@ -85,7 +88,7 @@ export default function Account({ css }) {
                 <h1 className="text-2xl font-semibold">Account Details</h1>
                 <div className="flex justify-between flex-wrap">
                     {
-                        userDetails.map(userDetail => <LabelInput css="lg:w-[48%] w-full" inputCss="w-full text-slate-600" labelCss="mt-2" id={userDetail.id} key={userDetail.id} name={userDetail.name} placeholder={userDetail.placeholder} title={userDetail.title} type={userDetail.type} value={formData[userDetail.name]} onChange={fieldValue} />)
+                        userDetails.map(userDetail => <LabelInput css="lg:w-[48%] w-full" inputCss="w-full text-slate-600" labelCss="mt-2" id={userDetail.id} key={userDetail.id} name={userDetail.name} placeholder={userDetail.placeholder} title={userDetail.title} type={userDetail.type} value={formData[userDetail.name]} onChange={fieldValue} disabled={userDetail.disabled || false} />)
                     }
                 </div>
                 <label className="mt-2 block text-md" htmlFor="bio">Bio</label>
