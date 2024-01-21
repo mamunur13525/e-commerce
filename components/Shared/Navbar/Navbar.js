@@ -12,7 +12,7 @@ import { UserData, cartStore } from "../../../store/createStore";
 import CartSidebar from "../Cart/CartSidebar";
 import Dropdown from "../Dropdown/Dropdown";
 import SearchGlobal from "../SearchGlobal/SearchGlobal";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 let categoryFoods = [
   {
@@ -470,6 +470,13 @@ const DropDownItems = ({
 const NavItemAccordion = ({ setShowNavs }) => {
   const [showAccordion, setShowAccordion] = useState(null);
   const router = useRouter();
+  const {data: session, sessionStatus} = useSession()
+
+  const signOutHandler = () => {
+    localStorage.setItem('user', null)
+    signOut()
+  }
+
   let data = [
     {
       id: 0,
@@ -555,6 +562,23 @@ const NavItemAccordion = ({ setShowNavs }) => {
             </ul>
           </div>
         ))}
+        <div className="px-5">
+          {
+            session?.user?.email && <div onClick={() => router.push('/profile')} className="flex justify-between gap-4 items-center cursor-pointer border-b border-white py-4 text-xl font-medium">
+              Profile
+            </div>
+          }
+          {
+            session?.user?.email && <div onClick={signOutHandler} className="flex justify-between gap-4 items-center cursor-pointer border-b border-white py-4 text-xl font-medium">
+              Sign out
+            </div>
+          }
+          {
+            !session?.user?.email && <div onClick={() => router.push('/login')} className="flex justify-between gap-4 items-center cursor-pointer border-b border-white py-4 text-xl font-medium">
+              Sign in
+            </div>
+          }
+        </div>
     </div>
   );
 };
