@@ -4,6 +4,7 @@ import { BsStar, BsStarFill } from 'react-icons/bs';
 import { GoSearch } from 'react-icons/go';
 import { itemLists } from '../../../FakeData/FakeData';
 import debounce from 'lodash.debounce';
+import toast from 'react-hot-toast';
 
 const products = [
     {
@@ -76,11 +77,16 @@ const SearchGlobal = ({ showingSearch, setShowingSearch }) => {
                 })
                 .then(res => res.json())
                 .then(result => {
-                    setSearchedProducts(result)
-                    setLoading(false)
+                    if (!result.error) {
+                        setSearchedProducts(result)
+                        setLoading(false)
+                    }
+                    else {
+                        toast.error(result.error || 'Something went wrong.')
+                    }
                 })
             } catch (error) {
-                alert('Something went wrong.')
+                toast.error(error.message)
                 setLoading(false)
             }
         }

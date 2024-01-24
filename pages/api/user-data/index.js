@@ -5,14 +5,18 @@ export default async function POST(req, res) {
     const {email} = req.body
 
     await connectMongoDB();
-    const userData = await User.findOne({email})
+    try {
+        const userData = await User.findOne({email})
     
-    if(userData?.email) {
-        const newData = {...userData._doc}
-        delete newData.password
-        res.status(200).json(newData)
-    }
-    else {
-        res.status(400).json({error: 'User data could not be loaded. Please reload the page.'})
+        if(userData?.email) {
+            const newData = {...userData._doc}
+            delete newData.password
+            return res.status(200).json(newData || {})
+        }
+        else {
+            return res.status(500).json({error: 'Internal server error'})
+        }
+    } catch (error) {
+        return res.status(500).json({message: error || 'Internal server error'})
     }
 }

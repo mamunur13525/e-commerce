@@ -7,18 +7,22 @@ export default async function POST(req, res) {
 
     await connectMongoDB()
 
-    const products = await Product.find().sort({updatedAt:-1})
-    const categoryProducts = products.filter(product => product.category === category)
-    const extraProducts = products.filter(product => product.category !== category)
-    const allProducts = [...categoryProducts, ...extraProducts]
-    const filteredProducts = allProducts.slice(offset, offset + limit)
-    let allLoaded = false
-    if(filteredProducts.length < 10) {
-        allLoaded = true
-    }
-    else {
-        allLoaded = false
-    }
+    try {
+        const products = await Product.find().sort({updatedAt:-1})
+        const categoryProducts = products.filter(product => product.category === category)
+        const extraProducts = products.filter(product => product.category !== category)
+        const allProducts = [...categoryProducts, ...extraProducts]
+        const filteredProducts = allProducts.slice(offset, offset + limit)
+        let allLoaded = false
+        if(filteredProducts.length < 10) {
+            allLoaded = true
+        }
+        else {
+            allLoaded = false
+        }
 
-    res.send({data: filteredProducts, allLoaded})
+        return res.send({data: filteredProducts || [], allLoaded})
+    } catch (error) {
+        return res.status(500).json({message: error || 'Internal server error'})
+    }
 }

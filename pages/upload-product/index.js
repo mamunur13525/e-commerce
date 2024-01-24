@@ -3,6 +3,7 @@ import Footer from "../../components/Shared/Footer/Footer";
 import FlotingInput from '../../components/Shared/InputFeild/FlotingInput'
 import ManualSelect from "../../components/Shared/SelectList/ManualSelect";
 import ImageUpload from "../../components/Shared/ImageUpload/ImageUpload";
+import toast from "react-hot-toast";
 
 
 const selectData = [
@@ -63,18 +64,22 @@ export default function UploadProduct() {
         if(formData.item_name && formData.description && formData.base_price && formData.quantity && formData.weight_category && formData.rating && formData.category && formData.discount && formData.currency) {
             if(mainImage && nestedImage) {
                 const newCollectedData = {...formData, item_img: mainImage, nestedImages: nestedImage}
-                await fetch('api/product-upload', {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(newCollectedData)
-                })
-                .then(res => res.json())
-                .then(result => {
-                    console.log(result)
-                    alert('Check Console')
-                })
+                try {
+                    await fetch('/api/product-upload', {
+                        method: 'POST',
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(newCollectedData)
+                    })
+                    .then(res => res.json())
+                    .then(result => {
+                        console.log(result)
+                        toast.success('Product uploaded successfully. check console.')
+                    })
+                } catch (error) {
+                    toast.error(error.message)
+                }
             }
             else {
                 alert('Please select Images')

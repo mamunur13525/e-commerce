@@ -31,28 +31,7 @@ const OrderDetails = () => {
 
     const checkout = async (e) => {
         e.preventDefault()
-        if(!loading) {
-            setLoading(true)
-            if(userData.email) {
-                await fetch('api/order', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({user_details: userData, product_details: allCartItems, subtotal: subTotal, tax: tax, total: total})
-                })
-                .then(res => res.json())
-                .then(result => {
-                    setLoading(false)
-                    clearCart()
-                    router.push('/profile')
-                })
-            }
-            else {
-                setLoading(false)
-                router.push('/login')
-            }
-        }
+        router.push('/checkout')
     }
 
     return (

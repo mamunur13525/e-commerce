@@ -10,9 +10,12 @@ export default async function POST(req, res) {
     delete data._id
 
     await connectMongoDB()
-    const doc = await User.findOneAndUpdate({_id: uid}, {...data}, {
-        returnOriginal: false
-    });
-    console.log(doc)
-    res.send(doc)
+    try {
+        const doc = await User.findOneAndUpdate({_id: uid}, {...data}, {
+            returnOriginal: false
+        });
+        return res.send(doc)
+    } catch (error) {
+        return res.status(500).json({message: error || 'Internal server error'})
+    }
 }

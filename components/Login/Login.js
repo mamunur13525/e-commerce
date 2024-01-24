@@ -7,6 +7,7 @@ import Button from '../Shared/Button';
 import FlotingInput from '../Shared/InputFeild/FlotingInput';
 import { FaGoogle } from "react-icons/fa";
 import { signIn, useSession } from 'next-auth/react';
+import toast from 'react-hot-toast';
 
 const Login = () => {
     const router = useRouter();
@@ -78,37 +79,11 @@ export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType }) => 
     const onSubmit = async (data) => {
         if(apiType === 'signin') {
             setError('')
-            await fetch('api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(res => res.json())
-            .then(result => {
-                if(result.error) {
-                    setError(result.error)
-                }
-                else {
-                    setError('')
-                    signIn(`credentials`, {name: result.name, email: result.email, redirect: false})
-                    if(prevPath) {
-                        router.push(prevPath)
-                    }
-                    else {
-                        router.push('/profile')
-                    }
-                }
-            })
-        }
-        else if (apiType === 'register') {
-            if(formData.password === formData.confirm_password) {
-                setError('')
-                await fetch('api/register', {
+            try {
+                await fetch('/api/login', {
                     method: 'POST',
                     headers: {
-                        "Content-Type": "application/json"
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(formData)
                 })
@@ -128,6 +103,42 @@ export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType }) => 
                         }
                     }
                 })
+            } catch (error) {
+                setError(error.message)
+                toast.error(error.message)
+            }
+        }
+        else if (apiType === 'register') {
+            if(formData.password === formData.confirm_password) {
+                setError('')
+                try {
+                    await fetch('/api/register', {
+                        method: 'POST',
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                    .then(res => res.json())
+                    .then(result => {
+                        if(result.error) {
+                            setError(result.error)
+                        }
+                        else {
+                            setError('')
+                            signIn(`credentials`, {name: result.name, email: result.email, redirect: false})
+                            if(prevPath) {
+                                router.push(prevPath)
+                            }
+                            else {
+                                router.push('/profile')
+                            }
+                        }
+                    })
+                } catch (error) {
+                    setError(error.message)
+                    toast.error(error.message)
+                }
             }
             else {
                 setError('Password did not match.')

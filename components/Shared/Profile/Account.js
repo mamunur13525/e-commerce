@@ -1,6 +1,7 @@
 import LabelInput from "../InputFeild/LabelInput"
 import { UserData } from "../../../store/createStore"
 import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
 
 export default function Account({ css }) {
     const userData = UserData((state) => (state.data))
@@ -71,7 +72,7 @@ export default function Account({ css }) {
     const updateHandler = (e) => {
         e.preventDefault()
         try {
-            fetch('api/modify-user', {
+            fetch('/api/modify-user', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -79,7 +80,7 @@ export default function Account({ css }) {
                 body: JSON.stringify(formData)
             })
         } catch (error) {
-            alert('Something went wrong.')
+            toast.error(error.message)
         }
     }
     return (

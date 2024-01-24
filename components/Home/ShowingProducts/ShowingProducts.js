@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Button from '../../Shared/Button';
 import ProductLists from '../../Shared/ProductLists/ProductLists';
+import toast from 'react-hot-toast';
 
 const ShowingProducts = ({ classAdd = '' }) => {
     const [selectedCategory, setSelectedCategory] = useState('All')
@@ -32,7 +33,7 @@ const ShowingProducts = ({ classAdd = '' }) => {
         setLoading(true)
         setAllLoaded(false)
         try {
-            fetch('api/products-data', {
+            fetch('/api/products-data', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -41,7 +42,10 @@ const ShowingProducts = ({ classAdd = '' }) => {
             })
             .then(res => res.json())
             .then(result => {
-                if(!result.error) {
+                if(result.error) {
+                    toast.error(result.error || 'Something went wrong.')
+                }
+                else {
                     if(productsData === null) {
                         setProductsData(result.data)
                     }
@@ -53,7 +57,7 @@ const ShowingProducts = ({ classAdd = '' }) => {
                 }
             })
         } catch (error) {
-            alert('Something went wrong while loading data. Please reload the page.')
+            toast.error(error.message)
         }
     }, [selectedCategory, offset])
 

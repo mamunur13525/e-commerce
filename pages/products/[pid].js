@@ -9,6 +9,7 @@ import { Product } from '../../components/Shared/ProductLists/ProductLists';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Spinner from '../../components/Shared/Loader/Spinner';
+import toast from 'react-hot-toast';
 
 
 
@@ -40,7 +41,6 @@ export default function ProductWithId({productData, pid, similarProductsData, al
     const [offset, setOffset] = useState(0)
     const [loadMore, setLoadMore] = useState(false)
     const [allLoaded, setAllLoaded]= useState(primaryAllLoaded || false)
-    console.log(router)
 
     useEffect(() => {
         if(similarProductsData) {
@@ -70,14 +70,18 @@ export default function ProductWithId({productData, pid, similarProductsData, al
                 })
                 .then(res => res.json())
                 .then( result => {
-                    setSimilarProducts([...similarProducts, ...result.data])
-                    setAllLoaded(result.allLoaded)
-                    setOffset(newOffset)
-                    setLoadMore(false)
+                    if (!result.error) {
+                        setSimilarProducts([...similarProducts, ...result.data])
+                        setAllLoaded(result.allLoaded)
+                        setOffset(newOffset)
+                        setLoadMore(false)
+                    } else {
+                        toast.error(result.error || 'Something went wrong.')
+                    }
                 })
             } catch (error) {
                 setLoadMore(false)
-                alert('Something went wrong.')
+                toast.error(error.message)
             }
         }
     }

@@ -1,16 +1,20 @@
 import mongoose, { models } from "mongoose"
 
 const orderSchema = new mongoose.Schema({
-    user_details: {
+    user: {
         type: Object,
         required: true,
+    },
+    contact: {
+        type: Object,
+        required: true
     },
     status: {
         type: String,
         required: true,
         default: 'Pending',
     },
-    product_details: {
+    products: {
         type: Array,
         required: true,
     },

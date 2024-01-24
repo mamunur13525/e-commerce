@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { UserData } from "../../../store/createStore"
 import ShowOrder from "./ShowOrder"
+import toast from "react-hot-toast"
 
 export default function Orders({css}) {
     const userData = UserData((state) => (state.data))
@@ -21,12 +22,17 @@ export default function Orders({css}) {
             })
             .then(res => res.json())
             .then(result => {
-                setLoading(false)
-                setOrderData(result)
+                if(result.error) {
+                    toast.error(result.error || 'Something went wrong.')
+                }
+                else {
+                    setLoading(false)
+                    setOrderData(result)
+                }
             })
         } catch (error) {
             setLoading(false)
-            console.log(error.message)
+            toast.error(error.message)
         }
     }, [userData.orders])
 

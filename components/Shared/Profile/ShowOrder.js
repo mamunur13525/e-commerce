@@ -4,7 +4,7 @@ import { FaMinus, FaPlus } from "react-icons/fa"
 import SingleOrderShow from "./SingleOrderShow"
 
 export default function ShowOrder({data, orderId, setOrderId}) {
-    const { _id, user_details, product_details, total, subtotal, tax, status, createdAt } = data
+    const { _id, user, products, total, subtotal, tax, status, createdAt } = data
     const [date, setDate] = useState('')
     
     useEffect(() => {
@@ -33,11 +33,11 @@ export default function ShowOrder({data, orderId, setOrderId}) {
             <div className={`bg-green-200 grid grid-rows-[0fr] duration-500 ${orderId === _id && 'grid-rows-[1fr]'}`}>
                 <div className="overflow-hidden">
                     <div className="p-2 bg-green-400 text-white flex justify-between">
-                        <h1>Product Count: {product_details.length}</h1>
-                        <h1>Total: {product_details[0].currency === 'taka' ? '৳' : '$'}{total}</h1>
+                        <h1>Product Count: {products.length}</h1>
+                        <h1>Total: {products[0].currency === 'taka' ? '৳' : '$'}{total}</h1>
                     </div>
                     {
-                        product_details.map(product => <SingleOrderShow key={product._id} data={product} />)
+                        products.map(product => <SingleOrderShow key={product._id} data={product} />)
                     }
                 </div>
             </div>

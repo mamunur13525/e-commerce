@@ -33,28 +33,7 @@ const CartSidebar = ({ cart }) => {
 
     const checkout = async (e) => {
         e.preventDefault()
-        if(!loading) {
-            setLoading(true)
-            if(userData.email) {
-                await fetch('api/order', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({user_details: userData, product_details: cartItems, subtotal: subTotal, tax: tax, total: total})
-                })
-                .then(res => res.json())
-                .then(result => {
-                    setLoading(false)
-                    clearCart()
-                    router.push('/profile')
-                })
-            }
-            else {
-                setLoading(false)
-                router.push('/login')
-            }
-        }
+        router.push('/checkout')
     }
     return (
         <div className={`${cartShow} transition-transform duration-500 shadow-xl border-l fixed right-0 top-0  h-full z-[125] w-96  pt-0 bg-white`}>

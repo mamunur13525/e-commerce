@@ -8,10 +8,15 @@ export default async function POST(req, res) {
 
     await connectMongoDB()
 
-    const orders = await Order.find({_id: { $in: body }}).sort({createdAt:-1})
+    try {
+        const orders = await Order.find({_id: { $in: body }}).sort({createdAt:-1})
+        
     
-
-    if(orders) {
-        res.send(orders)
+        if(orders && orders.length) {
+            return res.send(orders)
+        }
+        return res.send({error: 'Order not found'})
+    } catch (error) {
+        res.send({message: error.message})
     }
 }

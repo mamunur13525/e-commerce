@@ -13,6 +13,7 @@ import CartSidebar from "../Cart/CartSidebar";
 import Dropdown from "../Dropdown/Dropdown";
 import SearchGlobal from "../SearchGlobal/SearchGlobal";
 import { signOut, useSession } from "next-auth/react";
+import toast from "react-hot-toast";
 
 let categoryFoods = [
   {
@@ -207,22 +208,26 @@ const Navbar = () => {
 
   useEffect(() => {
       if(session?.user?.email && session.user.email !== userData.email) {
-          fetch('api/user-data', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({email: session.user.email})
-          })
-          .then(res => res.json())
-          .then(userResult => {
-              if(userResult?.error) {
-                  alert(userResult.error)
-              }
-              else {
-                  setUserData(userResult)
-              }
-          })
+          try {
+            fetch('/api/user-data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({email: session.user.email})
+            })
+            .then(res => res.json())
+            .then(userResult => {
+                if(userResult?.error) {
+                    toast.error(userResult.error || 'Something went wrong.')
+                }
+                else {
+                    setUserData(userResult)
+                }
+            })
+          } catch (error) {
+            toast.error(error.message)
+          }
       }
   }, [session?.user?.email])
   return (

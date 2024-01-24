@@ -8,6 +8,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import Orders from '../../components/Shared/Profile/Orders';
 import { UserData } from '../../store/createStore';
+import toast from 'react-hot-toast';
 
 
 export default function Profile() {
@@ -27,23 +28,26 @@ export default function Profile() {
 
     useEffect(() => {
         if(sessionStatus === 'authenticated') {
-            fetch('api/user-data', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({email: session.user.email})
-            })
-            .then(res => res.json())
-            .then(userResult => {
-                console.log(userResult)
-                if(userResult?.error) {
-                    alert(userResult.error)
-                }
-                else {
-                    setUserData(userResult)
-                }
-            })
+            try {
+                fetch('/api/user-data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({email: session.user.email})
+                })
+                .then(res => res.json())
+                .then(userResult => {
+                    if(userResult?.error) {
+                        toast.error(result.error || 'Something went wrong.')
+                    }
+                    else {
+                        setUserData(userResult)
+                    }
+                })
+            } catch (error) {
+                toast.error(error.message)
+            }
         }
     }, [sessionStatus])
     return (

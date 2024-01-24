@@ -12,6 +12,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import Spinner from '../../Loader/Spinner';
 import { useRouter } from 'next/router';
 import { queryStore } from '../../../../store/createStore';
+import toast from 'react-hot-toast';
 
 const ShopContent = () => {
     const router = useRouter()
@@ -105,13 +106,17 @@ const ShopContent = () => {
             })
             .then(res => res.json())
             .then(result => {
-                setProductsData([...productsData, ...result.data])
-                setAllLoaded(result.allLoaded)
-                setMaxPrice(result.maxPrice)
-                setLoading(false)
+                if (!result.error) {
+                    setProductsData([...productsData, ...result.data])
+                    setAllLoaded(result.allLoaded)
+                    setMaxPrice(result.maxPrice)
+                    setLoading(false)
+                } else {
+                    toast.error(result.error || 'Something went wrong.')
+                }
             })
         } catch (error) {
-            alert(error.message || 'Something went wrong. Please reload the page.')
+            toast.error(error.message)
         }
     }, [offset, reloadData, searchValue])
 
