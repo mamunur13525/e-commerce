@@ -11,6 +11,7 @@ const updateQuantity = (items, proId, quantity) => {
 
 const cartStore = create(devtools((set) => ({
     items: [],
+    setCartItems: (newItems) => set((state) => ({ items: newItems })),
     addToCart: (item, quantity = 1) => {
         const newItem = {...item}
         newItem.ordered_quantity = quantity

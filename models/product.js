@@ -1,7 +1,7 @@
 import mongoose, { models } from "mongoose"
 
 const productSchema = new mongoose.Schema({
-    item_name: {
+    name: {
         type: String,
         required: true,
     },
@@ -9,20 +9,20 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    base_price: {
-        type: String,
+    price: {
+        type: Number,
         required: true
     },
     quantity: {
-        type: String,
+        type: Number,
         required: true
     },
-    weight_category: {
+    weight: {
         type: String,
         required: true
     },
     rating: {
-        type: String,
+        type: Number,
         required: true
     },
     category: {
@@ -30,18 +30,18 @@ const productSchema = new mongoose.Schema({
         required: true
     },
     discount: {
-        type: String,
+        type: Number,
         required: true
     },
     currency: {
         type: String,
         required: true
     },
-    item_img: {
-        type: String,
+    image: {
+        type: Object,
         required: true
     },
-    nestedImages: {
+    images: {
         type: Array,
         required: true
     }

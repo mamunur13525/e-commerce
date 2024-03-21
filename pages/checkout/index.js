@@ -14,7 +14,12 @@ import { useRouter } from 'next/router'
 import ReactToPrint from 'react-to-print';
 import React from 'react';
 import toast from 'react-hot-toast'
+import { loadStripe } from '@stripe/stripe-js'
 
+const stripePromise = loadStripe(
+    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+  );
+  
 export default function Index() {
     const { register, setValue, handleSubmit, formState: { errors } } = useForm();
     const [openModal, setOpenModal] = useState(false);
@@ -38,25 +43,26 @@ export default function Index() {
                 setLoading(true)
                 if(userData.email) {
                     try {
-                        await fetch('/api/order', {
+                        const order_data = {user: userData, products: cartItems, contact: newData, subtotal: subTotal, tax: tax, total: total}
+                        const stripe = await stripePromise;
+                        const response = await fetch('/api/checkout', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
                             },
-                            body: JSON.stringify({user: userData, products: cartItems, contact: newData, subtotal: subTotal, tax: tax, total: total})
+                            body: JSON.stringify({items: cartItems, order: order_data})
                         })
-                        .then(res => res.json())
-                        .then(result => {
-                            if (!result.error) {
-                                setLoading(false)
-                                clearCart()
-                                router.push('/profile')
-                            } else {
-                                toast.error(result.error || 'Something went wrong.')
-                            }
-                        })
+                        const session = await response.json()
+                        console.log(session)
+                        session.error ? toast.error(session.error) :
+                        clearCart()
+                        await stripe.redirectToCheckout({
+                            sessionId: session.id,
+                        });
+                        setLoading(false)
                     } catch (error) {
                         toast.error(error.message)
+                        setLoading(false)
                     }
                 }
                 else {
@@ -69,7 +75,7 @@ export default function Index() {
 
     // order
     useEffect(() => {
-        let subt = cartItems.length ? cartItems.map(itm => (itm.base_price - (itm.base_price / itm.discount)) * itm.ordered_quantity).reduce((prev, curr) => prev + curr) : 0
+        let subt = cartItems.length ? cartItems.map(itm => (itm.price - (itm.price / itm.discount)) * itm.ordered_quantity).reduce((prev, curr) => prev + curr) : 0
         setSubTotal(parseFloat(subt).toFixed(2))
         setTax((parseFloat((5 * subt) / 100)).toFixed(2))
         setTotal(parseFloat(subt + ((5 * subt) / 100)).toFixed(2))

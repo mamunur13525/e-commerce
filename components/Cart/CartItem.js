@@ -30,8 +30,8 @@ const CartItem = ({ cart, num }) => {
                 <div className='w-48  whitespace-nowrap'>
                     <div className='w-48 font-medium text-center text-slate-800'>
                         {
-                            cart?.item_img ?
-                                <img className="w-48" src={cart?.item_img} alt="image" />
+                            cart?.image ?
+                                <img className="w-48" src={cart?.image.url} alt="product" />
                                 :
                                 <span className='text-base'> No Image</span>
                         }
@@ -41,19 +41,19 @@ const CartItem = ({ cart, num }) => {
                     <div className='text-left px-2 py-6 flex flex-col justify-between h-full'>
                         <div>
                             <div className='text-xl capitalize inline-flex font-medium  text-green-600 rounded-full text-left 5'>
-                                {cart?.item_name || '--'}
+                                {cart?.name || '--'}
                             </div>
                             <div className='text-left text-base my-2 '>
-                                <span class="text-gray-500 line-through tracking-tighter">
-                                    {cart?.currency === 'taka' ? '৳' : '$'}{cart?.base_price || '--'}
+                                <span className="text-gray-500 line-through tracking-tighter">
+                                    {cart?.currency === 'bdt' ? '৳' : '$'}{cart?.price || '--'}
                                 </span>
-                                <span class="text-green-600 text-xl font-medium tracking-tight ml-2">
-                                    {cart?.currency === 'taka' ? '৳' : '$'}{cart?.base_price - (cart?.base_price / cart?.discount)}
+                                <span className="text-green-600 text-xl font-medium tracking-tight ml-2">
+                                    {cart?.currency === 'bdt' ? '৳' : '$'}{cart?.price - (cart?.price / cart?.discount)}
                                 </span>
                             </div>
                         </div>
-                        <div>Total: <span class="text-green-600 text-xl font-medium tracking-tight">
-                                {cart?.currency === 'taka' ? '৳' : '$'}{(cart?.base_price - (cart?.base_price / cart?.discount)) * cart?.ordered_quantity}
+                        <div>Total: <span className="text-green-600 text-xl font-medium tracking-tight">
+                                {cart?.currency === 'bdt' ? '৳' : '$'}{(cart?.price - (cart?.price / cart?.discount)) * cart?.ordered_quantity}
                             </span>
                         </div>
                         <div className='text-left text-sm  flex gap-1 font-normal items-center'><AiOutlineCheck className='text-xl text-green-600 ' /> In Stock</div>
@@ -79,7 +79,7 @@ const CartItem = ({ cart, num }) => {
                 <div className='w-[12rem] whitespace-nowrap '>
                     <div className='flex justify-center'>
                         <div className='text-center uppercase font-semibold text-emerald-600 bg-green-100 py-2 rounded-full w-[5rem]'>
-                            {cart?.weight_category || '--'}
+                            {cart?.weight || '--'}
                         </div>
                     </div>
                 </div>

@@ -9,10 +9,29 @@ const orderSchema = new mongoose.Schema({
         type: Object,
         required: true
     },
-    status: {
+    payment_status: {
         type: String,
         required: true,
-        default: 'Pending',
+        default: 'unpaid',
+    },
+    order_id: {
+        type: String,
+        required: true,
+        default: Math.floor(Math.random()*1000000) * Math.floor(Math.random()*1000000)
+    },
+    stripe_id: {
+        type: String,
+        required: true
+    },
+    delivery_status: {
+        type: String,
+        required: true,
+        default: 'order placed'
+    },
+    payment_url: {
+        type: String,
+        required: true,
+        default: null
     },
     products: {
         type: Array,

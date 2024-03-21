@@ -95,7 +95,7 @@ export const Product = ({ item, productClass = '' }) => {
     }
 
     useEffect(() => {
-        setMainImageShow(item.item_img)
+        setMainImageShow(item.image)
     }, [])
 
 
@@ -114,13 +114,13 @@ export const Product = ({ item, productClass = '' }) => {
                             <div className='h-[265px] scale-110 flex justify-center '>
                                 {
                                     mainImageShow !== null &&
-                                    <img className=' h-full' src={mainImageShow || ''} alt="product_image" />
+                                    <img className=' h-full' src={mainImageShow.url || ''} alt="product_image" />
                                 }
                             </div>
                         </div>
                         <div className='w-[95%] h-[30%]'>
                             {
-                                Array.isArray(item.nestedImages) &&
+                                Array.isArray(item.images) &&
                                 <SliderCarousel
                                     arrowSize={'3rem'}
                                     speed={500}
@@ -131,9 +131,9 @@ export const Product = ({ item, productClass = '' }) => {
                                     arrowMove='.5rem'
                                 >
                                     {
-                                        item.nestedImages.map((img, ind) => (
+                                        item.images.map((img, ind) => (
                                             <div key={ind} className='w-1/4 h-fit cursor-pointer'>
-                                                <img onClick={() => setMainImageShow(img)} className='h-full' src={img} alt="product  image" />
+                                                <img onClick={() => setMainImageShow(img)} className='h-full' src={img.url} alt="product  image" />
                                             </div>
                                         ))
                                     }
@@ -143,9 +143,9 @@ export const Product = ({ item, productClass = '' }) => {
                     </div>
                     <div className='pl-5 pr-1 w-full md:w-1/2 flex items-center'>
                         <div className='py-5'>
-                            <h1 className='hover:text-green-600 text-4xl mb-2 leading-[50px] pb-5 uppercase font-normal cursor-pointer'>{item?.item_name}</h1>
+                            <h1 className='hover:text-green-600 text-4xl mb-2 leading-[50px] pb-5 uppercase font-normal cursor-pointer'>{item?.name}</h1>
                             <hr className='bg-gray-300' />
-                            <p className='my-5'><span className='inline-block text-3xl font-normal line-through text-gray-600 align-bottom mr-2'>{item?.currency === 'usd' ? '$' : '৳'}{item?.base_price}</span> <span className='text-green-700 inline-block align-bottom m-0 text-4xl'>{item?.currency === 'usd' ? '$' : '৳'}{Math.round(item?.base_price - (item?.base_price / item?.discount))}</span></p>
+                            <p className='my-5'><span className='inline-block text-3xl font-normal line-through text-gray-600 align-bottom mr-2'>{item?.currency === 'usd' ? '$' : '৳'}{item?.price}</span> <span className='text-green-700 inline-block align-bottom m-0 text-4xl'>{item?.currency === 'usd' ? '$' : '৳'}{Math.round(item?.price - (item?.price / item?.discount))}</span></p>
                             <p className='text-gray-700 mt-5 mb-5'>{item?.description}</p>
                             <div className='flex justify-between gap-3'>
                                 <div className='w-1/2'>
@@ -170,12 +170,12 @@ export const Product = ({ item, productClass = '' }) => {
                 </div>
             </CustomModal>
             <div onClick={() => router.push(`/products/${item?._id}`)}>
-                <img className='w-full group-hover:scale-110 transition-transform duration-300' src={item?.item_img} alt="prduct_image" />
+                <img className='w-full group-hover:scale-110 transition-transform duration-300' src={item?.image.url} alt="prduct_image" />
                 <div className='absolute bottom-4 h-12  w-full px-4'>
-                    <h1 className='text-xl font-medium group-hover:text-green-600 transition-all'>{item?.item_name}</h1>
+                    <h1 className='text-xl font-medium group-hover:text-green-600 transition-all'>{item?.name}</h1>
                     <div className='flex gap-1 items-end'>
-                        <span className='text-gray-500 line-through tracking-tighter'>{item?.currency === 'usd' ? '$' : '৳'}{item?.base_price}</span>
-                        <span className='text-green-600 text-xl font-medium tracking-tight'>{item?.currency === 'usd' ? '$' : '৳'}{Math.round(item?.base_price - (item?.base_price / item?.discount))}</span>
+                        <span className='text-gray-500 line-through tracking-tighter'>{item?.currency === 'usd' ? '$' : '৳'}{item?.price}</span>
+                        <span className='text-green-600 text-xl font-medium tracking-tight'>{item?.currency === 'usd' ? '$' : '৳'}{Math.round(item?.price - (item?.price / item?.discount))}</span>
                     </div>
                 </div>
             </div>

@@ -19,7 +19,7 @@ const OrderDetails = () => {
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        let subt = allCartItems.length ? allCartItems.map(itm => (itm.base_price - (itm.base_price / itm.discount)) * itm.ordered_quantity).reduce((prev, curr) => prev + curr) : 0
+        let subt = allCartItems.length ? allCartItems.map(itm => (itm.price - (itm.price / itm.discount)) * itm.ordered_quantity).reduce((prev, curr) => prev + curr) : 0
         setSubTotal(parseFloat(subt).toFixed(2))
         setTax((parseFloat((5 * subt) / 100)).toFixed(2))
         setTotal(parseFloat(subt + ((5 * subt) / 100)).toFixed(2))
@@ -53,7 +53,7 @@ const OrderDetails = () => {
                                 Subtotal
                             </div>
                             <div className="lg:px-0 lg:py-0 m-2 lg:text-lg font-medium text-center text-gray-900">
-                                {allCartItems[0]?.currency === 'taka' ? '৳' : '$'} {subTotal}
+                                {allCartItems[0]?.currency === 'bdt' ? '৳' : '$'} {subTotal}
                             </div>
                         </div>
                         <div className="flex justify-between pt-0 border-b">
@@ -61,7 +61,7 @@ const OrderDetails = () => {
                             <CouponApply couponCode={couponCode} setCouponCode={setCouponCode} />
 
                             <div className="lg:px-0 lg:py-0 m-2 lg:text-lg font-medium text-center text-green-700">
-                                {allCartItems[0]?.currency === 'taka' ? '৳' : '$'} {(couponCode * subTotal) / 100}
+                                {allCartItems[0]?.currency === 'bdt' ? '৳' : '$'} {(couponCode * subTotal) / 100}
                             </div>
                         </div>
                         {/* <div className="flex justify-between pt-0 border-b">
@@ -69,7 +69,7 @@ const OrderDetails = () => {
                                 New Subtotals
                             </div>
                             <div className="lg:px-0 lg:py-0 m-2 lg:text-lg font-medium text-center text-gray-900">
-                                {allCartItems[0]?.currency === 'taka' ? '৳' : '$'} {newSubTotal.toFixed(2)}
+                                {allCartItems[0]?.currency === 'bdt' ? '৳' : '$'} {newSubTotal.toFixed(2)}
                             </div>
                         </div> */}
                         <div className="flex justify-between pt-0 border-b">
@@ -77,7 +77,7 @@ const OrderDetails = () => {
                                 Tax
                             </div>
                             <div className="lg:px-0 lg:py-0 m-2 lg:text-lg font-medium text-center text-gray-900">
-                                {allCartItems[0]?.currency === 'taka' ? '৳' : '$'} {tax}
+                                {allCartItems[0]?.currency === 'bdt' ? '৳' : '$'} {tax}
                             </div>
                         </div>
                         <div className="flex justify-between pt-0 border-b">
@@ -85,7 +85,7 @@ const OrderDetails = () => {
                                 Total
                             </div>
                             <div className="lg:px-0 lg:py-0 m-2 lg:text-lg font-medium text-center text-gray-900">
-                                {allCartItems[0]?.currency === 'taka' ? '৳' : '$'} {total}
+                                {allCartItems[0]?.currency === 'bdt' ? '৳' : '$'} {total}
                             </div>
                         </div>
                         <div className=''>

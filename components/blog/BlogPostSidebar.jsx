@@ -32,20 +32,20 @@ const BlogPostSidebar = () => {
                   <div className="w-4/12">
                     <img
                       className="group-hover:-translate-y-2 duration-300"
-                      src={item.item_img}
+                      src={item.image}
                       alt="product_image"
                     />
                   </div>
                   <div className="flex-1 flex flex-col h-full pt-2 gap-1 cursor-pointer">
                     <p className="hover:text-[#80BB01] duration-300 ">
-                      {item.item_name}
+                      {item.name}
                     </p>
                     <p className="font-medium text-lg text-black uppercase hover:text-[#80BB01] duration-300 ">
-                      {item.item_name}
+                      {item.name}
                     </p>
                     <p className="text-lg font-medium text-[#80BB01] mt-3">
-                      {item.base_price ? "$" : ""}
-                      {item.base_price}.00
+                      {item.price ? "$" : ""}
+                      {item.price}.00
                     </p>
                   </div>
                 </div>

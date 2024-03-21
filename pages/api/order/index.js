@@ -11,7 +11,7 @@ export default async function POST(req, res) {
         const response = await Order.create(body)
 
         const user = await User.findOne({email: body.user.email})
-        const orderID = response._id.toString()
+        const orderID = response.order_id
         const newUserData = {...user._doc}
         if(newUserData.orders[0]) {
             newUserData.orders = [...user.orders, orderID]
@@ -22,7 +22,7 @@ export default async function POST(req, res) {
         
         const userResponse = await User.findOneAndUpdate({email: body.user.email}, {orders: newUserData.orders})
         if(userResponse) {
-            return res.send({status: 'success'})
+            return res.send({success: true})
         }
         return res.send({error: 'Internal server error'})
     } catch (error) {

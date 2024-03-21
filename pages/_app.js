@@ -13,7 +13,27 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const setIsAnimating = useProgressStore((state) => (state.setIsAnimating));
   const router = useRouter();
   const cartItem = cartStore((state) => (state.items))
-  console.log(cartItem)
+  const setCartItems = cartStore((state) => (state.setCartItems))
+  const firstRender = useRef(false)
+  const secondRender = useRef(false)
+
+
+  // set cart items from localstorage
+  useEffect(() => {
+    setCartItems(JSON.parse(localStorage.getItem('cartItems')) || [])
+    firstRender.current = true
+  }, [])
+
+  useEffect(() => {
+    if (firstRender.current === true) {
+      if(secondRender.current === true) {
+        localStorage.setItem('cartItems', JSON.stringify(cartItem))
+      }
+      else {
+        secondRender.current = true
+      }
+    }
+  }, [cartItem])
 
   const setQuery = queryStore((state) => (state.setQuery))
   const queryRef = useRef(false)
@@ -26,7 +46,6 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   }, [router])  
 
   useEffect(() => {
-    console.log(router.asPath)
     if(router.asPath !== '/login') {
       if(router.asPath !== '/signup') {
         localStorage.setItem('path', router.asPath)

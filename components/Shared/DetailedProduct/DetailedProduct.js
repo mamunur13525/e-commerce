@@ -46,7 +46,7 @@ export default function DetailedProduct({ item, productClass = '' }) {
     }
 
     useEffect(() => {
-        setMainImageShow(item.item_img)
+        setMainImageShow(item.image)
     }, [])
 
 
@@ -55,12 +55,12 @@ export default function DetailedProduct({ item, productClass = '' }) {
     return (
         <div className='m-2 mb-3 w-full animate-waving-hand'>
             <div className='hover:shadow-lg border border-white shadow-sm hover:border-slate-100 duration-200 rounded-md bg-white w-full flex flex-col items-center p-3 sm:flex-row sm:items-start'>
-                <img onClick={() => router.push(`products/${item?._id}`)} className='w-80 sm:w-56 md:w-48 lg:w-56 cursor-pointer' src={item.item_img} alt="" />
+                <img onClick={() => router.push(`products/${item?._id}`)} className='w-80 sm:w-56 md:w-48 lg:w-56 cursor-pointer' src={item.image.url} alt="" />
                 <div className='self-start'>
-                    <h1 onClick={() => router.push(`products/${item?._id}`)} className='text-2xl font-semibold cursor-pointer inline-block'>{item.item_name}</h1>
+                    <h1 onClick={() => router.push(`products/${item?._id}`)} className='text-2xl font-semibold cursor-pointer inline-block'>{item.name}</h1>
                     <div className='flex items-end'>
-                        <p className='text-lg font-semibold text-slate-500 line-through'>${item.base_price}</p>
-                        <p className='text-2xl ml-4 font-semibold text-green-500'>${(item.base_price - (item.base_price * item.discount) / 100)}</p>
+                        <p className='text-lg font-semibold text-slate-500 line-through'>${item.price}</p>
+                        <p className='text-2xl ml-4 font-semibold text-green-500'>${(item.price - (item.price * item.discount) / 100)}</p>
                     </div>
                     <p className='text-gray-500 mt-2 text-md sm:text-sm lg:text-[1rem]'>{item.description}</p>
                     <div className='w-[96%] grid place-items-center group mt-5 mb-6'>
@@ -100,13 +100,13 @@ export default function DetailedProduct({ item, productClass = '' }) {
                             <div className='h-[265px] scale-110 flex justify-center '>
                                 {
                                     mainImageShow !== null &&
-                                    <img className=' h-full' src={mainImageShow || ''} alt="product_image" />
+                                    <img className=' h-full' src={mainImageShow.url || ''} alt="product_image" />
                                 }
                             </div>
                         </div>
                         <div className='w-[95%] h-[30%]'>
                             {
-                                Array.isArray(item.nestedImages) &&
+                                Array.isArray(item.images) &&
                                 <SliderCarousel
                                     arrowSize={'3rem'}
                                     speed={500}
@@ -117,9 +117,9 @@ export default function DetailedProduct({ item, productClass = '' }) {
                                     arrowMove='.5rem'
                                 >
                                     {
-                                        item.nestedImages.map((img, ind) => (
+                                        item.images.map((img, ind) => (
                                             <div key={ind} className='w-1/4 h-fit cursor-pointer'>
-                                                <img onClick={() => setMainImageShow(img)} className='h-full' src={img} alt="product  image" />
+                                                <img onClick={() => setMainImageShow(img.url)} className='h-full' src={img} alt="product  image" />
                                             </div>
                                         ))
                                     }
@@ -129,9 +129,9 @@ export default function DetailedProduct({ item, productClass = '' }) {
                     </div>
                     <div className='pl-5 pr-1 w-full md:w-1/2 flex items-center'>
                         <div className='py-5'>
-                            <h1 className='hover:text-green-600 text-4xl mb-2 leading-[50px] pb-5 uppercase font-normal cursor-pointer'>{item?.item_name}</h1>
+                            <h1 className='hover:text-green-600 text-4xl mb-2 leading-[50px] pb-5 uppercase font-normal cursor-pointer'>{item?.name}</h1>
                             <hr className='bg-gray-300' />
-                            <p className='my-5'><span className='inline-block text-3xl font-normal line-through text-gray-600 align-bottom mr-2'>{item?.currency === 'usd' && '$'}{item?.base_price}.00</span> <span className='text-green-700 inline-block align-bottom m-0 text-4xl'>{item?.currency === 'usd' && '$'}{item?.base_price - (item?.base_price / item?.discount)}.00</span></p>
+                            <p className='my-5'><span className='inline-block text-3xl font-normal line-through text-gray-600 align-bottom mr-2'>{item?.currency === 'usd' && '$'}{item?.price}.00</span> <span className='text-green-700 inline-block align-bottom m-0 text-4xl'>{item?.currency === 'usd' && '$'}{item?.price - (item?.price / item?.discount)}.00</span></p>
                             <p className='text-gray-700 mt-5 mb-5'>{item?.description}</p>
                             <div className='flex justify-between gap-3'>
                                 <div className='w-1/2'>

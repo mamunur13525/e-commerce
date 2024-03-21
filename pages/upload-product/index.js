@@ -16,7 +16,7 @@ const selectData = [
     {
         id: 2,
         title: "Product Weight Category",
-        name: 'weight_category',
+        name: 'weight',
         options: ['kg', 'ton']
     },
     {
@@ -29,7 +29,7 @@ const selectData = [
         id: 4,
         title: "Currency",
         name: 'currency',
-        options: ['usd', 'taka']
+        options: ['usd', 'bdt']
     }
 ]
 
@@ -61,9 +61,9 @@ export default function UploadProduct() {
 
     const productUploadHandler = async (e) => {
         e.preventDefault()
-        if(formData.item_name && formData.description && formData.base_price && formData.quantity && formData.weight_category && formData.rating && formData.category && formData.discount && formData.currency) {
+        if(formData.name && formData.description && formData.price && formData.quantity && formData.weight && formData.rating && formData.category && formData.discount && formData.currency) {
             if(mainImage && nestedImage) {
-                const newCollectedData = {...formData, item_img: mainImage, nestedImages: nestedImage}
+                const newCollectedData = {...formData, image: mainImage, images: nestedImage}
                 try {
                     await fetch('/api/product-upload', {
                         method: 'POST',
@@ -93,8 +93,8 @@ export default function UploadProduct() {
         <>  
             <div className="max-w-[1200px] m-auto pt-24 px-5 flex items-start">
                 <form onSubmit={productUploadHandler} className="w-1/2 h-auto flex flex-wrap justify-between">
-                    <FlotingInput getValue={setInputData} name="item_name" id={Math.random()} type={'text'} placeholder="Product Name" css="w-[49%]" />
-                    <FlotingInput getValue={setInputData} name="base_price" id={Math.random()} type={'number'} placeholder="Product Main Price" css="w-[49%]" />
+                    <FlotingInput getValue={setInputData} name="name" id={Math.random()} type={'text'} placeholder="Product Name" css="w-[49%]" />
+                    <FlotingInput getValue={setInputData} name="price" id={Math.random()} type={'number'} placeholder="Product Main Price" css="w-[49%]" />
                     <FlotingInput getValue={setInputData} name="discount" id={Math.random()} type={'number'} placeholder="Product Discount" css="w-[49%]" />
                     <FlotingInput getValue={setInputData} name="quantity" id={Math.random()} type={'number'} placeholder="Product Quantity" css="w-[49%]" />
                     <FlotingInput getValue={setInputData} name="description" id={Math.random()} type={'text'} placeholder="Product Description" css="w-[49%] flex" />
@@ -113,12 +113,12 @@ export default function UploadProduct() {
                 </form>
                 <div className="w-1/2 pl-10 flex">
                     {
-                        mainImage && <div className="w-1/2"><img className="w-full h-auto" src={mainImage} alt="" /></div>
+                        mainImage && <div className="w-1/2"><img className="w-full h-auto" src={mainImage.url} alt="" /></div>
                     }
                     {
                         nestedImage && <div className="w-1/2 flex flex-wrap items-center pl-5">
                             {
-                                nestedImage.map(image => <img className="w-1/2 h-auto border border-slate-200" src={image} alt="" />)
+                                nestedImage.map((image, index) => <img key={index} className="w-1/2 h-auto border border-slate-200" src={image.url} alt="producy" />)
                             }
                         </div>
                     }

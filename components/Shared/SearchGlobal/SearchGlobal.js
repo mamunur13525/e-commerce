@@ -130,18 +130,18 @@ const SearchGlobal = ({ showingSearch, setShowingSearch }) => {
 
                                 return (<li onClick={() => productClick(item._id)} key={item.id} className=' px-4 cursor-pointer my-2 py-3 text-xl hover:bg-gray-100 flex  gap-3'>
                                     <span className='w-16'>
-                                        <img className='w-full' src={item?.item_img} alt="" />
+                                        <img className='w-full' src={item?.image.url} alt="" />
                                     </span>
                                     <div className='flex flex-col'>
                                         <span className='capitalize font-medium'>
-                                            {item?.item_name}
+                                            {item?.name}
                                         </span>
                                         <span className='text-sm font-normal'>
                                             <span className='inline-block  font-normal line-through text-gray-600 align-bottom mr-2'>
-                                                {item?.currency === 'taka' ? '৳' : '$'}{item?.base_price}
+                                                {item?.currency === 'bdt' ? '৳' : '$'}{item?.price}
                                             </span>
                                             <span className='text-[#80b435] inline-block align-bottom m-0'>
-                                                {item?.currency === 'taka' ? '৳' : '$'}{Math.round(item?.base_price - (item?.base_price / item?.discount))}
+                                                {item?.currency === 'bdt' ? '৳' : '$'}{Math.round(item?.price - (item?.price / item?.discount))}
                                             </span>
                                         </span>
                                         <div className='flex gap-[1px]'>

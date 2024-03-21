@@ -10,16 +10,16 @@ export default async function POST(req, res) {
     let maxPrice = 0
     try {
         Product.find()
-        .sort({base_price:-1})
+        .sort({price:-1})
         .limit(1)
         .then(maxPriceResult => {
-            maxPrice = maxPriceResult[0].base_price
+            maxPrice = maxPriceResult[0].price
             if(filterPrice === 0) {
                 newFilterPrice = maxPrice
             }
 
             if(search) {
-                Product.find({item_name: { $regex: searchValue, $options: 'i' }})
+                Product.find({name: { $regex: searchValue, $options: 'i' }})
                 .sort({updatedAt:-1})
                 .skip(offset)
                 .limit(limit)
@@ -35,7 +35,7 @@ export default async function POST(req, res) {
                 })
             }
             else {
-                Product.find({"base_price":{"$lte":newFilterPrice}, "rating":{"$lte":filterRating}, 'category': { $in: filterCategory }})
+                Product.find({"price":{"$lte":newFilterPrice}, "rating":{"$lte":filterRating}, 'category': { $in: filterCategory }})
                 .sort({updatedAt:-1})
                 .skip(offset)
                 .limit(limit)

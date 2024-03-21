@@ -19,9 +19,9 @@ const sliderSettings = {
 };
 
 const ProductView = ({ productData }) => {
-    const [mainImageShow, setMainImageShow] = useState(productData.item_img)
-    const [newNestedImages, setNewNestedImages] = useState([productData.item_img, ...productData.nestedImages])
-    const {item_name: name, description, base_price: price, quantity, discount, rating, weight_category, currency} = productData
+    const [mainImageShow, setMainImageShow] = useState(productData.image)
+    const [newimages, setNewimages] = useState([productData.image, ...productData.images])
+    const {name: name, description, price: price, quantity, discount, rating, weight, currency} = productData
     const addToCart = cartStore((state) => (state.addToCart))
     const [newQuantity, setNewQuantity] = useState(1)
 
@@ -38,8 +38,8 @@ const ProductView = ({ productData }) => {
     }
 
     useEffect(() => {
-        setMainImageShow(productData.item_img)
-        setNewNestedImages([productData.item_img, ...productData.nestedImages])
+        setMainImageShow(productData.image)
+        setNewimages([productData.image, ...productData.images])
     }, [productData])
 
     const [ratingStar, setRatingStar] = useState([])
@@ -60,16 +60,16 @@ const ProductView = ({ productData }) => {
             <div className='flex flex-col lg:flex-row '>
                 <div className='w-full lg:w-1/2'>
                     <div className='lg:h-[40rem] relative '>
-                        <img className='w-full lg:h-full object-contain' src={mainImageShow} alt="image" />
+                        <img className='w-full lg:h-full object-contain' src={mainImageShow.url} alt="image" />
                     </div>
                     <div className='w-[95%] '>
                         {
-                            Array.isArray(newNestedImages) &&
+                            Array.isArray(newimages) &&
                             <Slider {...sliderSettings}>
                                 {
-                                    newNestedImages.map((img, ind) => (
+                                    newimages.map((img, ind) => (
                                         <div key={ind} className={`hover:border border-green-700 w-[150px] h-[150px] cursor-pointer p-1 ${mainImageShow === img ? 'border' : ''}`}>
-                                            <img onClick={() => setMainImageShow(img)} className='h-full object-cover' src={img} alt="product  image" />
+                                            <img onClick={() => setMainImageShow(img)} className='h-full object-cover' src={img.url} alt="product  image" />
                                         </div>
                                     ))
                                 }
@@ -86,9 +86,9 @@ const ProductView = ({ productData }) => {
                     </div>
                     <p className='my-5 mb-8'>
                         <span className='inline-block text-3xl font-normal line-through text-gray-600 align-bottom mr-5'>
-                            {currency === 'taka' ? '৳' : '$'}{price}.00
+                            {currency === 'bdt' ? '৳' : '$'}{price}.00
                         </span>
-                        <span className='text-[#80b435] leading-[40px] inline-block align-bottom m-0 text-4xl'>{currency === 'taka' ? '৳' : '$'}{Math.round(parseInt(price) - (parseInt(price) / parseInt(discount)))}.00
+                        <span className='text-[#80b435] leading-[40px] inline-block align-bottom m-0 text-4xl'>{currency === 'bdt' ? '৳' : '$'}{Math.round(parseInt(price) - (parseInt(price) / parseInt(discount)))}.00
                         </span>
                     </p>
                     <div className='flex flex-wrap justify-between '>

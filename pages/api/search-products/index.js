@@ -8,7 +8,7 @@ export default async function POST(req, res) {
     try {
         Product.find()
         .then(result => {
-            const searchedData = result.filter(product => product.item_name.toLowerCase().includes(searchValue.toLowerCase()))
+            const searchedData = result.filter(product => product.name.toLowerCase().includes(searchValue.toLowerCase()))
             return res.send(searchedData)
         })
         return res.send({error: 'Internal server error'})

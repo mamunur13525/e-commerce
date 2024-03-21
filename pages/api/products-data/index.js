@@ -9,10 +9,10 @@ export default async function POST(req, res) {
     let maxPrice = 0
     try {
         Product.find()
-        .sort({base_price:-1})
+        .sort({price:-1})
         .limit(1)
         .then(maxPriceResult => {
-            maxPrice = maxPriceResult[0].base_price
+            maxPrice = maxPriceResult[0].price
 
             if(category !== 'All') {
                 Product.find({'category': category})
