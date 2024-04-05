@@ -51,6 +51,11 @@ const queryStore = create(devtools((set) => ({
     setQuery: (newQuerys) => set(state => ({data: newQuerys}))
 })))
 
+const Metadata = create(devtools((set) => ({
+    data: null,
+    setMetadata: (newData) => set((state) => ({data: newData}))
+})))
+
 
 export {
     cartStore,
@@ -58,5 +63,6 @@ export {
     checkoutStore,
     useProgressStore,
     UserData,
-    queryStore
+    queryStore,
+    Metadata
 }

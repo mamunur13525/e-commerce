@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { RiHeadphoneLine } from "react-icons/ri";
 import { FiSend } from "react-icons/fi";
 import { BiSupport } from "react-icons/bi";
@@ -6,6 +6,7 @@ import { SiLinktree } from "react-icons/si";
 import Button from '../Button';
 import { useRouter } from 'next/router';
 import SliderCarousel from '../Slider/SliderCarousel';
+import { Metadata } from '../../../store/createStore';
 
 
 let sliderInfos = [
@@ -31,8 +32,18 @@ let sliderInfos = [
         description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit neque earum veniam quis deleniti aperiam mollitia voluptatibus iusto exercitationem explicabo!'
     },
 ]
+
+const dummyImage = 'https://images.unsplash.com/photo-1513612254505-fb553147a2e8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80'
 const FrontSlider = () => {
     const router = useRouter();
+    const metadata = Metadata((state) => (state.data))
+    const [sliderInfo, setSliderInfo] = useState(metadata?.slider_data || sliderInfos)
+
+    useEffect(() => {
+        if(metadata?.slider_data) {
+            setSliderInfo(metadata.slider_data)
+        }
+    }, [metadata])
 
     return (
         <div className='h-full  lg:h-screen w-full mx-auto relative'>
@@ -47,13 +58,13 @@ const FrontSlider = () => {
                 arrowSize='4rem'
             >
                 {
-                    Array.isArray(sliderInfos) && sliderInfos.map(slideInfo => (
+                    Array.isArray(sliderInfo) && sliderInfo.map(slideInfo => (
                         <div
                             key={slideInfo.id}
                             className={`h-full md:pb-5 lg:h-screen mx-auto  shadow rounded-md relative`}>
                             <div className='  flex flex-col h-full items-center justify-center mx-auto relative z-20' >
                                 <div className='w-full mb-16 text-center animate-waving-hand'>
-                                    <h1 className='mt-10     font-sans font-light text-4xl md:text-6xl lg:text-7xl text-green-600 drop-shadow-2xl uppercase'>{slideInfo.title}</h1>
+                                    <h1 className='mt-10     font-sans font-normal text-4xl md:text-6xl lg:text-7xl text-green-600 drop-shadow-2xl uppercase'>{slideInfo.title}</h1>
                                     {/* <p className=' w-7/12 mx-auto font-sans text-xl md:text-3xl mt-1 md:mt-3 capitalize'>{slideInfo.subTitle}</p> */}
                                     <p className='mx-auto w-10/12 md:w-7/12 mt-1 md:mt-10 cursor-pointer text-xl'>{slideInfo.description}</p>
                                     <Button clickFunc={() => router.push('/shop')} withBck={false} classAdd='max-w-fit mt-10 px-10 ' >
@@ -63,7 +74,7 @@ const FrontSlider = () => {
                             </div>
                             <div className='w-full  h-full  flex justify-center items-center
                             overflow-hidden absolute left-0 top-0 '>
-                                <img className='flex-shrink-0 min-w-full min-h-full scale-x-[-1]' src={slideInfo?.bg_image} alt="" />
+                                <img className='flex-shrink-0 min-w-full min-h-full scale-x-[-1]' src={slideInfo?.bg_image?.url || slideInfo?.bg_image} alt="slider" />
                             </div>
                         </div >
                     ))

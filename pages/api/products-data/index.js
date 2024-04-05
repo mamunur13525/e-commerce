@@ -2,7 +2,8 @@ import { connectMongoDB } from "../../../lib/mongodb";
 import Product from "../../../models/product";
 
 export default async function POST(req, res) {
-    const { offset = 0, limit = 10, category = 'All' } = req.body
+    const { offset = 0, limit = 10, category = 'all' } = req.body
+    console.log(req.body)
 
     await connectMongoDB()
 
@@ -14,20 +15,20 @@ export default async function POST(req, res) {
         .then(maxPriceResult => {
             maxPrice = maxPriceResult[0].price
 
-            if(category !== 'All') {
+            if(category !== 'all') {
                 Product.find({'category': category})
                 .sort({updatedAt:-1})
                 .skip(offset)
                 .limit(limit)
                 .then(result => {
                     let allLoaded = false
-                    if(result.length < 10) {
+                    if(result.length < limit) {
                         allLoaded = true
                     }
                     else {
                         allLoaded = false
                     }
-                    // const categoryData = category === 'All' ? [...result] : result.filter(product => product.category === category)
+                    // const categoryData = category === 'all' ? [...result] : result.filter(product => product.category === category)
                     return res.send({status: 'success', data: result, allLoaded: allLoaded, maxPrice})
                 })
             }
@@ -38,7 +39,7 @@ export default async function POST(req, res) {
                 .limit(limit)
                 .then(result => {
                     let allLoaded = false
-                    if(result.length < 10) {
+                    if(result.length < limit) {
                         allLoaded = true
                     }
                     else {

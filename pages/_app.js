@@ -2,7 +2,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router'
 import { useEffect, useRef } from 'react';
 import { Toaster } from 'react-hot-toast'
-import { cartStore, queryStore, useProgressStore } from '../store/createStore';
+import { Metadata, cartStore, queryStore, useProgressStore } from '../store/createStore';
 import '../styles/globals.css'
 import { useNProgress } from '@tanem/react-nprogress'
 import Progress from '../components/Shared/ProgressAnimation/Progress';
@@ -11,6 +11,7 @@ import { SessionProvider, useSession } from "next-auth/react"
 function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const isAnimating = useProgressStore((state) => (state.isAnimating));
   const setIsAnimating = useProgressStore((state) => (state.setIsAnimating));
+  const setMetadata = Metadata((state) => (state.setMetadata))
   const router = useRouter();
   const cartItem = cartStore((state) => (state.items))
   const setCartItems = cartStore((state) => (state.setCartItems))
@@ -70,6 +71,23 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }) {
       router.events.off('routeChangeStart', handleRouteON)
       router.events.off('routeChangeComplete', handleRouteOff)
       router.events.off('routeChangeError', handleRouteOff)
+    }
+  }, [])
+
+  // getting metadata
+  useEffect(() => {
+    try {
+      fetch('/api/get-metadata')
+      .then(res => res.json())
+      .then(result => {
+          if (!result.error) {
+              setMetadata(result)
+          } else {
+              console.log(result.error || 'Something went wrong.')
+          }
+      })
+    } catch (error) {
+        console.log(error.message)
     }
   }, [])
   return (
