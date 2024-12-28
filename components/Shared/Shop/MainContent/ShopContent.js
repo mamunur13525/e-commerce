@@ -5,7 +5,6 @@ import { itemLists } from '../../../../FakeData/FakeData';
 import { Product } from '../../ProductLists/ProductLists';
 import FilterSidebar from '../FilterSidebar';
 import TopFilter from '../TopFilter';
-import Sidebar from '../../SideBar/Sidebar';
 import { GiSettingsKnobs } from "react-icons/gi";
 import DetailedProduct from '../../DetailedProduct/DetailedProduct';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -13,6 +12,7 @@ import Spinner from '../../Loader/Spinner';
 import { useRouter } from 'next/router';
 import { queryStore } from '../../../../store/createStore';
 import toast from 'react-hot-toast';
+import Sidebar from '../../Sidebar/Sidebar';
 
 const ShopContent = () => {
     const router = useRouter()
