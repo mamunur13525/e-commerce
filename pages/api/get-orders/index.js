@@ -1,6 +1,5 @@
 import { connectMongoDB } from "../../../lib/mongodb"
 import Order from "../../../models/order"
-import User from "../../../models/user"
 
 export default async function POST(req, res) {
     const body = req.body

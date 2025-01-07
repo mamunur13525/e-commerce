@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import CategoryFilter from './CategoryFilter';
 import ColorFilter from './ColorFilter';
 import PriceRange from './PriceRange';
 import RatingFilter from './RatingFilter';
-import { useRouter } from 'next/navigation';
 
 const FilterSidebar = ({ data, queries, setQueries, fetchFilterData }) => {
 

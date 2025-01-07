@@ -23,7 +23,7 @@ export default function Policy() {
                 <h1 className={header}>4. Shipping:</h1>
                 <p className={details}>We offer shipping to [geographical regions you serve]. Shipping costs and estimated delivery times are displayed during the checkout process. You will receive a shipping confirmation email with tracking information once your order has been dispatched.</p>
                 <h1 className={header}>5. Returns and Refunds:</h1>
-                <p className={details}>If you are not satisfied with your purchase, you may initiate a return within [number of days] days from the date of delivery. Please refer to our "Returns and Refunds" page on our website for detailed instructions on the return process and eligibility criteria.</p>
+                <p className={details}>If you are not satisfied with your purchase, you may initiate a return within [number of days] days from the date of delivery. Please refer to our &quot;Returns and Refunds&quot; page on our website for detailed instructions on the return process and eligibility criteria.</p>
                 <h1 className={header}>6. Product Availability:</h1>
                 <p className={details}>Product availability is subject to change. If an item becomes out of stock after you have placed your order, we will notify you and provide options for a replacement or a refund.</p>
                 <h1 className={header}>7. Product Descriptions:</h1>
@@ -36,7 +36,7 @@ export default function Policy() {
                 <p className={details}>We use cookies to enhance your browsing experience and gather information about your preferences. By using our website, you consent to our use of cookies as outlined in our Privacy Policy.</p>
                 <h1 className={header}>11. Changes to Policies:</h1>
                 <p className={details}>We reserve the right to modify our e-commerce policies at any time. Changes will be effective immediately upon posting on our website. We recommend checking our policies regularly for updates.</p>
-                <p className={details}>Thank you for shopping with [Your E-Commerce Store Name]! If you have any questions or need further assistance, please don't hesitate to contact us.</p>
+                <p className={details}>Thank you for shopping with [Your E-Commerce Store Name]! If you have any questions or need further assistance, please don&apos;t hesitate to contact us.</p>
             </div>
             <Footer />
         </>

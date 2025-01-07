@@ -11,6 +11,7 @@ import { toast } from 'react-hot-toast';
 import CustomModal from '../CustomModal/CustomModal';
 import SliderCarousel from '../Slider/SliderCarousel';
 import { twMerge } from 'tailwind-merge';
+import Image from 'next/image';
 
 
 const ProductLists = ({ productClass = '', data, animate = false }) => {
@@ -32,16 +33,6 @@ const ProductLists = ({ productClass = '', data, animate = false }) => {
 
 export default ProductLists;
 
-
-
-const sliderSettings = {
-    lazyLoad: true,
-    speed: 500,
-    slidesToShow: 3,
-    swipeToSlide: true,
-    // prevArrow: <MdOutlineArrowBackIosNew className='text-red-500' />,
-    // nextArrow: <MdArrowForwardIos className='text-red-500' />,
-};
 
 export const Product = ({ item, productClass = '', animate }) => {
     const [openModal, setOpenModal] = useState(false);
@@ -95,7 +86,7 @@ export const Product = ({ item, productClass = '', animate }) => {
                             <div className='h-[265px] scale-110 flex justify-center '>
                                 {
                                     mainImageShow !== null &&
-                                    <img className=' h-full' src={mainImageShow.url || ''} alt="product_image" />
+                                    <Image className=' h-full' src={mainImageShow.url || ''} alt="product_image" />
                                 }
                             </div>
                         </div>
@@ -114,7 +105,7 @@ export const Product = ({ item, productClass = '', animate }) => {
                                     {
                                         item.images.map((img, ind) => (
                                             <div key={ind} className='w-1/4 h-fit cursor-pointer'>
-                                                <img onClick={() => setMainImageShow(img)} className='h-full' src={img.url} alt="product  image" />
+                                                <Image onClick={() => setMainImageShow(img)} className='h-full' src={img.url} alt="product  image" />
                                             </div>
                                         ))
                                     }

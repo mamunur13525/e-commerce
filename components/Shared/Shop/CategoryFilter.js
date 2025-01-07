@@ -1,7 +1,4 @@
-import { useRouter } from 'next/router';
-import React, { useEffect, useRef } from 'react';
-import { useState } from 'react';
-import { queryStore } from '../../../store/createStore';
+import React from 'react';
 
 const categories = ['fruits', 'vegetables', 'nuts']
 const CategoryFilter = ({ selectedCategories = [], handleFilter }) => {

@@ -1,7 +1,7 @@
 
 
 export default function SingleOrderShow({ data }) {
-    const { name, description, price: price, quantity, ordered_quantity, discount, rating, weight, currency, image: image } = data
+    const { name, price: price, ordered_quantity, discount, rating, currency, image: image } = data
     return (
         <div className="p-2 h-15 bg-white border-b border-gray-100 last:border-none flex">
             <img className="w-12 h-12 object-cover border border-gray-100 rounded-sm mr-2" src={image.url} alt="" />

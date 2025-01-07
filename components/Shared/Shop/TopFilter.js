@@ -1,11 +1,8 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { TbSortDescending } from 'react-icons/tb'
+import React, { useMemo, useState } from 'react';
 import SelectList from '../SelectList/SelectList';
 import { BsListTask, BsGrid3X3Gap } from 'react-icons/bs';
 import debounce from 'lodash.debounce';
 import Spinner from '../Loader/Spinner';
-import { queryStore } from '../../../store/createStore';
-import { useRouter } from 'next/navigation';
 
 const TopFilter = ({ sortDisplay, changeSortType, loading, queries, setQueries, fetchFilterData, resultCount, filter, sortType }) => {
 

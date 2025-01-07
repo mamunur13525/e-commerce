@@ -1,7 +1,5 @@
 import debounce from 'lodash.debounce';
-import React, { useEffect, useMemo, useRef } from 'react';
-import { useState } from 'react';
-import { queryStore } from '../../../store/createStore';
+import React from 'react';
 
 const PriceRange = ({ maxPrice, handleFilter, defaultPrice }) => {
 

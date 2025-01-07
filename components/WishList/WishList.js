@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Button from '../Shared/Button';
-import { GrClose } from 'react-icons/gr'
 
 const WishList = ({ classAdd }) => {
     return (

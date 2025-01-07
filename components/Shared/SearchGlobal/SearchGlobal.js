@@ -1,41 +1,9 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { BsStar, BsStarFill } from 'react-icons/bs';
-import { GoSearch } from 'react-icons/go';
-import { itemLists } from '../../../FakeData/FakeData';
 import debounce from 'lodash.debounce';
 import toast from 'react-hot-toast';
 
-const products = [
-    {
-        id: 0,
-        name: 'Tomato'
-    },
-    {
-        id: 2,
-        name: 'potato'
-    },
-    {
-        id: 3,
-        name: 'mango'
-    },
-    {
-        id: 4,
-        name: 'jinger'
-    },
-    {
-        id: 5,
-        name: 'apple'
-    },
-    {
-        id: 6,
-        name: 'water-melon'
-    },
-    {
-        id: 7,
-        name: 'other'
-    },
-]
 const SearchGlobal = ({ showingSearch, setShowingSearch }) => {
     const [searchValue, setSearchValue] = useState('');
     const [searchedProducts, setSearchedProducts] = useState([]);

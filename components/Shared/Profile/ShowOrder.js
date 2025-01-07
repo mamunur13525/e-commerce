@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react"
-import { UserData } from "../../../store/createStore"
 import { FaMinus, FaPlus } from "react-icons/fa"
 import SingleOrderShow from "./SingleOrderShow"
 
 export default function ShowOrder({ data, orderId, setOrderId }) {
-    const { _id, user, products, total, subtotal, tax, payment_status, createdAt, payment_url, order_id } = data
+    const { _id, products, total, payment_status, createdAt, payment_url, order_id } = data
     console.log(data)
     const [date, setDate] = useState('')
 
@@ -22,11 +21,6 @@ export default function ShowOrder({ data, orderId, setOrderId }) {
         setDate(day + ' ' + month + ' ' + year)
     }, [createdAt])
 
-    // const payNowHandler = () => {
-    //     if (payment_status !== 'paid' && payment_url !== null) {
-    //         window.location.href = payment_url
-    //     }
-    // }
     return (
         <div className={`border-t border-gray-200 w-full`}>
             <div className="flex justify-between items-center h-16 text-black bg-gray-100 p-2 gap-3">

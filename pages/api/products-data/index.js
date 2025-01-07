@@ -3,7 +3,6 @@ import Product from "../../../models/product";
 
 export default async function POST(req, res) {
     const { offset = 0, limit = 10, category = 'all' } = req.body
-    console.log(req.body)
 
     await connectMongoDB()
 
