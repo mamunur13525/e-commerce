@@ -4,28 +4,36 @@ import SelectList from '../SelectList/SelectList';
 import { BsListTask, BsGrid3X3Gap } from 'react-icons/bs';
 import debounce from 'lodash.debounce';
 import Spinner from '../Loader/Spinner';
-import { useRouter } from 'next/router';
 import { queryStore } from '../../../store/createStore';
+import { useRouter } from 'next/navigation';
 
-const TopFilter = ({ setSearchValue, itemLists, filter, sortDisplay, sortType, changeSortType, loading, resultText, resultCount, reloadDataHandler, defaultInputValue, setSearchQuery }) => {
-    
+const TopFilter = ({ sortDisplay, changeSortType, loading, queries, setQueries, fetchFilterData, resultCount, filter, sortType }) => {
+
+    const handleSearch = (value) => {
+        let newQueries = { ...queries };
+
+        if (value === null) {
+            delete newQueries.search;
+        } else {
+            newQueries.search = value;
+        }
+
+        setQueries(newQueries)
+        fetchFilterData(0, true, newQueries)
+    }
     return (
         <div className='flex flex-wrap justify-between items-center border-b bg-white p-4'>
-            <p className='text-gray-500 text-lg'>{resultText}<span className='font-semibold text-green-500'>{resultCount}</span></p>
+            <p className='text-gray-500 text-lg'>Products loaded: <span className='font-semibold text-green-500'>{resultCount}</span></p>
             {
                 filter
             }
-            <div className='flex items-center gap-3 '>
-                <button onClick={reloadDataHandler} className='text-white bg-sky-500 rounded-sm px-5 py-2 cursor-pointer'>Reload Data</button>
-                <div className=' w-56'>
-                    <SearchInput setSearchQuery={setSearchQuery} defaultValue={defaultInputValue} inputValue={setSearchValue} placeholder='Search...' type='search' name='product_name' customClass='!rounded !bg-white' loading={loading} />
+            <div className='flex items-center gap-3 w-full md:w-auto'>
+                <div className='w-full sm:w-56 flex-1'>
+                    <SearchInput inputValue={queries.search} handleSearch={handleSearch} placeholder='Search...' type='text' name='product_name' customClass='!rounded !bg-white' loading={loading} />
                 </div>
                 {
-                    sortDisplay && 
+                    sortDisplay &&
                     <div onClick={changeSortType} className='border border-slate-300 hover:bg-slate-100 duration-200 rounded cursor-pointer relative w-[43px] h-[43px]'>
-                        {/* {
-                            sortType === 'grid' ? <BsGrid3X3Gap className='p-2 w-10 h-10' /> : <BsListTask className='p-2 w-10 h-10' />
-                        } */}
                         <BsGrid3X3Gap className={`p-2 w-[41.5px] h-[41.5px] absolute left-0 top-0 opacity-0 duration-200 ${sortType === 'detailed' && 'opacity-100'}`} />
                         <BsListTask className={`p-2 w-[41.5px] h-[41.5px] absolute left-0 top-0 opacity-0 duration-200 ${sortType === 'grid' && 'opacity-100'}`} />
                     </div>
@@ -46,31 +54,22 @@ const TopFilter = ({ setSearchValue, itemLists, filter, sortDisplay, sortType, c
 export default TopFilter;
 
 
-const SearchInput = ({ inputValue, placeholder = '', name = '', customClass = '', type = 'text', required = false, loading = false, setSearchQuery }) => {
-    const queryData = queryStore((state) => (state.data))
-    
-    const [fieldValue, setFieldValue] = useState('')
+const SearchInput = ({ inputValue = '', placeholder = '', name = '', customClass = '', type = 'text', required = false, loading = false, handleSearch }) => {
+
+    const [fieldValue, setFieldValue] = useState(inputValue)
 
     const debounceActivator = (e) => {
         searchDebounce(e)
     }
 
-    useEffect(() => {
-        if(queryData?.search) {
-            setFieldValue(queryData.search)
-            debounceActivator(queryData.search)
-        }
-    }, [queryData?.search])
-
     const searchDebounce = useMemo(() => {
         return debounce(e => {
-            if(e) {
-                setSearchQuery({name: 'search', value: e})
+            if (e) {
+                handleSearch(e)
             }
             else {
-                setSearchQuery({name: 'search', value: null})
+                handleSearch(null)
             }
-            inputValue(e)
         }, 500);
     }, []);
     return (
@@ -79,10 +78,10 @@ const SearchInput = ({ inputValue, placeholder = '', name = '', customClass = ''
             <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     {
-                        (loading && fieldValue != '') ? 
-                        <Spinner parentStyle='w-5 h-full' />
-                        :
-                        <svg aria-hidden="true" className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        (loading && fieldValue != '') ?
+                            <Spinner parentStyle='w-5 h-full' />
+                            :
+                            <svg aria-hidden="true" className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     }
                 </div>
                 <input

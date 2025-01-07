@@ -48,7 +48,7 @@ const UserData = create(devtools((set) => ({
 
 const queryStore = create(devtools((set) => ({
     data: {},
-    setQuery: (newQuerys) => set(state => ({data: newQuerys}))
+    setQuery: (newQuerys) => set(() => ({data: newQuerys}))
 })))
 
 const Metadata = create(devtools((set) => ({

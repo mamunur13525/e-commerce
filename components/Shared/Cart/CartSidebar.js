@@ -2,14 +2,12 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { GrClose } from 'react-icons/gr';
-import { RiCloseLine, RiDeleteBin6Line } from 'react-icons/ri';
-import { UserData, cartStore } from '../../../store/createStore';
+import { RiCloseLine } from 'react-icons/ri';
+import { cartStore } from '../../../store/createStore';
 import Button from '../Button'
 
 const CartSidebar = ({ cart }) => {
     let [showCart, setShowCart] = cart;
-    const clearCart = cartStore((state) => (state.clearCart))
-    const userData = UserData((state) => (state.data))
     const router = useRouter();
     const cartItems = cartStore((state) => (state.items));
     const [subTotal, setSubTotal] = useState(0)

@@ -154,9 +154,9 @@ export default function ProductWithId({productData, pid, similarProductsData, al
                             ))
                         }
                     </Slider> */}
-                    <div className='flex flex-wrap justify-center'>
+                    <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3'>
                         {
-                            similarProducts?.map(product => <Product productClass={'w-[18%] h-[280px]'} key={Math.random()} item={product} />)
+                            similarProducts?.map(product => <Product productClass={''} key={Math.random()} item={product} />)
                         }
                     </div>
                     <div className='w-full flex justify-center mt-2'>

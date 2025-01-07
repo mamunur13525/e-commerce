@@ -73,3 +73,7 @@ svg.slick-arrow.slick-next {
   
   }
 }
+
+.infinite-scroll-component {
+  overflow: hidden !important;
+}

@@ -65,7 +65,6 @@ const Blogs = () => {
             src="https://cdn.iconscout.com/icon/free/png-256/data-not-found-1965034-1662569.png"
             alt=""
           />
-          {/* <RiFileForbidLine className='text-4xl'/> */}
           <p className="text-center text-2xl font-light">No Data!</p>
         </div>
       )}

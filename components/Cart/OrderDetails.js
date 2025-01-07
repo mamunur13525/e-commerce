@@ -11,7 +11,6 @@ const OrderDetails = () => {
     const userData = UserData((state) => (state.data))
     const clearCart = cartStore((state) => (state.clearCart))
     const [subTotal, setSubTotal] = useState(0);
-    // const [newSubTotal, setNewSubTotal] = useState(0);
     const [tax, setTax] = useState(0);
     const [total, setTotal] = useState(0)
     const [couponCode, setCouponCode] = useState(0);
@@ -24,10 +23,6 @@ const OrderDetails = () => {
         setTax((parseFloat((5 * subt) / 100)).toFixed(2))
         setTotal(parseFloat(subt + ((5 * subt) / 100)).toFixed(2))
     }, [allCartItems])
-
-    // useEffect(() => {
-    //     setNewSubTotal((subTotal - (10 * subTotal) / 100))
-    // }, [subTotal])
 
     const checkout = async (e) => {
         e.preventDefault()
@@ -64,14 +59,6 @@ const OrderDetails = () => {
                                 {allCartItems[0]?.currency === 'bdt' ? '৳' : '$'} {(couponCode * subTotal) / 100}
                             </div>
                         </div>
-                        {/* <div className="flex justify-between pt-0 border-b">
-                            <div className="lg:px-0 lg:py-0 m-2 text-lg lg:text-base font-medium text-center text-gray-800">
-                                New Subtotals
-                            </div>
-                            <div className="lg:px-0 lg:py-0 m-2 lg:text-lg font-medium text-center text-gray-900">
-                                {allCartItems[0]?.currency === 'bdt' ? '৳' : '$'} {newSubTotal.toFixed(2)}
-                            </div>
-                        </div> */}
                         <div className="flex justify-between pt-0 border-b">
                             <div className="lg:px-0 lg:py-0 m-2 text-lg lg:text-base font-medium text-center text-gray-800">
                                 Tax

@@ -99,7 +99,7 @@ const SearchGlobal = ({ showingSearch, setShowingSearch }) => {
         return debounce(e => {setSearchValue(e)}, 500);
     }, []);
     return (
-        <div className={`fixed flex justify-center items-start h-screen z-50 bg-[#00000080] px-5 py-3 w-full ${showingSearch ? "visible" : "invisible"} `}>
+        <div className={`fixed flex justify-center items-start h-screen z-[110] bg-[#00000080] px-5 py-3 w-full ${showingSearch ? "visible" : "invisible"} `}>
             <div style={{background:'radial-gradient(white, #d9d9d9)'}} ref={searchRef} className={` w-11/12 md:w-5/6 lg:w-1/2 mt-10 py-4 rounded translate-y-5 transition-all  ${showingSearch ? "translate-y-0 opacity-100" : "opacity-0"}`}>
 
                 <div className='flex items-center gap-2 pt-2  pb-5  px-4'>

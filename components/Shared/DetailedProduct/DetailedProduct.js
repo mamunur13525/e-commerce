@@ -64,7 +64,7 @@ export default function DetailedProduct({ item, productClass = '' }) {
                     </div>
                     <p className='text-gray-500 mt-2 text-md sm:text-sm lg:text-[1rem]'>{item.description}</p>
                     <div className='w-[96%] grid place-items-center group mt-5 mb-6'>
-                        <div className='w-5/6 flex justify-center border rounded-full shadow-md bg-white py-3 transition-all duration-300 cursor-pointer'>
+                        <div className='w-5/6 flex justify-center border rounded-full bg-white py-3 transition-all duration-300 cursor-pointer'>
                             {
                                 isItemOnCart ?
                                     <BsFillBagCheckFill onClick={removeItem} className='border-r py-1 w-1/3 flex justify-center text-[29px]  text-green-600' title='already add on cart' />
@@ -158,22 +158,3 @@ export default function DetailedProduct({ item, productClass = '' }) {
         </div>
     )
 }
-
-{/* <div className='absolute left-0 top-[50%] w-[96%] translate-x-[2%] translate-y-[-50%] grid place-items-center group'>
-<div className='w-5/6 flex justify-center border rounded-full shadow-md bg-white py-3 translate-y-10 invisible  opacity-0 group-hover:visible group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300'>
-    {
-        isItemOnCart ?
-            <BsFillBagCheckFill onClick={removeItem} className='border-r py-1 w-1/3 flex justify-center text-[29px]  text-green-600' title='already add on cart' />
-            :
-            <BsBagPlus onClick={addProductToCart} className='border-r py-1 w-1/3 flex justify-center text-[29px] hover:text-green-600' />
-    }
-    {
-        isItemOnFavoriteList ?
-            <MdFavorite onClick={removeItemFav} className='border-r py-1 w-1/3 flex justify-center text-[32px]  text-red-600' title='already add on cart' />
-            :
-            <MdFavoriteBorder onClick={addProductToFavorite} className='border-r py-1 w-1/3 flex justify-center text-[32px] hover:text-red-600' />
-    }
-
-    <IoSearch onClick={() => setOpenModal(true)} className=' py-1 w-1/3 flex justify-center text-[29px] hover:text-green-600' />
-</div>
-</div> */}

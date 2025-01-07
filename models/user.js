@@ -19,11 +19,26 @@ const userSchema = new mongoose.Schema({
         lowercase: true
     },
     password: {
-        type: String,
+        type: String || null,
     },
     orders: {
         type: Array,
         required: false,
+    },
+    phone: {
+        type: String,
+        required: false,
+        default: ''
+    },
+    bio: {
+        type: String,
+        required: false,
+        default: ''
+    },
+    company: {
+        type: String,
+        required: false,
+        default: ''
     }
 },
 {

@@ -4,12 +4,13 @@ import User from "../../../models/user"
 
 export default async function POST(req, res) {
     const body = req.body
+    console.log(body, 'order id')
     
 
     await connectMongoDB()
 
     try {
-        const orders = await Order.find({_id: { $in: body }}).sort({createdAt:-1})
+        const orders = await Order.find({order_id: { $in: body }}).sort({createdAt:-1})
         
     
         if(orders && orders.length) {

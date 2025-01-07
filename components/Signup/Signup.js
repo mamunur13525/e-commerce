@@ -37,7 +37,7 @@ const Signup = () => {
     return (
         <div className='bg-no-repeat bg-cover bg-right bg-[url("https://cdn.shopify.com/s/files/1/0033/7956/0537/files/New_Project_9.jpg?v=1570870688")]'>
             <div className="container mx-auto">
-                <div className='py-20 '>
+                <div className='py-20 flex justify-center'>
                     <div className="w-[28rem]  rounded-sm mx-auto md:mx-0  shadow-lg">
                         <div className='w-full bg-white p-10'>
                             <p className='text-4xl font-thin  text-center mb-10'>

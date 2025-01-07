@@ -1,14 +1,11 @@
 import { useEffect, useState } from "react"
-import { UserData } from "../../../store/createStore"
 import ShowOrder from "./ShowOrder"
 import toast from "react-hot-toast"
 
-export default function Orders({css}) {
-    const userData = UserData((state) => (state.data))
+export default function Orders({css, userData}) {
     const [orderData, setOrderData] = useState([])
     const [orderId, setOrderId] = useState('')
     const [loading, setLoading] = useState(true)
-    console.log(loading)
 
     useEffect(() => {
         setLoading(true)
@@ -22,6 +19,7 @@ export default function Orders({css}) {
             })
             .then(res => res.json())
             .then(result => {
+                console.log(result)
                 if(result.error) {
                     toast.error(result.error || 'Something went wrong.')
                 }
@@ -45,7 +43,7 @@ export default function Orders({css}) {
                 </div>
                 : 
                 <div className={css}>
-                    <div className="border border-lime-500 rounded-sm lg:w-[70%] xl:w-[100%]">
+                    <div className="bg-gray-100 rounded-sm lg:w-[70%] xl:w-[100%] border border-gray-100">
                         <h1 className="p-2">Total Orders: {orderData?.length}</h1>
                         <div className="bg-green-400 xl:flex xl:flex-wrap">
                             {

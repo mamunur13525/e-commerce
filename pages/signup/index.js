@@ -2,9 +2,29 @@ import Head from 'next/head'
 import Footer from '../../components/Shared/Footer/Footer'
 import Navbar from '../../components/Shared/Navbar/Navbar'
 import Signup from '../../components/Signup/Signup'
+import { authOptions } from '../api/auth/[...nextauth]';
+import { getServerSession } from 'next-auth';
 
+export async function getServerSideProps(context) {
+    const session = await getServerSession(context.req, context.res, authOptions);
 
-export default function Home() {
+    if (session?.user) {
+        return {
+            redirect: {
+                destination: '/profile',
+                permanent: false,
+            },
+        };
+    }
+
+    return {
+        props: {
+            session,
+        },
+    };
+}
+
+export default function Page({ session }) {
     return (
         <div>
             <Head>

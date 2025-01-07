@@ -5,8 +5,8 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Button from '../Shared/Button';
 import FlotingInput from '../Shared/InputFeild/FlotingInput';
-import { FaGoogle } from "react-icons/fa";
-import { signIn, useSession } from 'next-auth/react';
+import { FcGoogle } from "react-icons/fc";
+import { signIn } from 'next-auth/react';
 import toast from 'react-hot-toast';
 
 const Login = () => {
@@ -30,7 +30,7 @@ const Login = () => {
     return (
         <div className='bg-no-repeat bg-cover bg-center bg-[url("https://cdn.shopify.com/s/files/1/0033/7956/0537/files/New_Project_10.jpg?v=1570870679")]'>
             <div className="container mx-auto">
-                <div className='py-20'>
+                <div className='py-20 flex justify-center'>
                     <div className="w-[28rem]  rounded-sm mx-auto md:mx-0  shadow-lg">
                         <div className='w-full bg-white p-10'>
                             <p className='text-4xl font-thin  text-center mb-10'>
@@ -54,21 +54,19 @@ export default Login;
 
 export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType }) => {
     const [formData, setFormData] = useState({})
-    const [inputData, setInputData] = useState({}) 
+    const [inputData, setInputData] = useState({})
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
     const [prevPath, setPrevPath] = useState(null)
     const router = useRouter()
-
-    const {data: session2} = useSession()
 
     useEffect(() => {
         setPrevPath(localStorage.getItem('path') || null)
     }, [])
 
     useEffect(() => {
-        if(inputData) {
-            const newData = {...formData}
+        if (inputData) {
+            const newData = { ...formData }
             newData[inputData.title] = inputData.value
             delete newData.undefined
             setFormData(newData)
@@ -77,7 +75,8 @@ export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType }) => 
 
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const onSubmit = async (data) => {
-        if(apiType === 'signin') {
+        setLoading(true)
+        if (apiType === 'signin') {
             setError('')
             try {
                 await fetch('/api/login', {
@@ -87,29 +86,31 @@ export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType }) => 
                     },
                     body: JSON.stringify(formData)
                 })
-                .then(res => res.json())
-                .then(result => {
-                    if(result.error) {
-                        setError(result.error)
-                    }
-                    else {
-                        setError('')
-                        signIn(`credentials`, {name: result.name, email: result.email, redirect: false})
-                        if(prevPath) {
-                            router.push(prevPath)
+                    .then(res => res.json())
+                    .then(result => {
+                        if (result.error) {
+                            setError(result.error)
                         }
                         else {
-                            router.push('/profile')
+                            setError('')
+                            signIn(`credentials`, { name: result.name, email: result.email, redirect: false })
+                            if (prevPath) {
+                                router.push(prevPath)
+                            }
+                            else {
+                                router.push('/profile')
+                            }
                         }
-                    }
-                })
+                    })
             } catch (error) {
                 setError(error.message)
                 toast.error(error.message)
+            } finally {
+                setLoading(false)
             }
         }
         else if (apiType === 'register') {
-            if(formData.password === formData.confirm_password) {
+            if (formData.password === formData.confirm_password) {
                 setError('')
                 try {
                     await fetch('/api/register', {
@@ -119,32 +120,39 @@ export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType }) => 
                         },
                         body: JSON.stringify(formData)
                     })
-                    .then(res => res.json())
-                    .then(result => {
-                        if(result.error) {
-                            setError(result.error)
-                        }
-                        else {
-                            setError('')
-                            signIn(`credentials`, {name: result.name, email: result.email, redirect: false})
-                            if(prevPath) {
-                                router.push(prevPath)
+                        .then(res => res.json())
+                        .then(result => {
+                            if (result.error) {
+                                setError(result.error)
                             }
                             else {
-                                router.push('/profile')
+                                setError('')
+                                signIn(`credentials`, { name: result.name, email: result.email, redirect: false })
+                                if (prevPath) {
+                                    router.push(prevPath)
+                                }
+                                else {
+                                    router.push('/profile')
+                                }
                             }
-                        }
-                    })
+                        })
                 } catch (error) {
                     setError(error.message)
                     toast.error(error.message)
+                } finally {
+                    setLoading(false)
                 }
             }
             else {
                 setError('Password did not match.')
+                setLoading(false)
             }
         }
     }
+
+    const handleGoogleSignIn = () => {
+        signIn("google", { callbackUrl: '/profile', redirect: false });
+    };
     return (
         <>{
             inputFeilds.length &&
@@ -167,19 +175,26 @@ export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType }) => 
                         </div>
                     ))
                 }
-                <div className='flex justify-center'>
-                    <FaGoogle className='border border-slate-800 rounded-full p-[3px] w-6 h-6 cursor-pointer' onClick={() => signIn("google")} />
-                </div>
+                <button
+                    className='flex justify-center w-full border border-gray-300 rounded-sm py-2 gap-2 cursor-pointer mt-10'
+                    type='button'
+                    onClick={handleGoogleSignIn}
+                >
+                    <FcGoogle className='w-6 h-6 cursor-pointer' />
+                    <h1>Sign in with Google</h1>
+                </button>
                 {
                     error && <p className='text-red-500 font-xs text-center '>{error}</p>
                 }
-                <div className="flex items-center justify-between pt-2">
-                    <Button type="submit" classAdd={`w-fit px-7 ${loading && 'cursor-not-allowed'}`} >
+                <div className="flex flex-col gap-2 items-center justify-between pt-2">
+                    <Button type="submit" classAdd={`w-full px-7 ${loading && 'cursor-not-allowed opacity-50'}`} >
                         {submitBtn}
                     </Button>
-                    <a className="inline-block align-baseline font-medium text-sm text-green-600 hover:text-green-800" href="#">
-                        Forgot Password?
-                    </a>
+                    {
+                        apiType === 'signin' && <a className="inline-block align-baseline font-medium text-sm text-green-600 hover:text-green-800" href="#">
+                            Forgot Password?
+                        </a>
+                    }
                 </div>
             </form>}
         </>

@@ -48,12 +48,12 @@ const CartItem = ({ cart, num }) => {
                                     {cart?.currency === 'bdt' ? '৳' : '$'}{cart?.price || '--'}
                                 </span>
                                 <span className="text-green-600 text-xl font-medium tracking-tight ml-2">
-                                    {cart?.currency === 'bdt' ? '৳' : '$'}{cart?.price - (cart?.price / cart?.discount)}
+                                    {cart?.currency === 'bdt' ? '৳' : '$'}{cart?.price - (cart?.price / cart?.discount).toFixed(2)}
                                 </span>
                             </div>
                         </div>
                         <div>Total: <span className="text-green-600 text-xl font-medium tracking-tight">
-                                {cart?.currency === 'bdt' ? '৳' : '$'}{(cart?.price - (cart?.price / cart?.discount)) * cart?.ordered_quantity}
+                                {cart?.currency === 'bdt' ? '৳' : '$'}{((cart?.price - (cart?.price / cart?.discount)) * cart?.ordered_quantity).toFixed(2)}
                             </span>
                         </div>
                         <div className='text-left text-sm  flex gap-1 font-normal items-center'><AiOutlineCheck className='text-xl text-green-600 ' /> In Stock</div>

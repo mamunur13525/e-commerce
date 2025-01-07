@@ -5,41 +5,23 @@ import { MdFavorite } from 'react-icons/md';
 import { MdFavoriteBorder } from 'react-icons/md';
 import 'react-responsive-modal/styles.css';
 import Button from '../Button';
-import { itemLists } from '../../../FakeData/FakeData';
 import { useRouter } from 'next/router';
 import { cartStore, favoriteStore } from '../../../store/createStore';
 import { toast } from 'react-hot-toast';
 import CustomModal from '../CustomModal/CustomModal';
 import SliderCarousel from '../Slider/SliderCarousel';
+import { twMerge } from 'tailwind-merge';
 
 
-const ProductLists = ({ productClass = '', searchValue, selectedCategory = '', listProducts = null, data }) => {
-    const [filterProducts, setFilterProducts] = useState([]);
-    useEffect(() => {
-        if (!searchValue === '') {
-            categorFilterFunc();
-        } else {
-            categorFilterFunc();
-        }
-    }, [selectedCategory])
-
-
-    const categorFilterFunc = () => {
-        let filterProducts = [];
-        if (selectedCategory === 'All Products') {
-            filterProducts = itemLists;
-        } else {
-            filterProducts = itemLists.filter(item => item.category === selectedCategory)
-        }
-        setFilterProducts([...filterProducts])
-    }
+const ProductLists = ({ productClass = '', data, animate = false }) => {
+    
 
     return (
-        <div className='flex flex-wrap sm:justify-evenly justify-center mt-8'>
+        <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mt-8'>
             {
                 Array.isArray(data) &&
-                data.length ? data.map(item => (
-                        <Product productClass={productClass} key={Math.random()} item={item} />
+                    data.length ? data.map(item => (
+                        <Product animate={animate} productClass={productClass} key={item._id} item={item} />
                     ))
                     :
                     'No Products Found!'
@@ -61,7 +43,7 @@ const sliderSettings = {
     // nextArrow: <MdArrowForwardIos className='text-red-500' />,
 };
 
-export const Product = ({ item, productClass = '' }) => {
+export const Product = ({ item, productClass = '', animate }) => {
     const [openModal, setOpenModal] = useState(false);
     const [mainImageShow, setMainImageShow] = useState(null)
     const router = useRouter()
@@ -102,8 +84,7 @@ export const Product = ({ item, productClass = '' }) => {
     const isItemOnCart = cartItems.find(itm => itm._id === item._id)
     const isItemOnFavoriteList = favoriteList.find(itm => itm._id === item._id)
     return (
-        <div className={`animate-waving-hand mx-1 my-2 relative group overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer ${productClass} `
-        }>
+        <div className={twMerge(`relative group overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer`, productClass, animate && 'animate-waving-hand')}>
 
             <CustomModal
                 customClass='w-full  h-fit max-w-[90%!important] md:max-w-[75%!important] md:max-w-[90%!important] !rounded lg:max-w-[75%!important] h-fit  pr-4'
@@ -169,9 +150,11 @@ export const Product = ({ item, productClass = '' }) => {
                     </div>
                 </div>
             </CustomModal>
-            <div onClick={() => router.push(`/products/${item?._id}`)}>
-                <img className='w-full group-hover:scale-110 transition-transform duration-300' src={item?.image.url} alt="prduct_image" />
-                <div className='absolute bottom-4 h-12  w-full px-4'>
+            <div className='p-2' onClick={() => router.push(`/products/${item?._id}`)}>
+                <div className='w-full aspect-square flex justify-center items-center overflow-hidden'>
+                    <img className='w-full group-hover:scale-110 transition-transform duration-300' src={item?.image.url} alt="prduct_image" />
+                </div>
+                <div className='w-full px-2'>
                     <h1 className='text-xl font-medium group-hover:text-green-600 transition-all'>{item?.name}</h1>
                     <div className='flex gap-1 items-end'>
                         <span className='text-gray-500 line-through tracking-tighter'>{item?.currency === 'usd' ? '$' : '৳'}{item?.price}</span>
