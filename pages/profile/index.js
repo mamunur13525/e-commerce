@@ -9,6 +9,8 @@ import ChangePassword from '../../components/Shared/Profile/ChangePassword';
 import Orders from '../../components/Shared/Profile/Orders';
 import Head from 'next/head';
 
+const base_url = process.env.NEXT_PUBLIC_API_BASE_URL
+
 export async function getServerSideProps(context) {
     const session = await getServerSession(context.req, context.res, authOptions);
 
@@ -23,7 +25,7 @@ export async function getServerSideProps(context) {
 
     let userData = {}
 
-    await fetch('http://localhost:3000/api/user-data', {
+    await fetch(`${base_url}/api/user-data`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

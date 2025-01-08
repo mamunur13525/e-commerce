@@ -2,17 +2,15 @@ import Head from 'next/head'
 import Navbar from '../../components/Shared/Navbar/Navbar'
 import Footer from '../../components/Shared/Footer/Footer'
 import ProductView from '../../components/Products/ProductView'
-import { MdOutlineArrowBackIosNew, MdArrowForwardIos } from 'react-icons/md';
 import { Product } from '../../components/Shared/ProductLists/ProductLists';
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Spinner from '../../components/Shared/Loader/Spinner';
 import toast from 'react-hot-toast';
 
-
+const base_url = process.env.NEXT_PUBLIC_API_BASE_URL
 
 export async function getServerSideProps({params}) {
-    const res = await fetch('http://localhost:3000/api/single-product', {
+    const res = await fetch(`${base_url}/api/single-product`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -21,7 +19,7 @@ export async function getServerSideProps({params}) {
     })
     const productData = await res.json()
 
-    const similarProductsRes = await fetch('http://localhost:3000/api/similar-products', {
+    const similarProductsRes = await fetch(`${base_url}/api/similar-products`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

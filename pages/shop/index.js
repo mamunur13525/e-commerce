@@ -5,7 +5,7 @@ import PageTitleSection from '../../components/Shared/PageTitleSection/PageTitle
 import ShopContent from '../../components/Shared/Shop/MainContent/ShopContent';
 
 // API Base URL (can be moved to environment variables)
-const API_BASE_URL = 'http://localhost:3000/api/filter-data';
+const base_url = process.env.NEXT_PUBLIC_API_BASE_URL
 
 export async function getServerSideProps({ query }) {
     const { cat, search, rate, price } = query;
@@ -14,7 +14,7 @@ export async function getServerSideProps({ query }) {
     // Fetch filtered data
     let result = [];
     try {
-        const response = await fetch(API_BASE_URL, {
+        const response = await fetch(`${base_url}/api/filter-data`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ offset: 0, limit: 10, searchFilter: !!search, rate, price, cat, search }),
