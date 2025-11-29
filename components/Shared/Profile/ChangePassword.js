@@ -90,7 +90,7 @@ export default function ChangePassword({ css, email }) {
         <div className={`mt-5 ${css}`}>
             <h1 className="text-2xl font-semibold">Change Password</h1>
             <p className="md:mb-3 text-sm text-secondary text-gray-500">
-                If you signed in with Google or don't have a password, leave the old password field empty.
+                If you signed in with Google or don&apos;t have a password, leave the old password field empty.
             </p>
             <form onSubmit={handleSubmit} className="">
                 {userDetails.map((userDetail) => (
