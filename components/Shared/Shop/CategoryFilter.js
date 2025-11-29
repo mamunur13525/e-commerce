@@ -1,48 +1,35 @@
 import React from 'react';
+import { GiFruitBowl, GiCarrot, GiPeanut } from 'react-icons/gi';
 
-const categories = ['fruits', 'vegetables', 'nuts']
+const categories = [
+    { name: 'fruits', icon: GiFruitBowl },
+    { name: 'vegetables', icon: GiCarrot },
+    { name: 'nuts', icon: GiPeanut }
+];
+
 const CategoryFilter = ({ selectedCategories = [], handleFilter }) => {
-
     const categoryHandler = (value) => {
-        let newCategories = [];
+        const newCategories = selectedCategories.includes(value)
+            ? selectedCategories.filter(category => category !== value)
+            : [...selectedCategories, value];
 
-        if (selectedCategories.includes(value)) {
-            newCategories = selectedCategories.filter(category => category !== value);
-        } else {
-            newCategories = [...selectedCategories, value];
-        }
-
-        if (newCategories[0]) {
-            handleFilter({ name: 'cat', value: newCategories })
-        } else {
-            handleFilter({ name: 'cat', value: null })
-        }
+        handleFilter({ name: 'cat', value: newCategories.length ? newCategories : null });
     };
 
     return (
-        <div>
-            <p className='flex items-center justify-between mb-2'>
-                <span>Category</span>
-                {
-                    selectedCategories[0] &&
-                    <span className='cursor-pointer' onClick={() => handleFilter({ name: 'cat', value: null })}>clear</span>
-                }
-            </p>
-            <div className='flex flex-col gap-2 pl-2'>
-                {
-                    categories.map(cate => (
-                        <div key={cate} className="flex items-center w-full">
-
-                            <input onChange={(e) => categoryHandler(e.target.name)}
-                                checked={
-                                    selectedCategories.includes(cate)
-                                }
-                                name={cate} id={cate} type="checkbox" className="w-5 h-5 text-blue-600 cursor-pointer bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:bg-gray-700 dark:border-gray-600 outline-none" />
-                            <label htmlFor={cate} className="ml-2 w-full text-sm font-medium text-gray-900 cursor-pointer capitalize">{cate}</label>
-                        </div>
-                    ))
-                }
-            </div>
+        <div className='flex flex-col gap-2'>
+            {categories.map(({ name, icon: Icon }) => (
+                <label key={name} className="flex items-center p-2 rounded-md hover:bg-white cursor-pointer transition-colors group">
+                    <input
+                        onChange={() => categoryHandler(name)}
+                        checked={selectedCategories.includes(name)}
+                        type="checkbox"
+                        className="w-4 h-4 text-blue-600 cursor-pointer bg-white border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                    />
+                    <Icon className='ml-2 text-lg text-gray-600 group-hover:text-gray-800' />
+                    <span className="ml-2 text-sm font-medium text-gray-700 capitalize group-hover:text-gray-900">{name}</span>
+                </label>
+            ))}
         </div>
     );
 };

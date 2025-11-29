@@ -14,6 +14,7 @@ import SearchGlobal from "../SearchGlobal/SearchGlobal";
 import { signOut, useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import { twMerge } from "tailwind-merge";
+import { saveRedirectPath } from "../../../utils/redirectHelper";
 
 const Navbar = () => {
   const [showingSearch, setShowingSearch] = useState(false);
@@ -126,7 +127,7 @@ const Navbar = () => {
                     title={{ title: "My Account", css: "border-none", icon: false }}
                     menuItems={[
                       { id: 1, name: "settings" },
-                      { id: 2, name: "sign in", navigateLink: "/login" }
+                      { id: 2, name: "sign in", navigateLink: `/login?callbackUrl=${encodeURIComponent(router.asPath)}` }
                     ]}
                   />
                 )}
@@ -178,7 +179,7 @@ const NavItemAccordion = ({ setShowNavs }) => {
 
   const signOutHandler = () => {
     localStorage.setItem('user', null);
-    signOut();
+    signOut({ redirect: false }).then(() => window.location.reload());
   };
 
   return (
@@ -201,7 +202,7 @@ const NavItemAccordion = ({ setShowNavs }) => {
           </div>
         )}
         {!session?.user?.email && (
-          <div onClick={() => router.push('/login')} className="flex justify-between gap-4 items-center cursor-pointer border-b border-white py-4 text-xl font-medium">
+          <div onClick={() => router.push(`/login?callbackUrl=${encodeURIComponent(router.asPath)}`)} className="flex justify-between gap-4 items-center cursor-pointer border-b border-white py-4 text-xl font-medium">
             Sign in
           </div>
         )}

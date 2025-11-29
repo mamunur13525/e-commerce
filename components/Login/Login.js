@@ -9,7 +9,7 @@ import { FcGoogle } from "react-icons/fc";
 import { signIn } from 'next-auth/react';
 import toast from 'react-hot-toast';
 
-const Login = () => {
+const Login = ({ callbackUrl }) => {
     const router = useRouter();
     const inputFeilds = [
         {
@@ -37,7 +37,7 @@ const Login = () => {
                                 <span>Log in </span>
                                 <span className='text-base text-gray-500 font-normal cursor-pointer' onClick={() => router.push('/signup')}> / Sign up</span>
                             </p>
-                            <FormBox inputFeilds={inputFeilds} submitBtn="Sign In" apiType="signin" />
+                            <FormBox inputFeilds={inputFeilds} submitBtn="Sign In" apiType="signin" callbackUrl={callbackUrl} />
                             <p className="text-center text-gray-500 text-xs mt-5">
                                 &copy;2020 Acme Corp. All rights reserved.
                             </p>
@@ -52,26 +52,58 @@ const Login = () => {
 export default Login;
 
 
-export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType }) => {
+export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType, callbackUrl = null }) => {
     const [formData, setFormData] = useState({})
     const [inputData, setInputData] = useState({})
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
-    const [prevPath, setPrevPath] = useState(null)
     const router = useRouter()
 
     useEffect(() => {
-        setPrevPath(localStorage.getItem('path') || null)
-    }, [])
-
-    useEffect(() => {
-        if (inputData) {
+        if (inputData && inputData.title) {
             const newData = { ...formData }
             newData[inputData.title] = inputData.value
             delete newData.undefined
             setFormData(newData)
         }
-    }, [inputData])
+    }, [inputData, formData])
+
+    const getRedirectDestination = () => {
+        return callbackUrl && callbackUrl !== '/login' && callbackUrl !== '/signup' ? callbackUrl : '/profile';
+    }
+
+    // Email validation pattern
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    // Get validation rules for each field
+    const getValidationRules = (field) => {
+        const rules = { required: field?.errMessage || 'This field is required' };
+
+        if (field.type === 'email') {
+            rules.pattern = {
+                value: emailPattern,
+                message: 'Please enter a valid email address'
+            };
+        }
+
+        // Add password length validation
+        if (field.name === 'password' && apiType === 'register') {
+            rules.minLength = {
+                value: 6,
+                message: 'Password must be at least 6 characters long'
+            };
+        }
+
+        // Add password confirmation validation
+        if (field.name === 'confirm_password' && apiType === 'register') {
+            rules.validate = (value) => {
+                const password = watch('password');
+                return value === password || 'Passwords do not match';
+            };
+        }
+
+        return rules;
+    };
 
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const onSubmit = async (data) => {
@@ -94,12 +126,7 @@ export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType }) => 
                         else {
                             setError('')
                             signIn(`credentials`, { name: result.name, email: result.email, redirect: false })
-                            if (prevPath) {
-                                router.push(prevPath)
-                            }
-                            else {
-                                router.push('/profile')
-                            }
+                            router.push(getRedirectDestination());
                         }
                     })
             } catch (error) {
@@ -128,12 +155,7 @@ export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType }) => 
                             else {
                                 setError('')
                                 signIn(`credentials`, { name: result.name, email: result.email, redirect: false })
-                                if (prevPath) {
-                                    router.push(prevPath)
-                                }
-                                else {
-                                    router.push('/profile')
-                                }
+                                router.push(getRedirectDestination());
                             }
                         })
                 } catch (error) {
@@ -151,7 +173,8 @@ export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType }) => 
     }
 
     const handleGoogleSignIn = () => {
-        signIn("google", { callbackUrl: '/profile', redirect: false });
+        const destination = getRedirectDestination();
+        signIn("google", { callbackUrl: destination });
     };
     return (
         <>{
@@ -170,8 +193,9 @@ export const FormBox = ({ inputFeilds = [], submitBtn = 'SUBMIT', apiType }) => 
                                 type={field.type}
                                 placeholder={field.placeholder}
                                 getValue={setInputData}
+                                validation={getValidationRules(field)}
                             />
-                            {errors[field.name] && <span className='text-red-700 mt-2 text-sm italic'>{field?.errMessage || 'this field is required'}</span>}
+                            {errors[field.name] && <span className='text-red-700 mt-2 text-sm italic block'>{errors[field.name]?.message || field?.errMessage || 'This field is required'}</span>}
                         </div>
                     ))
                 }

@@ -14,9 +14,10 @@ export default function ChangePassword({ css, email }) {
         {
             id: 0,
             name: "oldPassword",
-            placeholder: "Old Password",
+            placeholder: "Old Password (leave empty if signed in with Google)",
             title: "Old Password",
             type: "password",
+            required: false,
         },
         {
             id: 1,
@@ -89,7 +90,7 @@ export default function ChangePassword({ css, email }) {
         <div className={`mt-5 ${css}`}>
             <h1 className="text-2xl font-semibold">Change Password</h1>
             <p className="md:mb-3 text-sm text-secondary text-gray-500">
-                If there is no old password, leave the field empty.
+                If you signed in with Google or don't have a password, leave the old password field empty.
             </p>
             <form onSubmit={handleSubmit} className="">
                 {userDetails.map((userDetail) => (

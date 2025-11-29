@@ -14,7 +14,7 @@ export default function Dropdown({ title = {}, menuItems = [] }) {
     e.preventDefault();
     if (data === 'signout') {
       localStorage.setItem('user', null);
-      signOut();
+      signOut({ redirect: false }).then(() => window.location.reload());
     }
   };
 
@@ -63,9 +63,10 @@ export default function Dropdown({ title = {}, menuItems = [] }) {
                     item.navigateLink ? (
                       <Link href={item.navigateLink}>
                         <span
+                          onClick={item.onClick}
                           className={classNames(
                             active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                            "block px-4 py-2 text-sm"
+                            "block px-4 py-2 text-sm cursor-pointer"
                           )}
                         >
                           {item.name}

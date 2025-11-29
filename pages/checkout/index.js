@@ -15,11 +15,30 @@ import ReactToPrint from 'react-to-print';
 import React from 'react';
 import toast from 'react-hot-toast'
 import { loadStripe } from '@stripe/stripe-js'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '../api/auth/[...nextauth]'
 
 const stripePromise = loadStripe(
     process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-  );
-  
+);
+
+export async function getServerSideProps(context) {
+    const session = await getServerSession(context.req, context.res, authOptions);
+
+    if (!session?.user) {
+        return {
+            redirect: {
+                destination: '/login?callbackUrl=' + encodeURIComponent('/checkout'),
+                permanent: false,
+            },
+        };
+    }
+
+    return {
+        props: { session },
+    };
+}
+
 export default function Index() {
     const { register, setValue, handleSubmit, formState: { errors } } = useForm();
     const [openModal, setOpenModal] = useState(false);
@@ -35,27 +54,27 @@ export default function Index() {
 
     //Form Submission
     const onSubmit = async (data) => {
-        localStorage.setItem('checkoutForm', JSON.stringify({...data, country: country || JSON.parse(localStorage?.getItem('checkoutForm')).country || ''}))
-        const newData = {...data}
+        localStorage.setItem('checkoutForm', JSON.stringify({ ...data, country: country || JSON.parse(localStorage?.getItem('checkoutForm')).country || '' }))
+        const newData = { ...data }
         newData.country = country || JSON.parse(localStorage?.getItem('checkoutForm')).country || ''
-        if(cartItems[0]) {
-            if(!loading) {
+        if (cartItems[0]) {
+            if (!loading) {
                 setLoading(true)
-                if(userData.email) {
+                if (userData.email) {
                     try {
-                        const order_data = {user: userData, products: cartItems, contact: newData, subtotal: subTotal, tax: tax, total: total}
+                        const order_data = { user: userData, products: cartItems, contact: newData, subtotal: subTotal, tax: tax, total: total }
                         const stripe = await stripePromise;
                         const response = await fetch('/api/checkout', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
                             },
-                            body: JSON.stringify({items: cartItems, order: order_data})
+                            body: JSON.stringify({ items: cartItems, order: order_data })
                         })
                         const session = await response.json()
                         console.log(session)
                         session.error ? toast.error(session.error) :
-                        clearCart()
+                            clearCart()
                         await stripe.redirectToCheckout({
                             sessionId: session.id,
                         });
@@ -67,7 +86,8 @@ export default function Index() {
                 }
                 else {
                     setLoading(false)
-                    router.push('/login')
+                    // Redirect to login with callbackUrl to return to checkout after auth
+                    router.push('/login?callbackUrl=/checkout')
                 }
             }
         }
@@ -181,7 +201,7 @@ class PrintableArea extends React.Component {
 }
 
 
-const CheckoutOrderSummery = ({quantity, total}) => {
+const CheckoutOrderSummery = ({ quantity, total }) => {
     return (
         <div>
             <div className='md:px-5'>

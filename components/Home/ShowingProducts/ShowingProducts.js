@@ -3,27 +3,31 @@ import Button from '../../Shared/Button';
 import ProductLists from '../../Shared/ProductLists/ProductLists';
 import toast from 'react-hot-toast';
 import { Metadata } from '../../../store/createStore';
+import Spinner from '../../Shared/Loader/Spinner';
 
-const ShowingProducts = ({ classAdd = '' }) => {
+const ShowingProducts = ({ classAdd = '', initialMetadata, initialProductsData }) => {
     const metadata = Metadata()
     const [selectedCategory, setSelectedCategory] = useState('all')
-    const [productsData, setProductsData] = useState(null)
+    const [productsData, setProductsData] = useState(initialProductsData?.data || null)
     const [loading, setLoading] = useState(false)
     const [offset, setOffset] = useState(0)
-    const [allLoaded, setAllLoaded] = useState(false)
-    const [limit, setLimit] = useState(null)
-    const [categoryLists, setCategoryLists] = useState(null)
+    const [allLoaded, setAllLoaded] = useState(initialProductsData?.allLoaded || false)
+    const [limit, setLimit] = useState(10)
+    const [categoryLists, setCategoryLists] = useState(initialMetadata?.categories ? ['all', ...initialMetadata.categories] : null)
     const [animate, setAnimate] = useState(false)
 
     useEffect(() => {
         if (metadata?.data) {
-            setLimit(metadata?.data?.product_show_quantity)
             setCategoryLists(['all', ...metadata?.data?.categories])
         }
     }, [metadata.data])
 
     useEffect(() => {
-        if (limit) {
+        // Only fetch if we don't have initial data OR if the user has interacted (changed category or offset)
+        // We check if productsData matches initialProductsData to know if it's the first render with SSR data
+        const isInitialRender = productsData === initialProductsData?.data && selectedCategory === 'all' && offset === 0;
+
+        if (limit && !isInitialRender) {
             setLoading(true)
             setAllLoaded(false)
             try {
@@ -42,7 +46,7 @@ const ShowingProducts = ({ classAdd = '' }) => {
                             toast.error(result.error || 'Something went wrong.')
                         }
                         else {
-                            if (productsData === null) {
+                            if (productsData === null || offset === 0) {
                                 setProductsData(result.data)
                             }
                             else {
@@ -76,12 +80,12 @@ const ShowingProducts = ({ classAdd = '' }) => {
                         ))
                     }
                 </ul>
-                {
-                    loading && <span className='text-center block mt-2 mb-2 text-lg'>Loading...</span>
-                }
                 <div>
                     {productsData !== null && <ProductLists productClass='rounded-md' selectedCategory={selectedCategory} listProducts={null} data={productsData} animate={animate} />}
                 </div>
+                {
+                    loading && <div className='flex justify-center mt-8 mb-8'><Spinner /></div>
+                }
                 {
                     !loading && (!allLoaded && <div onClick={() => setOffset(offset + limit || 0)} className='flex justify-center mt-16'>
                         <Button classAdd='max-w-fit px-20 uppercase' >

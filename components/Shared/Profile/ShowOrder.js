@@ -22,27 +22,54 @@ export default function ShowOrder({ data, orderId, setOrderId }) {
     }, [createdAt])
 
     return (
-        <div className={`border-t border-gray-200 w-full`}>
-            <div className="flex justify-between items-center h-16 text-black bg-gray-100 p-2 gap-3">
-                <div className="text-sm md:text-base flex-1">
-                    <h1>ID: {order_id}</h1>
-                    <h1 className="flex gap-1">Status: <h1 className="uppercase font-medium">{payment_status !== 'paid' && payment_url !== null ? <h1>Unpaid - <a className="text-blue-500 cursor-pointer hover:underline text-sm font-bold uppercase" href={payment_url}>Pay now</a></h1> : payment_status}</h1></h1>
-                </div>
-                <div className="flex flex-1 justify-between items-center">
-                    <div className="text-sm md:text-base">
-                        <h1>{date}</h1>
-                        <h1>Total: ৳{total}</h1>
+        <div className={`border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow duration-200 w-full`}>
+            <div
+                onClick={() => setOrderId(orderId === _id ? '' : _id)}
+                className="flex flex-col md:flex-row justify-between items-center p-4 cursor-pointer bg-white hover:bg-gray-50 transition-colors gap-4"
+            >
+                <div className="flex flex-col gap-1 w-full md:w-auto">
+                    <div className="flex items-center gap-3">
+                        <span className="font-semibold text-gray-800">#{order_id}</span>
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium uppercase tracking-wide ${payment_status === 'paid'
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-yellow-100 text-yellow-700'
+                            }`}>
+                            {payment_status}
+                        </span>
                     </div>
-                    {
-                        orderId === _id ? <FaMinus onClick={() => setOrderId('')} className="bg-white text-gray-700 w-7 h-7 p-2 rounded-sm cursor-pointer" /> : <FaPlus onClick={() => setOrderId(_id)} className="bg-white text-gray-700 w-7 h-7 p-2 rounded-sm cursor-pointer" />
-                    }
+                    <span className="text-sm text-gray-500">{date}</span>
+                </div>
+
+                <div className="flex items-center justify-between w-full md:w-auto gap-6">
+                    <div className="flex flex-col items-end">
+                        <span className="text-sm text-gray-500">Total Amount</span>
+                        <span className="font-bold text-gray-900">৳{total}</span>
+                    </div>
+
+                    {payment_status !== 'paid' && payment_url && (
+                        <a
+                            href={payment_url}
+                            onClick={(e) => e.stopPropagation()}
+                            className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 transition-colors"
+                        >
+                            Pay Now
+                        </a>
+                    )}
+
+                    <div className={`transform transition-transform duration-200 ${orderId === _id ? 'rotate-180' : ''}`}>
+                        <FaMinus className={`w-4 h-4 text-gray-400 ${orderId === _id ? 'block' : 'hidden'}`} />
+                        <FaPlus className={`w-4 h-4 text-gray-400 ${orderId !== _id ? 'block' : 'hidden'}`} />
+                    </div>
                 </div>
             </div>
-            <div className={`bg-white grid grid-rows-[0fr] duration-500 ${orderId === _id && 'grid-rows-[1fr]'}`}>
+
+            <div className={`grid grid-rows-[0fr] transition-all duration-300 ease-in-out ${orderId === _id ? 'grid-rows-[1fr] border-t border-gray-100' : ''}`}>
                 <div className="overflow-hidden">
-                    {
-                        products.map(product => <SingleOrderShow key={product._id} data={product} />)
-                    }
+                    <div className="p-4 bg-gray-50">
+                        {
+                            products.map(product => <SingleOrderShow key={product._id} data={product} />)
+                        }
+                    </div>
                 </div>
             </div>
         </div>

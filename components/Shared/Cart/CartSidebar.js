@@ -5,10 +5,12 @@ import { GrClose } from 'react-icons/gr';
 import { RiCloseLine } from 'react-icons/ri';
 import { cartStore } from '../../../store/createStore';
 import Button from '../Button'
+import { useSession } from 'next-auth/react';
 
 const CartSidebar = ({ cart }) => {
     let [showCart, setShowCart] = cart;
     const router = useRouter();
+    const { data: session } = useSession();
     const cartItems = cartStore((state) => (state.items));
     const [subTotal, setSubTotal] = useState(0)
     const [tax, setTax] = useState(0)
@@ -31,6 +33,10 @@ const CartSidebar = ({ cart }) => {
 
     const checkout = async (e) => {
         e.preventDefault()
+        if (!session?.user) {
+            router.push(`/login?callbackUrl=${encodeURIComponent('/checkout')}`);
+            return;
+        }
         router.push('/checkout')
     }
     return (

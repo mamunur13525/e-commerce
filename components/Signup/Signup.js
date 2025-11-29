@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { FormBox } from '../Login/Login';
 
-const Signup = () => {
+const Signup = ({ callbackUrl }) => {
     const router = useRouter();
     const inputFeilds = [
         {
@@ -44,7 +44,7 @@ const Signup = () => {
                                 <span>Sign Up </span>
                                 <span className='text-base text-gray-500 font-normal cursor-pointer' onClick={() => router.push('login')}> / Log in</span>
                             </p>
-                            <FormBox inputFeilds={inputFeilds} submitBtn="Register" apiType="register" />
+                            <FormBox inputFeilds={inputFeilds} submitBtn="Register" apiType="register" callbackUrl={callbackUrl} />
                             <p className="text-center text-gray-500 text-xs mt-5">
                                 &copy;2020 Acme Corp. All rights reserved.
                             </p>

@@ -71,6 +71,12 @@ export const authOptions = {
   },
 
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith(baseUrl)) return url;
+      if (url.startsWith('/')) return `${baseUrl}${url}`;
+      return baseUrl;
+    },
+
     async jwt({ token, user }) {
       // If user is passed (on sign in), save it to the token
       if (user) {
@@ -97,6 +103,11 @@ export const authOptions = {
   },
 
   secret: process.env.NEXT_AUTH_SECRET, // Ensure the secret is set for JWT encryption
+
+  pages: {
+    signIn: '/login',
+    error: '/login',
+  },
 };
 
 export default NextAuth(authOptions);

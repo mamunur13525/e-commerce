@@ -15,9 +15,11 @@ export async function getServerSideProps(context) {
     const session = await getServerSession(context.req, context.res, authOptions);
 
     if (!session?.user) {
+        // Include callbackUrl to redirect back after login
+        const callbackUrl = encodeURIComponent(context.resolvedUrl);
         return {
             redirect: {
-                destination: '/login',
+                destination: `/login?callbackUrl=${callbackUrl}`,
                 permanent: false,
             },
         };

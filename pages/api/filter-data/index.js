@@ -2,59 +2,48 @@ import { connectMongoDB } from "../../../lib/mongodb";
 import Product from "../../../models/product";
 
 export default async function POST(req, res) {
-    const { offset = 0, limit = 10, searchFilter = false, search = '', price = 100000, rate = 5, cat = ['fruits', 'vegetables', 'nuts'] } = req.body
-    console.log(req.body, 'server')
+    const { offset = 0, limit = 10, searchFilter = false, search = '', price, rate, cat = ['fruits', 'vegetables', 'nuts'] } = req.body;
 
-    await connectMongoDB()
-
-    let newFilterPrice = price
-    let maxPrice = 0
     try {
-        Product.find()
-            .sort({ price: -1 })
-            .limit(1)
-            .then(maxPriceResult => {
-                maxPrice = maxPriceResult[0].price
-                if (price === 0) {
-                    newFilterPrice = maxPrice
-                }
+        await connectMongoDB();
 
-                if (searchFilter) {
-                    Product.find({ name: { $regex: search, $options: 'i' } })
-                        .sort({ updatedAt: -1 })
-                        .skip(offset)
-                        .limit(limit)
-                        .then(result => {
-                            let allLoaded = false
-                            if (result.length < 10) {
-                                allLoaded = true
-                            }
-                            else {
-                                allLoaded = false
-                            }
-                            return res.send({ status: 'success', data: result, allLoaded: allLoaded, maxPrice, message: result[0] ? null : `There is no product with the keywod '${search}'` })
-                        })
-                }
-                else {
-                    Product.find({ "price": { "$lte": newFilterPrice }, "rating": { "$lte": rate }, 'category': { $in: cat } })
-                        .sort({ updatedAt: -1 })
-                        .skip(offset)
-                        .limit(limit)
-                        .then(result => {
-                            let allLoaded = false
-                            if (result.length < 10) {
-                                allLoaded = true
-                            }
-                            else {
-                                allLoaded = false
-                            }
-                            return res.send({ status: 'success', data: result, allLoaded: allLoaded, maxPrice, message: result[0] ? null : `No product found` })
-                        })
-                }
-            })
+        const [maxPriceDoc] = await Product.find().sort({ price: -1 }).limit(1).select('price').lean();
+        const maxPrice = maxPriceDoc?.price || 100000;
+        const filterPrice = price || maxPrice;
+
+        let query, result;
+
+        if (searchFilter && search) {
+            query = Product.find({ name: { $regex: search, $options: 'i' } });
+        } else {
+            query = Product.find({
+                price: { $lte: filterPrice },
+                ...(rate && { rating: { $lte: rate } }),
+                category: { $in: cat }
+            });
+        }
+
+        result = await query
+            .sort({ updatedAt: -1 })
+            .skip(offset)
+            .limit(limit)
+            .lean();
+
+        const allLoaded = result.length < limit;
+        const message = result.length === 0
+            ? (searchFilter ? `No products found for "${search}"` : 'No products match your filters')
+            : null;
+
+        return res.status(200).json({
+            status: 'success',
+            data: result,
+            allLoaded,
+            maxPrice,
+            message
+        });
     } catch (error) {
-        return res.send({ message: error || 'Internal server error' })
+        console.error('Filter API Error:', error);
+        return res.status(500).json({ status: 'error', message: 'Internal server error' });
     }
 }
-
 

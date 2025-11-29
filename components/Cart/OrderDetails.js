@@ -5,8 +5,10 @@ import { AiOutlineCheck } from 'react-icons/ai';
 import { RiDeleteBin5Line } from 'react-icons/ri';
 import { UserData, cartStore } from '../../store/createStore';
 import Button from '../Shared/Button';
+import { useSession } from 'next-auth/react';
 
 const OrderDetails = () => {
+    const { data: session } = useSession();
     const allCartItems = cartStore((state) => (state.items))
     const userData = UserData((state) => (state.data))
     const clearCart = cartStore((state) => (state.clearCart))
@@ -26,6 +28,10 @@ const OrderDetails = () => {
 
     const checkout = async (e) => {
         e.preventDefault()
+        if (!session?.user) {
+            router.push(`/login?callbackUrl=${encodeURIComponent('/checkout')}`);
+            return;
+        }
         router.push('/checkout')
     }
 

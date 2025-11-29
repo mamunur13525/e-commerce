@@ -1,25 +1,24 @@
-import debounce from 'lodash.debounce';
 import React from 'react';
 
 const PriceRange = ({ maxPrice, handleFilter, defaultPrice }) => {
+    const currentPrice = defaultPrice || maxPrice;
 
     return (
-        <>
-            <p className='flex items-center justify-between'>
-                <span>Price Range</span>
-                {
-                    defaultPrice != maxPrice ?
-                        <span className='cursor-pointer' onClick={() => handleFilter({ name: 'price', value: null })}>clear</span>
-                        :
-                        null
-                }
-            </p>
-            <div className='mt-2 flex items-center w-full gap-2 pl-2'>
-                <span>$0</span>
-                <input onChange={(e) => handleFilter({ name: 'price', value: parseInt(e.target.value) === maxPrice ? null : e.target.value })} min='1' max={maxPrice} type="range" name="rating" value={defaultPrice || maxPrice} className='bg-green-500 cursor-pointer' />
-                <span>${defaultPrice}</span>
+        <div className='space-y-3'>
+            <div className='flex items-center justify-between text-sm'>
+                <span className='font-medium text-gray-700'>$0</span>
+                <span className='px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-semibold'>${currentPrice}</span>
+                <span className='font-medium text-gray-700'>${maxPrice}</span>
             </div>
-        </>
+            <input
+                onChange={(e) => handleFilter({ name: 'price', value: parseInt(e.target.value) === maxPrice ? null : e.target.value })}
+                min='0'
+                max={maxPrice}
+                type="range"
+                value={currentPrice}
+                className='w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600'
+            />
+        </div>
     );
 };
 
