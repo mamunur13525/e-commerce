@@ -53,7 +53,7 @@ export function CategoryRail() {
             </Link>
           ))}
           <Link
-            href="#"
+            href="/categories"
             className="flex flex-col items-center justify-center p-4 rounded-xl bg-[#d4e157] hover:bg-[#c0cc4b] transition-colors text-[#003d29] text-center gap-2 font-bold"
           >
             <div className="size-8 bg-white/30 rounded-full flex items-center justify-center">

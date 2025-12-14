@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -25,17 +26,22 @@ export function ProductCard({
   const handleIncrement = () => setQuantity((p) => p + 1);
   const handleDecrement = () => setQuantity((p) => Math.max(0, p - 1));
 
+  // Generate a mock slug from the title
+  const slug = title.toLowerCase().replace(/ /g, "-");
+
   return (
-    <div className="bg-white p-6 relative flex flex-col items-center text-center group border">
+    <div className="bg-white p-6 relative flex flex-col items-center text-center group">
       {/* Badge or Tag area if needed */}
 
       {/* Image */}
-      <div className="relative w-32 h-32 mb-4 group-hover:scale-105 transition-transform duration-300">
+      <Link href={`/products/${slug}`} className="relative w-52 h-52 mb-4 group-hover:scale-105 transition-transform duration-300 block">
         <Image src={imageSrc} alt={title} fill className="object-contain" />
-      </div>
+      </Link>
 
       {/* Content */}
-      <h3 className="font-bold text-gray-900 text-lg leading-tight">{title}</h3>
+      <Link href={`/products/${slug}`} className="block">
+        <h3 className="font-bold text-gray-900 text-xl leading-tight hover:text-[#003d29] transition-colors">{title}</h3>
+      </Link>
       <p className="text-sm text-gray-500 my-1">{subtitle}</p>
       <p className="text-xs text-gray-400 mb-3">{weight}</p>
 

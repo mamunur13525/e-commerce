@@ -11,6 +11,7 @@ import {
   // CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import Link from "next/link";
 
 export function Hero() {
   const plugin = React.useRef(
@@ -26,6 +27,7 @@ export function Hero() {
           align: "start",
           loop: true,
           duration: 60, // Smooth transition
+          slidesToScroll: 1,
         }}
       >
         <CarouselContent>
@@ -87,9 +89,11 @@ function HeroSlide({
           {title.split(" ").slice(3).join(" ")}
         </h1>
         <p className="text-lg md:text-xl text-gray-200 max-w-lg">{subtitle}</p>
-        <Button className="bg-[#d4e157] hover:bg-[#c0cc4b] text-[#003d29] font-bold text-lg px-8 py-6 rounded-md shadow-lg transition-transform hover:scale-105">
-          Shop now
-        </Button>
+        <Link href="/shop">
+          <Button className="bg-[#d4e157] hover:bg-[#c0cc4b] text-[#003d29] font-bold text-lg px-8 py-6 rounded-md shadow-lg transition-transform hover:scale-105">
+            Shop now
+          </Button>
+        </Link>
       </div>
 
       {/* Hero Image */}

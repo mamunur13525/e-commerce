@@ -30,6 +30,8 @@ import {
   Home01Icon,
   VegetarianFoodIcon,
 } from "hugeicons-react";
+import { SearchBar } from "@/components/layout/search-bar";
+import { CartSheet } from "@/components/layout/cart-sheet";
 
 export function Navbar() {
   return (
@@ -52,28 +54,28 @@ export function Navbar() {
             </SheetHeader>
             <div className="flex flex-col gap-4 px-4 mt-8">
               <Link
-                href="#"
+                href="/"
                 className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg transition-colors text-lg font-medium"
               >
                 <Home01Icon className="size-6 text-[#003d29]" />
                 Home
               </Link>
               <Link
-                href="#"
+                href="/categories"
                 className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg transition-colors text-lg font-medium"
               >
                 <VegetarianFoodIcon className="size-6 text-[#003d29]" />
                 Shop by Category
               </Link>
               <Link
-                href="#"
+                href="/cart"
                 className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg transition-colors text-lg font-medium"
               >
                 <ShoppingBasket01Icon className="size-6 text-[#003d29]" />
                 My Orders
               </Link>
               <Link
-                href="#"
+                href="/account/settings"
                 className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg transition-colors text-lg font-medium"
               >
                 <Settings02Icon className="size-6 text-[#003d29]" />
@@ -113,18 +115,7 @@ export function Navbar() {
       </div>
 
       {/* Center: Search Bar */}
-      <div className="flex-1 max-w-2xl mx-4 hidden md:block">
-        <div className="relative group">
-          <input
-            type="text"
-            placeholder="Search for Grocery, Stores, Vegetable or Meat"
-            className="w-full h-12 rounded-full pl-6 pr-12 text-gray-900 placeholder:text-gray-500 bg-white focus:outline-none focus:ring-2 focus:ring-[#d4e157] transition-all"
-          />
-          <button className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full hover:bg-gray-100 transition-colors">
-            <Search01Icon className="size-5 text-gray-600" />
-          </button>
-        </div>
-      </div>
+      <SearchBar />
 
       {/* Right: Actions */}
       <div className="flex items-center gap-6">
@@ -137,41 +128,8 @@ export function Navbar() {
           </span>
         </div>
 
-        {/* Cart Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger className="relative p-2 bg-white rounded-full hover:bg-gray-100 transition-colors cursor-pointer outline-none">
-            <ShoppingBasket01Icon className="size-6 text-[#003d29]" />
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold size-5 flex items-center justify-center rounded-full border-2 border-[#003d29]">
-              2
-            </span>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-80">
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>My Cart (2)</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <div className="p-4 flex flex-col gap-4">
-                {/* Placeholder items */}
-                <div className="flex items-center gap-3">
-                  <div className="size-12 bg-gray-100 rounded-md" />
-                  <div>
-                    <p className="font-medium text-sm">Organic Bananas</p>
-                    <p className="text-xs text-gray-500">$4.99</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="size-12 bg-gray-100 rounded-md" />
-                  <div>
-                    <p className="font-medium text-sm">Fresh Milk 1L</p>
-                    <p className="text-xs text-gray-500">$2.50</p>
-                  </div>
-                </div>
-                <Button className="w-full bg-[#003d29] hover:bg-[#002a1c]">
-                  Checkout
-                </Button>
-              </div>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* Cart Sidebar */}
+        <CartSheet />
 
         {/* User Profile Dropdown */}
         <DropdownMenu>
@@ -187,21 +145,27 @@ export function Navbar() {
             <DropdownMenuGroup>
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer">
-                <UserIcon className="mr-2 size-4" />
-                <span>Profile</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                <Settings02Icon className="mr-2 size-4" />
-                <span>Settings</span>
-              </DropdownMenuItem>
+              <Link href="/account/profile">
+                <DropdownMenuItem className="cursor-pointer">
+                  <UserIcon className="mr-2 size-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+              </Link>
+              <Link href="/account/settings">
+                <DropdownMenuItem className="cursor-pointer">
+                  <Settings02Icon className="mr-2 size-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+              </Link>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50">
-                <Logout01Icon className="mr-2 size-4" />
-                <span>Log out</span>
-              </DropdownMenuItem>
+              <Link href="/login">
+                <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50">
+                  <Logout01Icon className="mr-2 size-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </Link>
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
