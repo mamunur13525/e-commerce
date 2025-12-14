@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { PlusSignIcon, Remove01Icon } from "hugeicons-react";
+import { useCartAnimation } from "@/components/context/cart-animation-context";
 
 interface ProductCardProps {
   title: string;
@@ -22,8 +23,16 @@ export function ProductCard({
   imageSrc,
 }: ProductCardProps) {
   const [quantity, setQuantity] = useState(0);
+  const { startAnimation } = useCartAnimation();
+  const imageRef = useRef<HTMLImageElement>(null);
 
-  const handleIncrement = () => setQuantity((p) => p + 1);
+  const handleIncrement = () => {
+    if (quantity === 0 && imageRef.current) {
+      const rect = imageRef.current.getBoundingClientRect();
+      startAnimation(imageSrc, rect);
+    }
+    setQuantity((p) => p + 1);
+  };
   const handleDecrement = () => setQuantity((p) => Math.max(0, p - 1));
 
   // Generate a mock slug from the title
@@ -35,7 +44,7 @@ export function ProductCard({
 
       {/* Image */}
       <Link href={`/products/${slug}`} className="relative w-52 h-52 mb-4 group-hover:scale-105 transition-transform duration-300 block">
-        <Image src={imageSrc} alt={title} fill className="object-contain" />
+        <Image ref={imageRef} src={imageSrc} alt={title} fill className="object-contain" />
       </Link>
 
       {/* Content */}

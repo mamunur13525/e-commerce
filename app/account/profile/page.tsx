@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FloatingInput } from "@/components/ui/floating-input";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { UserIcon, Mail01Icon, SmartPhone01Icon, SecurityCheckIcon } from "hugeicons-react";
 
 export default function ProfilePage() {
     const [isLoading, setIsLoading] = useState(false);
@@ -29,42 +29,56 @@ export default function ProfilePage() {
 
             <form onSubmit={handleSave} className="space-y-8">
                 {/* Personal Information */}
-                <div className="bg-white p-6 rounded-xl border border-gray-100 space-y-4">
+                <div className="bg-white p-6 rounded-xl border border-gray-100 space-y-6">
                     <h2 className="text-lg font-bold text-[#003d29]">Personal Information</h2>
                     <Separator />
-                    <div className="grid gap-4 md:grid-cols-2">
-                        <div className="space-y-2">
-                            <Label htmlFor="full-name">Full Name</Label>
-                            <Input id="full-name" defaultValue="John Doe" placeholder="Enter your full name" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email Address</Label>
-                            <Input id="email" defaultValue="john.doe@example.com" disabled className="bg-gray-50 text-gray-500" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="phone">Phone Number</Label>
-                            <Input id="phone" defaultValue="+1 (555) 000-0000" placeholder="Enter your phone number" />
-                        </div>
+                    <div className="grid gap-6 md:grid-cols-2">
+                        <FloatingInput
+                            id="full-name"
+                            label="Full Name"
+                            defaultValue="John Doe"
+                            startIcon={<UserIcon className="size-5" />}
+                        />
+                        <FloatingInput
+                            id="email"
+                            label="Email Address"
+                            defaultValue="john.doe@example.com"
+                            disabled
+                            className="bg-gray-50 text-gray-500"
+                            startIcon={<Mail01Icon className="size-5" />}
+                        />
+                        <FloatingInput
+                            id="phone"
+                            label="Phone Number"
+                            defaultValue="+1 (555) 000-0000"
+                            startIcon={<SmartPhone01Icon className="size-5" />}
+                        />
                     </div>
                 </div>
 
                 {/* Security */}
-                <div className="bg-white p-6 rounded-xl border border-gray-100 space-y-4">
+                <div className="bg-white p-6 rounded-xl border border-gray-100 space-y-6">
                     <h2 className="text-lg font-bold text-[#003d29]">Security</h2>
                     <Separator />
-                    <div className="grid gap-4 max-w-md">
-                        <div className="space-y-2">
-                            <Label htmlFor="current-password">Current Password</Label>
-                            <Input id="current-password" type="password" placeholder="••••••••" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="new-password">New Password</Label>
-                            <Input id="new-password" type="password" placeholder="Enter new password" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="confirm-password">Confirm New Password</Label>
-                            <Input id="confirm-password" type="password" placeholder="Confirm new password" />
-                        </div>
+                    <div className="grid gap-6 max-w-md">
+                        <FloatingInput
+                            id="current-password"
+                            type="password"
+                            label="Current Password"
+                            startIcon={<SecurityCheckIcon className="size-5" />}
+                        />
+                        <FloatingInput
+                            id="new-password"
+                            type="password"
+                            label="New Password"
+                            startIcon={<SecurityCheckIcon className="size-5" />}
+                        />
+                        <FloatingInput
+                            id="confirm-password"
+                            type="password"
+                            label="Confirm New Password"
+                            startIcon={<SecurityCheckIcon className="size-5" />}
+                        />
                     </div>
                 </div>
 

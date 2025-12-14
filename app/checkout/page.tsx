@@ -322,7 +322,7 @@ export default function CheckoutPage() {
                                 href="/order-confirmation"
                                 className={cn(
                                     buttonVariants(),
-                                    "w-full bg-[#beef63] hover:bg-[#aedf4d] text-[#003d29] font-bold rounded-full py-6 text-base flex justify-center items-center sm:h-auto"
+                                    "w-full bg-[#beef63] hover:bg-[#aedf4d] text-[#003d29] font-bold rounded-full py-3.5 text-base flex justify-center items-center sm:h-auto"
                                 )}
                             >
                                 Confirm order

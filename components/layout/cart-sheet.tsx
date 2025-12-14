@@ -12,8 +12,11 @@ import {
 import { ShoppingBasket01Icon, Delete02Icon } from "hugeicons-react";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
+import { useCartAnimation } from "@/components/context/cart-animation-context";
 
 export function CartSheet() {
+    const { registerCartIcon } = useCartAnimation();
+
     const cartItems = [
         {
             id: 1,
@@ -46,10 +49,12 @@ export function CartSheet() {
     return (
         <Sheet>
             <SheetTrigger className="relative p-2 bg-white rounded-full hover:bg-gray-100 transition-colors cursor-pointer outline-none">
-                <ShoppingBasket01Icon className="size-6 text-[#003d29]" />
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold size-5 flex items-center justify-center rounded-full border-2 border-[#003d29]">
-                    {cartItems.length}
-                </span>
+                <div ref={registerCartIcon} className="relative flex items-center justify-center">
+                    <ShoppingBasket01Icon className="size-6 text-[#003d29]" />
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold size-5 flex items-center justify-center rounded-full border-2 border-[#003d29]">
+                        {cartItems.length}
+                    </span>
+                </div>
             </SheetTrigger>
             <SheetContent className="flex flex-col w-full sm:max-w-md p-0 gap-0">
                 <SheetHeader className="p-6 border-b">

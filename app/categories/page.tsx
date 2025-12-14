@@ -62,7 +62,7 @@ const CATEGORIES = [
 
 export default function CategoriesPage() {
     return (
-        <div className="min-h-screen bg-white py-12">
+        <div className="bg-white pt-12 pb-48">
             <div className="max-w-7xl mx-auto px-4">
                 <div className="text-center max-w-2xl mx-auto mb-16">
                     <h1 className="text-4xl font-bold text-[#003d29] mb-4">Browse Categories</h1>
