@@ -70,20 +70,10 @@ export default function SignupPage() {
                     </div>
                 </div>
 
-                <Button className="w-full h-12 text-base font-semibold bg-[#003d29] hover:bg-[#002a1c] text-white shadow-md shadow-emerald-900/20">
-                    Create Account
-                </Button>
-
-                <div className="relative py-4">
-                    <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t border-gray-200" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-white px-4 text-gray-500">Or Register With</span>
-                    </div>
-                </div>
-
-                <div className="grid">
+                <div className="grid gap-3">
+                    <Button className="w-full h-12 text-base font-semibold bg-[#003d29] hover:bg-[#002a1c] text-white shadow-md shadow-emerald-900/20">
+                        Create Account
+                    </Button>
                     <Button variant="outline" type="button" className="h-12 border-gray-200 hover:bg-gray-50 bg-gray-50/50">
                         <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />

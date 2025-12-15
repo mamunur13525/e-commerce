@@ -55,28 +55,28 @@ export function Navbar() {
             <div className="flex flex-col gap-4 px-4 mt-8">
               <Link
                 href="/"
-                className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg transition-colors text-lg font-medium"
+                className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
               >
                 <Home01Icon className="size-6 text-[#003d29]" />
                 Home
               </Link>
               <Link
                 href="/categories"
-                className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg transition-colors text-lg font-medium"
+                className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
               >
                 <VegetarianFoodIcon className="size-6 text-[#003d29]" />
                 Shop by Category
               </Link>
               <Link
                 href="/cart"
-                className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg transition-colors text-lg font-medium"
+                className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
               >
                 <ShoppingBasket01Icon className="size-6 text-[#003d29]" />
                 My Orders
               </Link>
               <Link
                 href="/account/settings"
-                className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg transition-colors text-lg font-medium"
+                className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
               >
                 <Settings02Icon className="size-6 text-[#003d29]" />
                 Settings
@@ -87,7 +87,7 @@ export function Navbar() {
 
         <Link href="/" className="flex items-center gap-2">
           {/* Logo */}
-          <div className="relative size-6">
+          <div className="relative size-9">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -110,7 +110,7 @@ export function Navbar() {
               />
             </svg>
           </div>
-          <span className="text-xl font-semibold tracking-tight">Gromuse</span>
+          <span className="text-xl font-semibold tracking-tight">Garden Shop</span>
         </Link>
       </div>
 
@@ -129,6 +129,19 @@ export function Navbar() {
         </div>
 
         {/* Cart Sidebar */}
+        <Link
+          href="/wishlist"
+          className="relative p-2 hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+          {/* Badge for wishlist count */}
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+            0
+          </span>
+        </Link>
+
         <CartSheet />
 
         {/* User Profile Dropdown */}

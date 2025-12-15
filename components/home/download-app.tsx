@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 
 export function DownloadAppBanner() {
     return (
@@ -19,7 +18,7 @@ export function DownloadAppBanner() {
 
                 {/* Content */}
                 <div className="relative z-10 max-w-xl text-center lg:text-left">
-                    <h2 className="mb-4 text-3xl font-bold leading-tight text-white md:text-5xl lg:text-5xl">
+                    <h2 className="mb-14 text-3xl font-bold leading-tight text-white md:text-5xl">
                         Stay Home and Get All Your Essentials From Our Market!
                     </h2>
                     <p className="mb-8 text-lg text-white/80">
@@ -64,18 +63,14 @@ export function DownloadAppBanner() {
 
                 {/* Image - Delivery Man */}
                 <div className="relative mt-12 flex justify-center lg:mt-0 lg:absolute lg:right-0 lg:bottom-0">
-                    {/* Using a placeholder div or check if I can generate an image later.
-                 For now, a colored silhouette or placeholder.
-             */}
-                    <div className="h-[400px] w-[350px] bg-orange-500/0 relative">
-                        {/* Masked Image Placeholder */}
-                        <div className="absolute inset-x-0 bottom-0 h-full w-full flex items-end justify-center">
-                            {/* Placeholder for legal reasons + speed, mimicking the delivery man */}
-                            <div className="flex flex-col items-center">
-                                <div className="w-32 h-32 bg-orange-200 rounded-full mb-2"></div>
-                                <div className="w-64 h-80 bg-orange-500 rounded-t-full"></div>
-                            </div>
-                        </div>
+                    <div className="h-[550px] w-auto relative">
+                        <Image
+                            src="/assets/delivery-man.png"
+                            alt="Delivery man with mask and groceries"
+                            width={500}
+                            height={600}
+                            className="h-full w-auto object-contain scale-x-[-1]"
+                        />
                     </div>
                 </div>
             </div>

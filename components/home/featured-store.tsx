@@ -1,27 +1,8 @@
 import Link from "next/link";
 import { ArrowRight01Icon } from "hugeicons-react";
 import { StoreCard } from "@/components/store/store-card";
+import { STORES } from "@/app/stores/page";
 
-const FEATURED_STORES = [
-    {
-        name: "Crush grocery",
-        image: "", // Placeholder or use a real URL if available
-        deliveryTime: "Delivery In 12 minute",
-        colorClass: "bg-orange-500",
-    },
-    {
-        name: "Delivery market",
-        image: "",
-        deliveryTime: "Delivery In 12 minute",
-        colorClass: "bg-blue-600",
-    },
-    {
-        name: "Quality product",
-        image: "",
-        deliveryTime: "Delivery In 12 minute",
-        colorClass: "bg-emerald-400",
-    },
-];
 
 export function FeaturedStore() {
     return (
@@ -40,13 +21,14 @@ export function FeaturedStore() {
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
-                {FEATURED_STORES.map((store, index) => (
+                {STORES.slice(0, 3).map((store, index) => (
                     <StoreCard
                         key={index}
                         name={store.name}
                         image={store.image}
                         deliveryTime={store.deliveryTime}
                         colorClass={store.colorClass}
+                        description={store.description}
                     />
                 ))}
             </div>
