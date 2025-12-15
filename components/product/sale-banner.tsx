@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export function SaleBanner() {
     return (
@@ -15,9 +16,11 @@ export function SaleBanner() {
             </div>
 
             <div className="z-10">
-                <Button className="bg-[#98dbe3] hover:bg-[#85cdd6] text-[#083c66] font-bold px-8 h-12 text-lg rounded-xl">
-                    Shop Sale
-                </Button>
+                <Link href={'/shop'} className="cursor-pointer">
+                    <Button className="bg-[#98dbe3] hover:bg-[#85cdd6] text-[#083c66] font-bold px-8 h-12 text-lg rounded-xl">
+                        Shop Sale
+                    </Button>
+                </Link>
             </div>
         </div>
     );

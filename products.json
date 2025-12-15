@@ -1,0 +1,152 @@
+[
+    {
+        "name": "Beetroot",
+        "description": "Fresh organic beetroot from local farms.",
+        "price": 17.29,
+        "quantity": 50,
+        "weight": "500 gm.",
+        "rating": 4.5,
+        "category": "Vegetables",
+        "discount": 0,
+        "currency": "USD",
+        "image": {
+            "url": "/placeholder-beet.png"
+        },
+        "images": []
+    },
+    {
+        "name": "Italian Avocado",
+        "description": "Premium Italian avocados, rich and creamy.",
+        "price": 12.29,
+        "quantity": 30,
+        "weight": "500 gm.",
+        "rating": 5,
+        "category": "Fruits",
+        "discount": 0,
+        "currency": "USD",
+        "image": {
+            "url": "/placeholder-avocado.png"
+        },
+        "images": []
+    },
+    {
+        "name": "Szam amm",
+        "description": "Processed food item.",
+        "price": 14.29,
+        "quantity": 20,
+        "weight": "500 gm.",
+        "rating": 4,
+        "category": "Frozen food",
+        "discount": 0,
+        "currency": "USD",
+        "image": {
+            "url": "/placeholder-dumplings.png"
+        },
+        "images": []
+    },
+    {
+        "name": "Beef Mixed",
+        "description": "Mixed beef cuts with bone.",
+        "price": 16.29,
+        "quantity": 15,
+        "weight": "500 gm.",
+        "rating": 4.8,
+        "category": "Meat & Ball",
+        "discount": 0,
+        "currency": "USD",
+        "image": {
+            "url": "/placeholder-meat.png"
+        },
+        "images": []
+    },
+    {
+        "name": "Cold drinks",
+        "description": "Refreshing Sprite soft drink.",
+        "price": 18.29,
+        "quantity": 100,
+        "weight": "500 gm.",
+        "rating": 4.2,
+        "category": "Beverages",
+        "discount": 0,
+        "currency": "USD",
+        "image": {
+            "url": "/placeholder-sprite.png"
+        },
+        "images": []
+    },
+    {
+        "name": "Organic Bananas",
+        "description": "Farm fresh bananas.",
+        "price": 4.99,
+        "quantity": 60,
+        "weight": "1 kg",
+        "rating": 4.7,
+        "category": "Fruits",
+        "discount": 0,
+        "currency": "USD",
+        "image": {
+            "url": "/placeholder-banana.png"
+        },
+        "images": []
+    },
+    {
+        "name": "Fresh Milk",
+        "description": "Fresh dairy milk.",
+        "price": 2.50,
+        "quantity": 40,
+        "weight": "1 L",
+        "rating": 4.6,
+        "category": "Dairy & Milk",
+        "discount": 0,
+        "currency": "USD",
+        "image": {
+            "url": "/placeholder-milk.png"
+        },
+        "images": []
+    },
+    {
+        "name": "Chicken Breast",
+        "description": "Skinless chicken breast.",
+        "price": 9.99,
+        "quantity": 25,
+        "weight": "1 kg",
+        "rating": 4.9,
+        "category": "Chicken",
+        "discount": 0,
+        "currency": "USD",
+        "image": {
+            "url": "/placeholder-chicken.png"
+        },
+        "images": []
+    },
+    {
+        "name": "Dark Chocolate",
+        "description": "70% Cocoa dark chocolate.",
+        "price": 3.49,
+        "quantity": 80,
+        "weight": "100 gm",
+        "rating": 4.8,
+        "category": "Chocolate",
+        "discount": 0,
+        "currency": "USD",
+        "image": {
+            "url": "/placeholder-chocolate.png"
+        },
+        "images": []
+    },
+    {
+        "name": "Potato Chips",
+        "description": "Salted potato chips.",
+        "price": 1.99,
+        "quantity": 150,
+        "weight": "150 gm",
+        "rating": 4.3,
+        "category": "Snacks",
+        "discount": 0,
+        "currency": "USD",
+        "image": {
+            "url": "/placeholder-chips.png"
+        },
+        "images": []
+    }
+]

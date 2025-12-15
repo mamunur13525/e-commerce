@@ -56,7 +56,7 @@ export function CartSheet() {
                     </span>
                 </div>
             </SheetTrigger>
-            <SheetContent className="flex flex-col w-full sm:max-w-md p-0 gap-0">
+            <SheetContent className="flex flex-col w-full sm:max-w-md p-0 gap-0 ">
                 <SheetHeader className="p-6 border-b">
                     <SheetTitle className="flex items-center gap-2 text-xl font-bold text-[#003d29]">
                         <ShoppingBasket01Icon className="size-6" />

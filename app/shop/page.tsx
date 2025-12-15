@@ -2,14 +2,7 @@
 
 import { useState } from "react";
 import { FilterSidebar } from "@/components/shop/filter-sidebar";
-import { Button, buttonVariants } from "@/components/ui/button";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { buttonVariants } from "@/components/ui/button";
 import {
     Sheet,
     SheetContent,
@@ -17,86 +10,33 @@ import {
 } from "@/components/ui/sheet";
 import {
     FilterHorizontalIcon,
-    ShoppingBasket01Icon,
-    StarIcon,
 } from "hugeicons-react";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useRef, Suspense } from "react";
+import { useInView } from "react-intersection-observer";
+import { ProductCard } from "@/components/product/product-card";
+import { ProductCardSkeleton } from "@/components/skeleton";
 
-// Mock Product Data
-const ALL_PRODUCTS = [
-    {
-        id: 1,
-        name: "Monstera Deliciosa",
-        price: 45.99,
-        rating: 4.8,
-        reviews: 120,
-        image: "/placeholder-product.jpg",
-        store: "Indoor Jungle",
-        category: "indoor-plants",
-        tags: ["Pet Friendly", "Low Light"]
-    },
-    {
-        id: 2,
-        name: "Fiddle Leaf Fig",
-        price: 85.00,
-        rating: 4.5,
-        reviews: 85,
-        image: "/placeholder-product.jpg",
-        store: "Green Corner",
-        category: "indoor-plants",
-        tags: ["High Light"]
-    },
-    {
-        id: 3,
-        name: "Snake Plant (Sansevieria)",
-        price: 25.99,
-        rating: 4.9,
-        reviews: 200,
-        image: "/placeholder-product.jpg",
-        store: "Desert Vibes",
-        category: "succulents",
-        tags: ["Low Light", "Air Purifying"]
-    },
-    {
-        id: 4,
-        name: "Ceramic Pot - Matte White",
-        price: 18.50,
-        rating: 4.7,
-        reviews: 50,
-        image: "/placeholder-product.jpg",
-        store: "Pottery Barn",
-        category: "pots-planters",
-        tags: []
-    },
-    {
-        id: 5,
-        name: "Organic Potting Mix 10L",
-        price: 12.99,
-        rating: 4.6,
-        reviews: 90,
-        image: "/placeholder-product.jpg",
-        store: "Soil & Earth",
-        category: "fertilizers",
-        tags: []
-    },
-    {
-        id: 6,
-        name: "Pruning Shears",
-        price: 22.99,
-        rating: 4.8,
-        reviews: 156,
-        image: "/placeholder-product.jpg",
-        store: "Garden Tools Co.",
-        category: "garden-tools",
-        tags: []
-    },
-    // Duplicates for demo purposes to show scrolling
-    { id: 7, name: "Rubber Plant", price: 35.00, rating: 4.4, reviews: 45, image: "/placeholder-product.jpg", store: "Indoor Jungle", category: "indoor-plants", tags: [] },
-    { id: 8, name: "Aloe Vera", price: 15.00, rating: 4.7, reviews: 30, image: "/placeholder-product.jpg", store: "Desert Vibes", category: "succulents", tags: ["Air Purifying"] },
-    { id: 9, name: "Peace Lily", price: 28.00, rating: 4.6, reviews: 110, image: "/placeholder-product.jpg", store: "Green Corner", category: "indoor-plants", tags: ["Air Purifying"] },
-    { id: 10, name: "ZZ Plant", price: 32.00, rating: 4.8, reviews: 95, image: "/placeholder-product.jpg", store: "Indoor Jungle", category: "indoor-plants", tags: ["Low Light"] },
-];
+
+interface Product {
+    _id: string;
+    name: string;
+    price: number;
+    rating?: number;
+    image: {
+        url: string;
+        display_url?: string;
+    };
+    store?: {
+        id?: string;
+        name?: string;
+    } | string;
+    category: string;
+    quantity?: number;
+    discount?: number;
+    currency?: string;
+}
 
 export default function ShopPage() {
     return (
@@ -106,14 +46,9 @@ export default function ShopPage() {
     );
 }
 
-import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, Suspense } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useInView } from "react-intersection-observer";
-
 function ShopPageContent() {
     const searchParams = useSearchParams();
-    const [products, setProducts] = useState<typeof ALL_PRODUCTS>([]);
+    const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
@@ -137,37 +72,69 @@ function ShopPageContent() {
     }, [inView]);
 
     const fetchProducts = async (pageNum: number, isNewFilter: boolean) => {
-        setIsLoading(true); // Show local loading state if needed, mostly for initial load
+        setIsLoading(true);
 
-        // Simulate network delay
-        setTimeout(() => {
-            // Filter logic (simulating backend)
-            let filtered = ALL_PRODUCTS;
+        try {
+            // Build query parameters
+            const params = new URLSearchParams();
 
             const category = searchParams.get("category");
             if (category) {
-                filtered = filtered.filter(p => p.category === category);
+                params.append("category", category);
             }
 
-            const minPrice = Number(searchParams.get("minPrice") || 0);
-            const maxPrice = Number(searchParams.get("maxPrice") || 1000);
-            filtered = filtered.filter(p => p.price >= minPrice && p.price <= maxPrice);
+            // Note: The current API doesn't support pagination or price filtering
+            // You may need to extend the API to support these features
+            const limit = searchParams.get("limit") || "20";
+            params.append("limit", limit);
 
-            // Pagination logic (simulating backend)
-            const PER_PAGE = 6;
-            const start = (pageNum - 1) * PER_PAGE;
-            const end = start + PER_PAGE;
-            const newSlice = filtered.slice(start, end);
+            const response = await fetch(`/api/products?${params.toString()}`);
+            const data = await response.json();
 
-            if (isNewFilter) {
-                setProducts(newSlice);
+            if (data.success) {
+                const fetchedProducts = data.data;
+
+                // Client-side price filtering (ideally this should be done on the backend)
+                const minPrice = Number(searchParams.get("minPrice") || 0);
+                const maxPrice = Number(searchParams.get("maxPrice") || 10000);
+                const filtered = fetchedProducts.filter((p: Product) =>
+                    p.price >= minPrice && p.price <= maxPrice
+                );
+
+                if (isNewFilter) {
+                    setProducts(filtered);
+                } else {
+                    setProducts(prev => [...prev, ...filtered]);
+                }
+
+                // For now, disable infinite scroll since API doesn't support pagination
+                setHasMore(false);
             } else {
-                setProducts(prev => [...prev, ...newSlice]);
+                console.error("Failed to fetch products:", data.message);
+                setProducts([]);
+                setHasMore(false);
             }
-
-            setHasMore(end < filtered.length);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+            setProducts([]);
+            setHasMore(false);
+        } finally {
             setIsLoading(false);
-        }, 1000); // 1 second delay
+        }
+    };
+
+    const getCurrencySymbol = (currency?: string): string => {
+        const symbols: Record<string, string> = {
+            'USD': '$',
+            'EUR': '€',
+            'GBP': '£',
+        };
+        return symbols[currency?.toUpperCase() || 'USD'] || '$';
+    };
+
+    const getStoreName = (store?: { id?: string; name?: string } | string): string => {
+        if (typeof store === 'string') return store;
+        return store?.name || 'Unknown Store';
     };
 
     return (
@@ -176,14 +143,15 @@ function ShopPageContent() {
 
                 {/* Page Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                    <div>
-                        <h1 className="text-3xl font-bold text-[#003d29]">Shop</h1>
-                        <p className="text-gray-500 mt-1">
-                            Showing products
-                        </p>
-                    </div>
 
-                    <div className="flex items-center gap-3">
+
+                    <div className="flex items-center justify-between gap-3 w-full">
+                        <div>
+                            <h1 className="text-3xl font-bold text-[#003d29]">Shop</h1>
+                            <p className="text-gray-500 mt-1">
+                                Showing {products.length} products
+                            </p>
+                        </div>
                         {/* Mobile Filter Trigger */}
                         <Sheet>
                             <SheetTrigger className={cn(buttonVariants({ variant: "outline" }), "lg:hidden gap-2")}>
@@ -196,10 +164,12 @@ function ShopPageContent() {
                                 </div>
                             </SheetContent>
                         </Sheet>
+
                     </div>
                 </div>
 
                 <div className="flex gap-6 items-start">
+
                     {/* Desktop Sidebar */}
                     <div className="hidden lg:block w-1/5 shrink-0 top-24 sticky">
                         <FilterSidebar />
@@ -207,69 +177,33 @@ function ShopPageContent() {
 
                     {/* Product Grid */}
                     <div className="flex-1">
+
+
                         {products.length === 0 && !isLoading ? (
                             <div className="text-center py-20 text-gray-500">
                                 No products found matching your filters.
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                 {products.map((product) => (
-                                    <div
-                                        key={`${product.id}-${Math.random()}`} // Random key for demo duplicates if any
-                                        className="bg-white rounded-2xl p-4 border border-gray-100 hover:shadow-lg transition-all duration-300 group flex flex-col"
-                                    >
-                                        {/* Image */}
-                                        <div className="relative aspect-square bg-gray-100 rounded-xl mb-4 overflow-hidden">
-                                            {/* Placeholder Image */}
-                                            <div className="absolute inset-0 flex items-center justify-center text-gray-300">
-                                                <ShoppingBasket01Icon className="size-12 opacity-50" />
-                                            </div>
-                                            <button className="absolute top-3 right-3 size-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white text-gray-500 hover:text-red-500">
-                                                <StarIcon className="size-4" />
-                                            </button>
-                                        </div>
-
-                                        {/* Content */}
-                                        <div className="flex-1 flex flex-col">
-                                            <div className="flex items-start justify-between mb-2">
-                                                <div>
-                                                    <h3 className="font-bold text-[#003d29] line-clamp-1 group-hover:text-[#aedf4d] transition-colors">{product.name}</h3>
-                                                    <p className="text-xs text-gray-500">{product.store}</p>
-                                                </div>
-                                                <span className="font-bold text-[#003d29]">${product.price.toFixed(2)}</span>
-                                            </div>
-
-                                            <div className="flex items-center gap-1 mb-4">
-                                                {[1, 2, 3, 4, 5].map((star) => (
-                                                    <StarIcon
-                                                        key={star}
-                                                        className={cn("size-3", star <= Math.round(product.rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-200")}
-                                                    />
-                                                ))}
-                                                <span className="text-xs text-gray-400 ml-1">({product.reviews})</span>
-                                            </div>
-
-                                            <div className="mt-auto pt-4 border-t border-dashed border-gray-100">
-                                                <Button className="w-full bg-[#003d29] hover:bg-[#002a1c] text-white rounded-full font-semibold h-10 transition-transform group-hover:scale-105">
-                                                    Add to Cart
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <ProductCard
+                                        key={product._id}
+                                        id={product._id}
+                                        title={product.name}
+                                        price={product.price}
+                                        imageSrc={product.image.url || product.image.display_url || "/placeholder-product.jpg"}
+                                        rating={product.rating}
+                                        quantity={product.quantity}
+                                        discount={product.discount}
+                                        currency={product.currency}
+                                    />
                                 ))}
 
                                 {/* Skeletons for loading state */}
                                 {isLoading && (
                                     <>
                                         {[1, 2, 3, 4, 5, 6].map((i) => (
-                                            <div key={`skeleton-${i}`} className="bg-white rounded-2xl p-4 border border-gray-100 space-y-4">
-                                                <Skeleton className="aspect-square w-full rounded-xl" />
-                                                <div className="space-y-2">
-                                                    <Skeleton className="h-4 w-3/4" />
-                                                    <Skeleton className="h-4 w-1/2" />
-                                                </div>
-                                                <Skeleton className="h-10 w-full rounded-full" />
-                                            </div>
+                                            <ProductCardSkeleton key={`skeleton-${i}`} />
                                         ))}
                                     </>
                                 )}
