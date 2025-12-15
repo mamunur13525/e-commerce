@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" width="48" height="32">
+  <rect width="120" height="40" rx="6" fill="#fff"/>
+  <g transform="translate(8,8)">
+    <rect width="16" height="16" rx="3" fill="#7b61ff" />
+    <text x="28" y="12" font-family="Arial, sans-serif" font-size="10" fill="#111">Tabby</text>
+  </g>
+</svg>

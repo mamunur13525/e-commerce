@@ -13,7 +13,6 @@ import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import {
-    ArrowLeft01Icon,
     DeliveryTruck01Icon,
     HeadphonesIcon,
     RefreshIcon,
@@ -63,6 +62,25 @@ function FilterSidebarContent() {
         router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     };
 
+    const toggleCategory = (slug) => {
+        const params = new URLSearchParams(searchParams.toString());
+        const currentCategories = params.get("category")?.split(",") || [];
+
+        if (currentCategories.includes(slug)) {
+            const updatedCategories = currentCategories.filter((cat) => cat !== slug);
+            if (updatedCategories.length > 0) {
+                params.set("category", updatedCategories.join(","));
+            } else {
+                params.delete("category");
+            }
+        } else {
+            currentCategories.push(slug);
+            params.set("category", currentCategories.join(","));
+        }
+
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    };
+
     const [priceRange, setPriceRange] = useState([
         Number(searchParams.get("minPrice") || 0),
         Number(searchParams.get("maxPrice") || 500)
@@ -84,56 +102,76 @@ function FilterSidebarContent() {
         return searchParams.get(section) === value;
     };
 
+    const isCategoryActive = (slug) => {
+        const currentCategories = searchParams.get("category")?.split(",") || [];
+        return currentCategories.includes(slug);
+    };
+
+    const appliedFilters = () => {
+        const filters = [];
+        if (searchParams.has("category")) {
+            filters.push({ name: `Category: ${searchParams.get("category")}`, key: "category" });
+        }
+        if (searchParams.has("minPrice") || searchParams.has("maxPrice")) {
+            const minPrice = searchParams.get("minPrice") || "0";
+            const maxPrice = searchParams.get("maxPrice") || "500";
+            filters.push({ name: `Price: $${minPrice} - $${maxPrice}`, key: "price" });
+        }
+        if (searchParams.has("rating")) {
+            filters.push({ name: `Rating: ${searchParams.get("rating")}★`, key: "rating" });
+        }
+        return filters;
+    };
+
+    const removeFilter = (key) => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (key === "price") {
+            params.delete("minPrice");
+            params.delete("maxPrice");
+        } else {
+            params.delete(key);
+        }
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    };
+
+    const filters = appliedFilters();
+
     return (
         <div className="w-full bg-white p-4 rounded-xl border border-gray-100 h-fit">
             {/* Header */}
             <div className="flex items-center justify-between mb-2">
                 <h2 className="text-xl font-bold text-[#003d29]">Filters</h2>
-                <button
-                    onClick={() => router.push(pathname)}
-                    className="text-xs text-gray-500 hover:text-[#003d29] underline"
-                >
-                    Clear All
-                </button>
+                {filters.length > 0 && (
+                    <button
+                        onClick={() => router.push(pathname)}
+                        className="text-xs text-gray-500 hover:text-[#003d29] underline"
+                    >
+                        Clear All
+                    </button>
+                )}
             </div>
 
-            <Accordion defaultValue={["collections", "categories", "price"]} className="w-full">
-
-                {/* Collections */}
-                <AccordionItem value="collections" className="border-b-gray-100">
-                    <AccordionTrigger className="hover:no-underline text-[#003d29] font-bold">Collections</AccordionTrigger>
-                    <AccordionContent>
-                        <div className="flex flex-wrap gap-2 pt-2">
-                            {["All", "Pet Friendly", "Low Light", "Rare Finds", "Succulents", "Air Purifying"].map(
-                                (tag, i) => {
-                                    const active = isActive("collection", tag) || (tag === "All" && !searchParams.has("collection"));
-                                    return (
-                                        <button
-                                            key={tag}
-                                            onClick={() => {
-                                                if (tag === "All") {
-                                                    const params = new URLSearchParams(searchParams.toString());
-                                                    params.delete("collection");
-                                                    router.replace(`${pathname}?${params.toString()}`);
-                                                } else {
-                                                    toggleFilter("collection", tag);
-                                                }
-                                            }}
-                                            className={cn(
-                                                "px-3 py-1.5 rounded-full text-sm font-medium transition-colors border",
-                                                active
-                                                    ? "bg-[#aedf4d] text-[#003d29] border-[#aedf4d]"
-                                                    : "bg-white text-gray-600 border-gray-200 hover:border-[#003d29] hover:text-[#003d29]"
-                                            )}
-                                        >
-                                            {tag}
-                                        </button>
-                                    )
-                                }
-                            )}
+            {/* Applied Filters */}
+            {filters.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-4">
+                    {filters.map((filter) => (
+                        <div
+                            key={filter.key}
+                            className="flex items-center bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full border border-gray-300"
+                        >
+                            <span>{filter.name}</span>
+                            <button
+                                onClick={() => removeFilter(filter.key)}
+                                className="ml-2 text-gray-500 hover:text-red-500"
+                            >
+                                ✕
+                            </button>
                         </div>
-                    </AccordionContent>
-                </AccordionItem>
+                    ))}
+                </div>
+            )}
+
+            <Accordion defaultValue={["categories", "price", "rating"]} className="w-full">
 
                 {/* Categories */}
                 <AccordionItem value="categories" className="border-b-gray-100">
@@ -152,14 +190,13 @@ function FilterSidebarContent() {
                                 <div
                                     key={cat.name}
                                     className="flex items-center justify-between group cursor-pointer"
-                                    onClick={() => toggleFilter("category", cat.slug)}
                                 >
                                     <div className="flex items-center space-x-3">
                                         <Checkbox
                                             id={cat.name}
-                                            checked={isActive("category", cat.slug)}
-                                            onCheckedChange={() => toggleFilter("category", cat.slug)}
-                                            className="rounded-[4px] border-gray-300 data-[state=checked]:bg-[#003d29] data-[state=checked]:border-[#003d29]"
+                                            checked={isCategoryActive(cat.slug)}
+                                            onCheckedChange={() => toggleCategory(cat.slug)}
+                                            className="rounded-lg border-gray-300 data-[state=checked]:bg-[#003d29] data-[state=checked]:border-[#003d29]"
                                         />
                                         <label
                                             htmlFor={cat.name}
@@ -215,17 +252,17 @@ function FilterSidebarContent() {
                     </AccordionContent>
                 </AccordionItem>
 
-                {/* Size (Pot Size) */}
-                <AccordionItem value="size" className="border-b-gray-100">
-                    <AccordionTrigger className="hover:no-underline text-[#003d29] font-bold">Pot Size</AccordionTrigger>
+                {/* Rating */}
+                <AccordionItem value="rating" className="border-b-gray-100">
+                    <AccordionTrigger className="hover:no-underline text-[#003d29] font-bold">Rating</AccordionTrigger>
                     <AccordionContent>
                         <div className="flex flex-wrap gap-2 pt-2">
-                            {['4"', '6"', '8"', '10"', '12"', '14"+'].map(size => {
-                                const active = isActive("size", size);
+                            {[1, 2, 3, 4, 5].map((star) => {
+                                const active = isActive("rating", star.toString());
                                 return (
                                     <button
-                                        key={size}
-                                        onClick={() => toggleFilter("size", size)}
+                                        key={star}
+                                        onClick={() => toggleFilter("rating", star.toString())}
                                         className={cn(
                                             "w-10 h-10 rounded-full text-xs font-semibold flex items-center justify-center border transition-colors",
                                             active
@@ -233,65 +270,10 @@ function FilterSidebarContent() {
                                                 : "bg-gray-100 text-gray-600 border-transparent hover:border-[#003d29]"
                                         )}
                                     >
-                                        {size}
+                                        {star}★
                                     </button>
                                 );
                             })}
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-
-                {/* Colors */}
-                <AccordionItem value="colors" className="border-b-gray-100">
-                    <AccordionTrigger className="hover:no-underline text-[#003d29] font-bold">Colors</AccordionTrigger>
-                    <AccordionContent>
-                        <div className="flex flex-wrap gap-3 pt-2">
-                            {[
-                                { name: "Green", code: "#4ade80" },
-                                { name: "White", code: "#ffffff" },
-                                { name: "Terracotta", code: "#c2410c" },
-                                { name: "Black", code: "#000000" },
-                                { name: "Yellow", code: "#facc15" },
-                                { name: "Pink", code: "#f472b6" },
-                            ].map((color) => {
-                                const active = isActive("color", color.name);
-                                return (
-                                    <div
-                                        key={color.name}
-                                        className="flex flex-col items-center gap-1 cursor-pointer group"
-                                        onClick={() => toggleFilter("color", color.name)}
-                                    >
-                                        <div
-                                            className={cn(
-                                                "size-8 rounded-full border border-gray-200 shadow-sm transition-all",
-                                                active ? "ring-2 ring-offset-2 ring-[#003d29]" : "group-hover:ring-2 group-hover:ring-offset-2 group-hover:ring-[#003d29]"
-                                            )}
-                                            style={{ backgroundColor: color.code }}
-                                        />
-                                        <span className={cn(
-                                            "text-[10px]",
-                                            active ? "text-[#003d29] font-bold" : "text-gray-500 group-hover:text-[#003d29]"
-                                        )}>{color.name}</span>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-
-                {/* Availability */}
-                <AccordionItem value="availability" className="border-none">
-                    <AccordionTrigger className="hover:no-underline text-[#003d29] font-bold">Availability</AccordionTrigger>
-                    <AccordionContent>
-                        <div className="space-y-3 pt-2">
-                            <div className="flex items-center space-x-3">
-                                <Checkbox id="in-stock" className="rounded-[4px] border-gray-300 data-[state=checked]:bg-[#003d29] data-[state=checked]:border-[#003d29]" defaultChecked />
-                                <label htmlFor="in-stock" className="text-sm font-medium text-gray-600">In Stock (120)</label>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <Checkbox id="out-of-stock" className="rounded-[4px] border-gray-300 data-[state=checked]:bg-[#003d29] data-[state=checked]:border-[#003d29]" />
-                                <label htmlFor="out-of-stock" className="text-sm font-medium text-gray-600">Out of Stock (14)</label>
-                            </div>
                         </div>
                     </AccordionContent>
                 </AccordionItem>

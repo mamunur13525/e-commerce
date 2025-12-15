@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" width="48" height="32">
+  <rect width="120" height="40" rx="6" fill="#fff"/>
+  <g transform="translate(8,9)">
+    <circle cx="8" cy="8" r="6" fill="#00a3ff" />
+    <text x="26" y="13" font-family="Arial, sans-serif" font-size="10" fill="#111">Tamara</text>
+  </g>
+</svg>

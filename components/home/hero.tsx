@@ -12,14 +12,24 @@ import {
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import Link from "next/link";
+import type { HeroSlider } from "@/lib/types/metadata";
 
-export function Hero() {
+interface HeroProps {
+  slides?: HeroSlider[];
+}
+
+export function Hero({ slides }: HeroProps) {
+  const heroslides = slides || [];
+
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: true })
   );
 
   return (
-    <section className="relative bg-[#003d29] text-white overflow-hidden pb-12">
+    <section
+      className="relative text-white overflow-hidden pb-12"
+      style={{ backgroundColor: heroslides[0]?.bg_color || "#003d29" }}
+    >
       <Carousel
         plugins={[plugin.current]}
         className="w-full"
@@ -31,22 +41,18 @@ export function Hero() {
         }}
       >
         <CarouselContent>
-          {/* ID 1 */}
-          <CarouselItem>
-            <HeroSlide
-              title="We bring the store to your door"
-              subtitle="Get organic produce and sustainably sourced groceries delivery at up to 4% off grocery."
-              imageSrc="/hero_grocery_bag.png"
-            />
-          </CarouselItem>
-          {/* ID 2 - Duplicate for demo effect */}
-          <CarouselItem>
-            <HeroSlide
-              title="Fresh Vegetables Every Day"
-              subtitle="Farm fresh vegetables delivered directly to your doorstep within minutes."
-              imageSrc="/hero_grocery_bag.png" // Reusing image for now, typically would change
-            />
-          </CarouselItem>
+          {heroslides.map((slide, index) => (
+            <CarouselItem key={index}>
+              <HeroSlide
+                title={slide.title}
+                subtitle={slide.description}
+                imageSrc={slide.image_url}
+                ctaBtn={slide.cta_btn}
+                bgColor={slide.bg_color}
+                ctaLink={slide.cta_btn.link}
+              />
+            </CarouselItem>
+          ))}
         </CarouselContent>
         {/* <CarouselPrevious className="left-4" />
             <CarouselNext className="right-4" /> */}
@@ -71,15 +77,31 @@ export function Hero() {
   );
 }
 
+interface HeroSlideProps {
+  title: string;
+  subtitle: string;
+  imageSrc: string;
+  ctaBtn?: {
+    color: string;
+    text: string;
+    bg_color: string;
+  };
+  bgColor?: string;
+  ctaLink: string;
+}
+
 function HeroSlide({
   title,
   subtitle,
   imageSrc,
-}: {
-  title: string;
-  subtitle: string;
-  imageSrc: string;
-}) {
+  ctaBtn,
+  bgColor = "#003d29",
+  ctaLink,
+}: HeroSlideProps) {
+  const btnBgColor = ctaBtn?.bg_color || "#d4e157";
+  const btnTextColor = ctaBtn?.color || "#003d29";
+  const btnText = ctaBtn?.text || "Shop now";
+
   return (
     <div className="container mx-auto px-6 md:px-12 pt-12 pb-24 md:pt-20 md:pb-32 flex flex-col md:flex-row items-center gap-12">
       {/* Text Content */}
@@ -89,9 +111,15 @@ function HeroSlide({
           {title.split(" ").slice(3).join(" ")}
         </h1>
         <p className="text-lg md:text-xl text-gray-200 max-w-lg">{subtitle}</p>
-        <Link href="/shop">
-          <Button className="bg-[#d4e157] hover:bg-[#c0cc4b] text-[#003d29] font-bold text-lg px-8 py-6 rounded-md shadow-lg transition-transform hover:scale-105">
-            Shop now
+        <Link href={ctaLink || "#"}>
+          <Button
+            style={{
+              backgroundColor: btnBgColor,
+              color: btnTextColor,
+            }}
+            className="font-bold text-lg px-8 py-6 rounded-md shadow-lg transition-transform hover:scale-105"
+          >
+            {btnText}
           </Button>
         </Link>
       </div>
