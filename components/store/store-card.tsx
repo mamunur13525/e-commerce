@@ -7,6 +7,7 @@ interface StoreCardProps {
     image: string;
     deliveryTime: string;
     colorClass: string; // Tailiwind class for background color e.g. "bg-orange-500"
+    description: string;
 }
 
 export function StoreCard({
@@ -14,48 +15,48 @@ export function StoreCard({
     image,
     deliveryTime,
     colorClass,
+    description,
 }: StoreCardProps) {
     return (
-        <div className="group relative flex flex-col overflow-hidden rounded-xl bg-white transition-all  border border-gray-100">
-            {/* Top half with color and pattern */}
-            <div className={cn("relative h-24 w-full overflow-hidden", colorClass)}>
-                <div className="absolute inset-0 opacity-10">
-                    {/* Abstract pattern SVG */}
-                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <pattern id="doodle" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-                                <path d="M10 10c0-5 5-5 5 0s5 5 5 0" stroke="currentColor" fill="none" strokeWidth="2" />
-                                <circle cx="30" cy="30" r="2" fill="currentColor" />
-                                <path d="M0 40 L40 0" stroke="currentColor" strokeWidth="1" opacity="0.5" />
-                            </pattern>
-                        </defs>
-                        <rect width="100%" height="100%" fill="url(#doodle)" />
-                    </svg>
-                </div>
+        <div className="group relative flex flex-col overflow-hidden rounded-[2rem] bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-gray-100 h-full">
+            {/* Top half with color - removed pattern for cleaner look */}
+            <div className={cn("relative h-28 w-full overflow-hidden transition-colors duration-300", colorClass)}>
+                {/* Subtle curve at bottom of header */}
+                <div className="absolute -bottom-6 left-0 right-0 h-10 bg-white rounded-t-[50%] scale-x-110"></div>
+
+                {/* Organic overlay opacity */}
+                <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300" />
             </div>
 
-            {/* Logo container - positioned to overlap */}
-            <div className="absolute left-6 top-14 h-16 w-16 overflow-hidden rounded-full border-4 border-white bg-white">
-                <div className="relative h-full w-full flex items-center justify-center bg-gray-400">
-                    {/* If actual image url is passed we use it, otherwise a placeholder */}
-                    {image ? (
-                        <Image
-                            src={image}
-                            alt={name}
-                            fill
-                            className="object-cover"
-                        />
-                    ) : (
-                        <span className="text-xl font-bold text-gray-300">{name[0]}</span>
-                    )}
+            {/* Logo container - positioned to overlap organically */}
+            <div className="absolute left-1/2 -translate-x-1/2 top-12 h-20 w-20">
+                <div className="relative h-full w-full overflow-hidden rounded-full border-[3px] border-white bg-white shadow-lg group-hover:scale-105 transition-transform duration-300">
+                    <div className="flex h-full w-full items-center justify-center bg-gray-50">
+                        {/* If actual image url is passed we use it, otherwise a placeholder */}
+                        {image ? (
+                            <Image
+                                src={image}
+                                alt={name}
+                                fill
+                                className="object-cover"
+                            />
+                        ) : (
+                            <span className="text-2xl font-black text-gray-300 select-none">{name[0]}</span>
+                        )}
+                    </div>
                 </div>
             </div>
 
             {/* Content */}
-            <div className="flex flex-col px-6 pb-6 pt-10">
-                <h3 className="mb-2 text-xl font-bold text-[#092929]">{name}</h3>
-                <div className="flex items-center text-sm text-gray-500">
-                    <FlashIcon className="mr-1.5 h-4 w-4 fill-amber-400 text-amber-400" />
+            <div className="flex flex-col items-center px-6 pb-8 pt-12 text-center flex-1">
+                <h3 className="mb-2 text-xl font-bold text-[#003d29] tracking-tight group-hover:text-emerald-700 transition-colors">
+                    {name}
+                </h3>
+                <p className="text-sm text-gray-500 mb-4 line-clamp-2 max-w-[200px]">
+                    {description}
+                </p>
+                <div className="mt-auto inline-flex items-center gap-1.5 rounded-full bg-orange-50 px-3 py-1 text-xs font-medium text-orange-700">
+                    <FlashIcon className="size-3.5 fill-orange-500 text-orange-500" />
                     <span>{deliveryTime}</span>
                 </div>
             </div>

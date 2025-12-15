@@ -199,9 +199,9 @@ function ShopPageContent() {
                     </div>
                 </div>
 
-                <div className="flex gap-8 items-start">
+                <div className="flex gap-6 items-start">
                     {/* Desktop Sidebar */}
-                    <div className="hidden lg:block w-1/4 shrink-0 top-24 sticky">
+                    <div className="hidden lg:block w-1/5 shrink-0 top-24 sticky">
                         <FilterSidebar />
                     </div>
 
@@ -212,7 +212,7 @@ function ShopPageContent() {
                                 No products found matching your filters.
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
                                 {products.map((product) => (
                                     <div
                                         key={`${product.id}-${Math.random()}`} // Random key for demo duplicates if any

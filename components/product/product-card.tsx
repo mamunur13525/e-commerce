@@ -39,19 +39,19 @@ export function ProductCard({
   const slug = title.toLowerCase().replace(/ /g, "-");
 
   return (
-    <div className="bg-white p-6 relative flex flex-col items-center text-center group">
+    <div className="bg-white shadow shadow-zinc-100 rounded-lg p-6 relative flex flex-col items-center text-center group ">
       {/* Badge or Tag area if needed */}
 
       {/* Image */}
-      <Link href={`/products/${slug}`} className="relative w-52 h-52 mb-4 group-hover:scale-105 transition-transform duration-300 block">
+      <Link href={`/products/${slug}`} className="relative w-52 h-52 mb-4 group-hover:scale-110 transition-transform duration-300 block">
         <Image ref={imageRef} src={imageSrc} alt={title} fill className="object-contain" />
       </Link>
 
       {/* Content */}
       <Link href={`/products/${slug}`} className="block">
-        <h3 className="font-bold text-gray-900 text-xl leading-tight hover:text-[#003d29] transition-colors">{title}</h3>
+        <h3 className="font-bold text-emerald-800 text-xl leading-tight hover:text-[#003d29] transition-colors">{title}</h3>
       </Link>
-      <p className="text-sm text-gray-500 my-1">{subtitle}</p>
+      <p className="font-semibold text-emerald-900 text-lg leading-tight hover:text-[#003d29] transition-colors my-1">{subtitle}</p>
       <p className="text-xs text-gray-400 mb-3">{weight}</p>
 
       <div className="font-black text-2xl text-[#003d29] mb-4">
@@ -64,26 +64,27 @@ export function ProductCard({
         {quantity === 0 ? (
           <Button
             onClick={handleIncrement}
-            className="w-full bg-gray-100 hover:bg-[#d4e157] text-gray-900 hover:text-[#003d29] font-bold py-6 rounded-xl transition-colors text-2xl"
+            className="w-full h-14 bg-[#F2F4E9] hover:bg-[#d4e157] text-[#003d29] font-bold rounded-b-[50%] rounded-t-2xl transition-all duration-300 shadow-sm hover:shadow-md"
           >
             <PlusSignIcon className="size-6" />
           </Button>
         ) : (
-          <div className="flex items-center justify-between bg-[#d4e157] rounded-xl p-1 shadow-inner">
+          <div className="flex items-center justify-between bg-[#d4e157] rounded-xl p-1 shadow-inner w-full overflow-hidden">
             <button
               onClick={handleDecrement}
-              className="p-3 bg-white/30 rounded-lg hover:bg-white/50 text-[#003d29] transition-colors"
+              className="p-3 bg-white/30 rounded-lg hover:bg-white/50 text-[#003d29] transition-colors animate-slide-out-left"
             >
               <Remove01Icon className="size-5" />
             </button>
-            <span className="font-bold text-xl text-[#003d29]">{quantity}</span>
+            <span className="font-bold text-xl text-[#003d29] animate-in fade-in zoom-in duration-300">{quantity}</span>
             <button
               onClick={handleIncrement}
-              className="p-3 bg-white/30 rounded-lg hover:bg-white/50 text-[#003d29] transition-colors"
+              className="p-3 bg-white/30 rounded-lg hover:bg-white/50 text-[#003d29] transition-colors animate-slide-out-right"
             >
               <PlusSignIcon className="size-5" />
             </button>
           </div>
+
         )}
       </div>
     </div>

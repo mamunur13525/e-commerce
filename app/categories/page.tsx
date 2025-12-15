@@ -5,6 +5,30 @@ import { ArrowRight01Icon } from "hugeicons-react";
 
 const CATEGORIES = [
     {
+        name: "Vegetable",
+        subtitle: "Local market",
+        color: "bg-green-50",
+        icon: "🥦",
+    },
+    {
+        name: "Snacks & Breads",
+        subtitle: "In store delivery",
+        color: "bg-orange-50",
+        icon: "🍞",
+    },
+    {
+        name: "Fruits",
+        subtitle: "Chemical free",
+        color: "bg-yellow-50",
+        icon: "🍊",
+    },
+    {
+        name: "Chicken legs",
+        subtitle: "Frozen Meal",
+        color: "bg-red-50",
+        icon: "🍗",
+    },
+    {
         id: "indoor",
         name: "Indoor Plants",
         subtitle: "Fresh air, fresh mind",
@@ -58,6 +82,7 @@ const CATEGORIES = [
         count: 12,
         slug: "garden-tools"
     },
+
 ];
 
 export default function CategoriesPage() {

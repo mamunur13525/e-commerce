@@ -44,7 +44,7 @@ export default function OrderConfirmationPage() {
                                 href="/"
                                 className={cn(
                                     buttonVariants(),
-                                    "w-full bg-[#aedf4d] hover:bg-[#9ccc3c] text-[#003d29] font-bold rounded-full py-6 text-base shadow-sm hover:shadow-md transition-all sm:h-auto"
+                                    "w-full bg-[#aedf4d] hover:bg-[#9ccc3c] text-[#003d29] font-bold rounded-full py-3 text-base shadow-sm hover:shadow-md transition-all sm:h-auto"
                                 )}
                             >
                                 Continue shopping

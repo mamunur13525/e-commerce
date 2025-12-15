@@ -9,7 +9,7 @@ import { DownloadAppBanner } from "@/components/home/download-app";
 
 export default function Page() {
   return (
-    <main className="bg-[#fafaf9] min-h-screen">
+    <main className="bg-[#f4f6f6] min-h-screen">
       <Hero />
       <CategoryRail />
       <ProductSection title="You might need" />

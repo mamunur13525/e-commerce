@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight01Icon } from "hugeicons-react";
 import { ProductCard } from "@/components/product/product-card";
 import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
 
 // Categories Data
 const CATEGORIES = [
@@ -24,18 +25,19 @@ function SortByCategoryProducts() {
   return (
     <div className="flex items-center gap-3 overflow-x-auto pb-8 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0">
       {CATEGORIES.map((category) => (
-        <button
+        <Button
+
           key={category}
           onClick={() => setActiveCategory(category)}
           className={cn(
-            "px-6 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200",
+            "cursor-pointer px-6 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border duration-200",
             activeCategory === category
-              ? "bg-[#003d29] text-white shadow-md shadow-[#003d29]/10"
-              : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-100/50"
+              ? "hover:bg-[#003d29] bg-[#003d29] text-white   border-[#003d29]"
+              : "shadow shadow-zinc-300/10 bg-white text-gray-600 hover:bg-gray-50  border-gray-100/50"
           )}
         >
           {category}
-        </button>
+        </Button>
       ))}
     </div>
   );
@@ -98,7 +100,7 @@ export function ProductSection({ title, isShowingCategoryFilter = false }: { tit
           <SortByCategoryProducts />
         }
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {PRODUCTS.map((product, idx) => (
             /* Using placeholders for now, images need generation or assets */
             <ProductCard key={idx} {...product} />

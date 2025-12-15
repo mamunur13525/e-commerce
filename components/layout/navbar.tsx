@@ -55,28 +55,28 @@ export function Navbar() {
             <div className="flex flex-col gap-4 px-4 mt-8">
               <Link
                 href="/"
-                className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg transition-colors text-lg font-medium"
+                className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
               >
                 <Home01Icon className="size-6 text-[#003d29]" />
                 Home
               </Link>
               <Link
                 href="/categories"
-                className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg transition-colors text-lg font-medium"
+                className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
               >
                 <VegetarianFoodIcon className="size-6 text-[#003d29]" />
                 Shop by Category
               </Link>
               <Link
                 href="/cart"
-                className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg transition-colors text-lg font-medium"
+                className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
               >
                 <ShoppingBasket01Icon className="size-6 text-[#003d29]" />
                 My Orders
               </Link>
               <Link
                 href="/account/settings"
-                className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg transition-colors text-lg font-medium"
+                className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
               >
                 <Settings02Icon className="size-6 text-[#003d29]" />
                 Settings
@@ -87,7 +87,7 @@ export function Navbar() {
 
         <Link href="/" className="flex items-center gap-2">
           {/* Logo */}
-          <div className="relative size-6">
+          <div className="relative size-9">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -110,7 +110,7 @@ export function Navbar() {
               />
             </svg>
           </div>
-          <span className="text-xl font-semibold tracking-tight">Gromuse</span>
+          <span className="text-xl font-semibold tracking-tight">Garden Shop</span>
         </Link>
       </div>
 

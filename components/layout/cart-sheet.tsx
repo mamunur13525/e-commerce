@@ -51,7 +51,7 @@ export function CartSheet() {
             <SheetTrigger className="relative p-2 bg-white rounded-full hover:bg-gray-100 transition-colors cursor-pointer outline-none">
                 <div ref={registerCartIcon} className="relative flex items-center justify-center">
                     <ShoppingBasket01Icon className="size-6 text-[#003d29]" />
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold size-5 flex items-center justify-center rounded-full border-2 border-[#003d29]">
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold size-4 flex items-center justify-center rounded-full border-2 border-white">
                         {cartItems.length}
                     </span>
                 </div>
@@ -64,11 +64,13 @@ export function CartSheet() {
                     </SheetTitle>
                 </SheetHeader>
 
-                <div className="flex-1 overflow-y-auto p-6">
-                    <div className="flex flex-col gap-6">
+                <div className="flex-1 overflow-y-auto p-3 pr-0">
+                    <div className="flex flex-col">
                         {cartItems.map((item) => (
-                            <div key={item.id} className="flex gap-4">
-                                <div className="size-20 bg-gray-100 rounded-lg shrink-0" />
+                            <div key={item.id} className="flex gap-4 rounded-xl overflow-hidden hover:bg-green-50 px-4 py-3 transition-colors">
+                                <div className="size-16 bg-gray-100 rounded-lg shrink-0 grid place-items-center" >
+                                    <ShoppingBasket01Icon className="size-4 text-[#003d29]/40" />
+                                </div>
                                 <div className="flex-1 flex flex-col justify-between">
                                     <div>
                                         <h4 className="font-semibold text-[#003d29]">{item.name}</h4>
@@ -80,9 +82,9 @@ export function CartSheet() {
                                         <p className="font-bold text-[#003d29]">
                                             ${(item.price * item.quantity).toFixed(2)}
                                         </p>
-                                        <button className="text-red-500 hover:text-red-700 transition-colors">
+                                        <Button variant="ghost" size="icon" type='button' className="cursor-pointer text-red-500 hover:text-red-700 transition-colors">
                                             <Delete02Icon className="size-4" />
-                                        </button>
+                                        </Button>
                                     </div>
                                 </div>
                             </div>
