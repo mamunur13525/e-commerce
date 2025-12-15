@@ -62,7 +62,7 @@ function FilterSidebarContent() {
         router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     };
 
-    const toggleCategory = (slug) => {
+    const toggleCategory = (slug:any) => {
         const params = new URLSearchParams(searchParams.toString());
         const currentCategories = params.get("category")?.split(",") || [];
 
@@ -102,7 +102,7 @@ function FilterSidebarContent() {
         return searchParams.get(section) === value;
     };
 
-    const isCategoryActive = (slug) => {
+    const isCategoryActive = (slug:any) => {
         const currentCategories = searchParams.get("category")?.split(",") || [];
         return currentCategories.includes(slug);
     };
@@ -123,7 +123,7 @@ function FilterSidebarContent() {
         return filters;
     };
 
-    const removeFilter = (key) => {
+    const removeFilter = (key:any) => {
         const params = new URLSearchParams(searchParams.toString());
         if (key === "price") {
             params.delete("minPrice");
