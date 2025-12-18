@@ -1,6 +1,7 @@
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { useQuery, useMutation, UseQueryResult, UseMutationResult } from "@tanstack/react-query";
 import type { Filters } from "@/lib/types/filters";
 import type { Metadata } from "@/lib/types/metadata";
+import type { AuthResponse, LoginCredentials, SignupCredentials } from "@/lib/types/auth";
 
 // ============ PRODUCTS QUERIES ============
 
@@ -170,5 +171,94 @@ export const useMetadata = (): UseQueryResult<Metadata> => {
     },
     staleTime: 1000 * 60 * 60, // 1 hour
     gcTime: 1000 * 60 * 120, // 2 hours
+  });
+};
+
+// ============ AUTH MUTATIONS ============
+
+/**
+ * Sign up a new user
+ */
+export const useSignup = (): UseMutationResult<AuthResponse, Error, SignupCredentials> => {
+  return useMutation({
+    mutationFn: async (credentials: SignupCredentials) => {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
+      });
+
+      const data: AuthResponse = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Signup failed");
+      }
+
+      return data;
+    },
+  });
+};
+
+/**
+ * Login with email and password
+ */
+export const useLogin = (): UseMutationResult<AuthResponse, Error, LoginCredentials> => {
+  return useMutation({
+    mutationFn: async (credentials: LoginCredentials) => {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(credentials),
+      });
+
+      const data: AuthResponse = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Login failed");
+      }
+
+      return data;
+    },
+  });
+};
+
+/**
+ * Login with Google
+ */
+export const useGoogleLogin = (): UseMutationResult<AuthResponse, Error, {
+  googleId: string;
+  email: string;
+  first_name?: string;
+  last_name?: string;
+  image?: string;
+}> => {
+  return useMutation({
+    mutationFn: async (googleData: {
+      googleId: string;
+      email: string;
+      first_name?: string;
+      last_name?: string;
+      image?: string;
+    }) => {
+      const res = await fetch("/api/auth/google", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(googleData),
+      });
+
+      const data: AuthResponse = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Google login failed");
+      }
+
+      return data;
+    },
   });
 };
