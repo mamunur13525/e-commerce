@@ -56,7 +56,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
         "--success-bg": "#ECFDF5",
         "--success-border": "#D1FAE5",
         "--success-text": "#065F46",
-        "--info-bg": "#EFF6FF",
+        "--info-bg": "#003d6d",
         "--info-border": "#DBEAFE",
         "--info-text": "#0F172A",
         "--warning-bg": "#FFFBEB",
@@ -70,8 +70,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
         classNames: {
           toast:
             "cn-toast flex items-start gap-3 p-3 md:p-4 rounded-2xl shadow-2xl backdrop-blur-sm bg-white/70 dark:bg-slate-900/70 border border-white/10 dark:border-white/6 max-w-md",
-          title: "text-sm font-semibold text-slate-900 dark:text-slate-100 pl-4",
-          description: "text-sm text-slate-700 dark:text-slate-300 pl-4",
+          title: "text-white! text-sm font-semibold text-slate-900 dark:text-slate-100 pl-4",
+          description: "text-white! text-sm text-slate-700 dark:text-slate-300 pl-4",
         },
       }}
       {...props}

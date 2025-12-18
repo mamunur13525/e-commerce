@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,84 +12,25 @@ import { cn } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ProductDetailsSkeleton } from "@/components/skeleton";
 import { toast } from "sonner";
-
-interface Product {
-  _id: string;
-  name: string;
-  description: string;
-  weight: string;
-  price: number;
-  image: {
-    url: string;
-    display_url?: string;
-  };
-  images?: any[];
-  category: string;
-  rating?: number;
-  discount?: number;
-  currency?: string;
-  quantity?: number;
-  store?:
-    | {
-        id?: string;
-        name?: string;
-      }
-    | string;
-}
+import { useProduct, type Product } from "@/hooks";
+import { FeaturedStore } from "@/components/home/featured-store";
 
 export default function ProductPage() {
   const params = useParams();
   const productId = params.slug as string;
 
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [cartQuantity, setCartQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const { startAnimation } = useCartAnimation();
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const res = await fetch(`/api/products/${productId}`);
-
-        if (!res.ok) {
-          if (res.status === 404) {
-            throw new Error("Product not found");
-          }
-          throw new Error(`Failed to fetch product: ${res.status}`);
-        }
-
-        const result = await res.json();
-
-        if (result.success) {
-          setProduct(result.data);
-        } else {
-          throw new Error(result.message || "Failed to load product");
-        }
-      } catch (err) {
-        console.error("Error fetching product:", err);
-        setError(
-          err instanceof Error ? err.message : "An unexpected error occurred"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (productId) {
-      fetchProduct();
-    }
-  }, [productId]);
+  // Fetch product using TanStack Query
+  const { data: product, isLoading, error } = useProduct(productId);
 
   const handleIncrement = () => setCartQuantity((p) => p + 1);
   const handleDecrement = () => setCartQuantity((p) => Math.max(1, p - 1));
 
-  if (loading) {
+  if (isLoading) {
     return <ProductDetailsSkeleton />;
   }
 
@@ -99,12 +40,12 @@ export default function ProductPage() {
         <div className="text-center max-w-md mx-auto px-4">
           <div className="text-red-500 text-6xl mb-4">⚠️</div>
           <h1 className="text-2xl font-bold text-gray-800 mb-2">
-            {error === "Product not found"
+            {error?.message === "Product not found"
               ? "Product Not Found"
               : "Oops! Something went wrong"}
           </h1>
           <p className="text-gray-600 mb-6">
-            {error || "Unable to load product details"}
+            {error?.message || "Unable to load product details"}
           </p>
           <Link
             href="/"
@@ -150,7 +91,7 @@ export default function ProductPage() {
           {/* Image Gallery */}
           <div className="space-y-4">
             <div
-              className="relative aspect-square bg-[#f4f6f6] rounded-lg overflow-hidden cursor-zoom-in"
+              className="relative aspect-square bg-[#f4f6f6] rounded-lg overflow-hidden cursor-zoom-in p-8 "
               onClick={() => setIsPreviewOpen(true)}
             >
               {product.discount && product.discount > 0 && (
@@ -167,7 +108,7 @@ export default function ProductPage() {
                 }
                 alt={product.name}
                 fill
-                className="object-contain p-8 animate-in fade-in duration-300"
+                className="object-contain animate-in fade-in duration-300  overflow-hidden"
               />
 
               {/* Navigation Buttons - Bottom Right */}
@@ -490,6 +431,7 @@ export default function ProductPage() {
             </div>
           </div>
         </div>
+      <FeaturedStore />
 
         {/* Related Products */}
         <ProductSection title="You might also like" />

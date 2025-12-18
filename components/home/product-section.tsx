@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { ArrowRight01Icon } from "hugeicons-react";
 import { ProductCard } from "@/components/product/product-card";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { ProductCardSkeleton } from "@/components/skeleton";
+import { useProducts } from "@/hooks";
 
 // Categories Data
 const CATEGORIES = [
@@ -48,68 +49,22 @@ function SortByCategoryProducts({ activeCategory, onCategoryChange }: SortByCate
   );
 }
 
-// Product Interface
-interface Product {
-  _id: string;
-  name: string;
-  description: string;
-  weight: string;
-  price: number;
-  image: {
-    url: string;
-    display_url?: string;
-  };
-  category: string;
-  rating?: number;
-  discount?: number;
-  currency?: string;
-  quantity?: number;
-  images?: any[];
-}
-
 export function ProductSection({ title, isShowingCategoryFilter = false }: { title: string; isShowingCategoryFilter?: boolean }) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState("All");
 
-  const fetchProducts = useCallback(async (category: string) => {
-    setLoading(true);
-    setError(null);
-    try {
-      let url = `/api/products?limit=10`;
-      if (category && category !== "All") {
-        url += `&category=${encodeURIComponent(category)}`;
-      }
+  // Fetch products using TanStack Query
+  const { data: allProducts = [], isLoading, error, refetch } = useProducts(activeCategory === "All" ? undefined : activeCategory, 10);
 
-      const res = await fetch(url);
+  // Memoize filtered products to avoid unnecessary recalculations
+  const products = useMemo(() => allProducts.slice(0, 10), [allProducts]);
 
-      if (!res.ok) {
-        throw new Error(`Failed to fetch products: ${res.status} ${res.statusText}`);
-      }
-
-      const result = await res.json();
-
-      if (result.success) {
-        setProducts(result.data);
-      } else {
-        throw new Error(result.message || 'Failed to load products');
-      }
-    } catch (error) {
-      console.error("Failed to fetch products", error);
-      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
-    } finally {
-      setLoading(false);
-    }
+  const handleCategoryChange = useCallback((category: string) => {
+    setActiveCategory(category);
   }, []);
 
-  useEffect(() => {
-    fetchProducts(activeCategory);
-  }, [fetchProducts, activeCategory]);
-
-  const handleCategoryChange = (category: string) => {
-    setActiveCategory(category);
-  };
+  const handleRetry = useCallback(() => {
+    refetch();
+  }, [refetch]);
 
   return (
     <section className="container mx-auto px-6 md:px-12 pb-24">
@@ -128,7 +83,7 @@ export function ProductSection({ title, isShowingCategoryFilter = false }: { tit
           <SortByCategoryProducts activeCategory={activeCategory} onCategoryChange={handleCategoryChange} />
         }
 
-        {loading ? (
+        {isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {[...Array(10)].map((_, i) => (
               <ProductCardSkeleton key={i} />
@@ -139,9 +94,9 @@ export function ProductSection({ title, isShowingCategoryFilter = false }: { tit
             <div className="max-w-md mx-auto">
               <div className="text-red-500 text-5xl mb-4">⚠️</div>
               <h3 className="text-xl font-bold text-gray-800 mb-2">Oops! Something went wrong</h3>
-              <p className="text-gray-600 mb-6">{error}</p>
+              <p className="text-gray-600 mb-6">{error.message || 'Failed to load products'}</p>
               <button
-                onClick={() => fetchProducts(activeCategory)}
+                onClick={handleRetry}
                 className="px-6 py-2 bg-[#003d29] text-white rounded-lg hover:bg-[#002d1f] transition-colors"
               >
                 Try Again

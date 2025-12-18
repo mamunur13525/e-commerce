@@ -71,21 +71,19 @@ export function CartSheet() {
                                 <div className="size-16 bg-gray-100 rounded-lg shrink-0 grid place-items-center" >
                                     <ShoppingBasket01Icon className="size-4 text-[#003d29]/40" />
                                 </div>
-                                <div className="flex-1 flex flex-col justify-between">
+                                <div className="flex-1 flex items-center justify-between">
                                     <div>
                                         <h4 className="font-semibold text-[#003d29]">{item.name}</h4>
                                         <p className="text-sm text-gray-500">
                                             ${item.price.toFixed(2)} x {item.quantity}
                                         </p>
-                                    </div>
-                                    <div className="flex items-center justify-between">
                                         <p className="font-bold text-[#003d29]">
                                             ${(item.price * item.quantity).toFixed(2)}
                                         </p>
-                                        <Button variant="ghost" size="icon" type='button' className="cursor-pointer text-red-500 hover:text-red-700 transition-colors">
-                                            <Delete02Icon className="size-4" />
-                                        </Button>
                                     </div>
+                                    <Button variant="ghost" size="icon" type='button' className="cursor-pointer text-red-500 hover:text-red-700 transition-colors">
+                                        <Delete02Icon className="size-4" />
+                                    </Button>
                                 </div>
                             </div>
                         ))}

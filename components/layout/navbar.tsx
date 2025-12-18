@@ -22,7 +22,6 @@ import {
 import {
   FlashIcon,
   Menu01Icon,
-  Search01Icon,
   ShoppingBasket01Icon,
   UserIcon,
   Settings02Icon,
@@ -35,7 +34,7 @@ import { CartSheet } from "@/components/layout/cart-sheet";
 
 export function Navbar() {
   return (
-    <nav className="bg-[#003d29] text-white py-4 px-6 md:px-12 flex items-center justify-between gap-4 sticky top-0 z-50">
+    <nav className="bg-[#003d29] backdrop-blur-2xl text-white py-4 px-6 md:px-12 flex items-center justify-between gap-4 sticky top-0 z-50">
       {/* Left: Menu & Logo */}
       <div className="flex items-center gap-4">
         {/* Sidebar Trigger */}
@@ -45,7 +44,7 @@ export function Navbar() {
           </SheetTrigger>
           <SheetContent
             side="left"
-            className="bg-white text-gray-900 w-[300px] sm:w-[350px]"
+            className="bg-white text-gray-900 w-75 sm:w-87.5"
           >
             <SheetHeader>
               <SheetTitle className="text-left px-4 text-xl font-bold text-[#003d29]">

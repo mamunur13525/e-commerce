@@ -33,6 +33,14 @@ export interface DiscountCard {
   cta_btn: CTAButton;
 }
 
+export interface Category {
+  slug: string;
+  name: string;
+  subtitle: string;
+  color: string;
+  icon: string;
+  count: number
+}
 export interface Metadata {
   _id: {
     $oid: string;
@@ -40,4 +48,5 @@ export interface Metadata {
   hero_slider: HeroSlider;
   offers: Offer[];
   discout_cards: DiscountCard[];
+  categories: Category[];
 }

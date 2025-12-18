@@ -6,6 +6,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Toaster } from "@/components/ui/sonner";
 import { CartAnimationProvider } from "@/components/context/cart-animation-context";
 import { CartAnimationLayer } from "@/components/layout/cart-animation-layer";
+import { QueryClientProviderWrapper } from "@/providers/query-client-provider";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -34,16 +35,17 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#f9fafb]`}
       >
-        <CartAnimationProvider>
-          <CartAnimationLayer />
-          <Navbar />
-
-          {children}
-          <Footer />
-          <Toaster
-            duration={5000}
-          />
-        </CartAnimationProvider>
+        <QueryClientProviderWrapper>
+          <CartAnimationProvider>
+            <CartAnimationLayer />
+            <Navbar />
+            {children}
+            <Footer />
+            <Toaster
+              duration={5000}
+            />
+          </CartAnimationProvider>
+        </QueryClientProviderWrapper>
       </body>
     </html>
   );
