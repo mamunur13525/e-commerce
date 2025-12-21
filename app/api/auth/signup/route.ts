@@ -54,7 +54,9 @@ export async function POST(request: Request) {
       first_name: user.first_name,
       last_name: user.last_name,
       email: user.email,
-      image: user.image,
+      phone: user.phone || "",
+      image: user.image || "",
+      addresses: user.addresses || [],
     };
 
     return NextResponse.json({

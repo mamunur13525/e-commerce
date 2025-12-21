@@ -1,3 +1,15 @@
+export interface Address {
+  _id?: string;
+  full_name: string;
+  phone: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  country?: string;
+  isDefault: boolean;
+}
+
 export interface User {
   _id: string;
   first_name: string;
@@ -5,6 +17,9 @@ export interface User {
   email: string;
   image?: string;
   googleId?: string;
+  phone?: string;
+  addresses?: Address[];
+  isPasswordLogin?: boolean
 }
 
 export interface AuthResponse {

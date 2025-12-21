@@ -34,6 +34,57 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    phone: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    addresses: [
+      {
+        full_name: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        street: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        city: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        state: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        zip: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        country: {
+          type: String,
+          default: "United States",
+          trim: true,
+        },
+        isDefault: {
+          type: Boolean,
+          default: false,
+        },
+      },
+    ],
+    passwordResetToken: {
+      type: String,
+      default: null,
+    },
+    passwordResetTokenExpires: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
@@ -42,17 +93,15 @@ const userSchema = new mongoose.Schema(
 );
 
 // Hash password before saving
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password") || !this.password) {
-    return next();
+userSchema.pre("save", async function (this: any) {
+  // Skip if password is not modified or doesn't exist (for Google users)
+  if (!this.isModified("password") || !this.password || this.googleId) {
+    return;
   }
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error: any) {
-    next(error);
-  }
+  
+  // Hash the password
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
 // Method to compare password

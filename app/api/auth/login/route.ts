@@ -30,10 +30,15 @@ export async function POST(request: Request) {
     // Check if user has password (not Google-only user)
     if (!user.password) {
       return NextResponse.json(
-        { success: false, message: "Please login with Google" },
+        {
+          success: false,
+          message: `Please login with Google.
+          You don't have a password.`,
+        },
         { status: 401 }
       );
     }
+  console.log({user:user})
 
     // Verify password
     const isPasswordValid = await user.comparePassword(password);
@@ -56,7 +61,10 @@ export async function POST(request: Request) {
       first_name: user.first_name,
       last_name: user.last_name,
       email: user.email,
-      image: user.image,
+      phone: user.phone || "",
+      image: user.image || "",
+      googleId: user.googleId,
+      addresses: user.addresses || [],
     };
 
     return NextResponse.json({
@@ -72,4 +80,3 @@ export async function POST(request: Request) {
     );
   }
 }
-

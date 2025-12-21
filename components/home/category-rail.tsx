@@ -8,12 +8,12 @@ export function CategoryRail({ categories }: { categories: Category[] }) {
   return (
     <section className="container mx-auto px-6 md:px-12 py-12">
       <div className="flex items-center justify-between gap-4">
-        <div className="flex items-stretch justify-between w-full gap-4">
+        <div className="flex flex-wrap w-full gap-4">
           {categories.map((cat: Category, idx: number) => (
             <Link
               key={idx}
               href="#"
-              className={`flex-1 bg-white flex items-center gap-3 px-4 pt-7 pb-14 rounded-xl transition-transform hover:scale-105 group relative shadow-lg shadow-zinc-200`}
+              className={`w-full sm:max-w-[300px] min-w-[250px] bg-white flex items-center gap-3 px-4 pt-7 pb-14 rounded-xl transition-transform hover:scale-105 group relative shadow-lg shadow-zinc-200`}
             >
               <div className="flex-1 -translate-y-3">
                 <h3 className="font-bold text-gray-900 text-lg leading-tight">

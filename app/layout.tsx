@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { CartAnimationProvider } from "@/components/context/cart-animation-context";
 import { CartAnimationLayer } from "@/components/layout/cart-animation-layer";
 import { QueryClientProviderWrapper } from "@/providers/query-client-provider";
+import { GoogleOAuthProviderWrapper } from "@/providers/google-oauth-provider";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -35,17 +36,19 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#f9fafb]`}
       >
-        <QueryClientProviderWrapper>
-          <CartAnimationProvider>
-            <CartAnimationLayer />
-            <Navbar />
-            {children}
-            <Footer />
-            <Toaster
-              duration={5000}
-            />
-          </CartAnimationProvider>
-        </QueryClientProviderWrapper>
+        <GoogleOAuthProviderWrapper>
+          <QueryClientProviderWrapper>
+            <CartAnimationProvider>
+              <CartAnimationLayer />
+              <Navbar />
+              {children}
+              <Footer />
+              <Toaster
+                duration={5000}
+              />
+            </CartAnimationProvider>
+          </QueryClientProviderWrapper>
+        </GoogleOAuthProviderWrapper>
       </body>
     </html>
   );

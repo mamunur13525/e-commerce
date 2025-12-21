@@ -138,7 +138,7 @@ export function SearchBar() {
 
             {/* Dropdown Results */}
             <div
-                className={`absolute left-0 top-14 w-full bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 transition-[height,opacity] duration-300 ease-out ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                className={`absolute left-0 top-14 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 transition-[height,opacity,width] duration-300 ease-out ${isOpen ? 'opacity-100 w-[130%]' : 'w-full opacity-0 pointer-events-none'}`}
                 style={{ height: isOpen ? (height === 'auto' ? 'auto' : `${height}px`) : '0px' }}
             >
                 <div ref={contentRef}>

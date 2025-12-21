@@ -82,8 +82,10 @@ export async function GET(request: Request) {
       first_name: user.first_name,
       last_name: user.last_name,
       email: user.email,
-      image: user.image,
+      phone: user.phone || "",
+      image: user.image || "",
       googleId: user.googleId,
+      addresses: user.addresses || [],
     };
 
     // Redirect to frontend with token and user info

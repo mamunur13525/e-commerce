@@ -5,11 +5,10 @@ import { generateToken } from "@/lib/jwt";
 
 export async function POST(request: Request) {
   try {
-    await connectToDatabase();
-
+    
     const body = await request.json();
     const { googleId, email, first_name, last_name, image } = body;
-
+    
     // Validation
     if (!googleId || !email) {
       return NextResponse.json(
@@ -17,7 +16,8 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-
+    
+    await connectToDatabase();
     // Find or create user
     let user = await User.findOne({
       $or: [{ googleId }, { email }],
@@ -53,8 +53,10 @@ export async function POST(request: Request) {
       first_name: user.first_name,
       last_name: user.last_name,
       email: user.email,
-      image: user.image,
+      phone: user.phone || "",
+      image: user.image || "",
       googleId: user.googleId,
+      addresses: user.addresses || [],
     };
 
     return NextResponse.json({

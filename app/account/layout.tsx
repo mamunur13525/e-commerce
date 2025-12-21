@@ -10,12 +10,7 @@ const sidebarItems = [
         name: "Profile",
         href: "/account/profile",
         icon: UserIcon,
-    },
-    {
-        name: "Settings",
-        href: "/account/settings",
-        icon: Settings02Icon,
-    },
+    }
 ];
 
 export default function AccountLayout({
