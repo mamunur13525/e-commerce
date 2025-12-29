@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import { StarIcon, FavouriteIcon, ShoppingBag01Icon, TradeUpIcon } from "hugeicons-react";
+import { StarIcon, FavouriteIcon, TradeUpIcon } from "hugeicons-react";
 import { Button } from "@/components/ui/button";
+import { AddToCartButton } from "@/components/product/add-to-cart-button";
+import { toast } from "sonner";
 
 export function ProductInfo() {
     // Mock Countdown
@@ -57,11 +59,17 @@ export function ProductInfo() {
             {/* Actions */}
             <div className="flex flex-col gap-4 py-4 border-b border-gray-100">
                 <div className="flex gap-4">
-                    <Button className="flex-1 bg-[#f0f3f2] text-[#092929] hover:bg-[#e1e6e4] h-12 rounded-full font-bold">
-                        <ShoppingBag01Icon className="mr-2 size-5" />
-                        Add to bucket
-                    </Button>
-                    <Button className="flex-1 bg-[#d4e157] text-[#092929] hover:bg-[#c0ce4e] h-12 rounded-full font-bold">
+                    <AddToCartButton
+                        productId="mock-product-id"
+                        className="flex-1 bg-[#f0f3f2] text-[#092929] hover:bg-[#e1e6e4] h-12 rounded-full font-bold"
+                        onAddToCart={() => {}}
+                    />
+                    <Button
+                        onClick={() => {
+                            toast.success("Proceeding to checkout");
+                        }}
+                        className="flex-1 bg-[#d4e157] text-[#092929] hover:bg-[#c0ce4e] h-12 rounded-full font-bold"
+                    >
                         Buy now
                     </Button>
                 </div>

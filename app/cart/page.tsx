@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
+import Image from "next/image";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -10,57 +11,80 @@ import {
     Delete02Icon,
     Remove01Icon,
     ShoppingBasket01Icon,
+    Loading03Icon,
 } from "hugeicons-react";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { CheckoutProgress } from "@/components/checkout/checkout-progress";
-
-// Mock Data
-const initialCartItems = [
-    {
-        id: 1,
-        name: "Organic Bananas",
-        store: "Shoppers grocery market",
-        price: 4.99,
-        quantity: 1,
-        image: "/placeholder-product.jpg",
-    },
-    {
-        id: 2,
-        name: "Fresh Milk 1L",
-        store: "Shoppers grocery market",
-        price: 2.5,
-        quantity: 1,
-        image: "/placeholder-product.jpg",
-    },
-    {
-        id: 3,
-        name: "Whole Wheat Bread",
-        store: "Loblaws market",
-        price: 3.25,
-        quantity: 2,
-        image: "/placeholder-product.jpg",
-    },
-    {
-        id: 4,
-        name: "Large Brown Eggs",
-        store: "Loblaws market",
-        price: 5.99,
-        quantity: 1,
-        image: "/placeholder-product.jpg",
-    },
-];
+import { useAuthStore } from "@/store/auth-store";
+import { useGetCart, useUpdateCartItem, useRemoveFromCart } from "@/hooks";
+import { toast } from "sonner";
 
 export default function CartPage() {
-    const [cartItems, setCartItems] = useState(initialCartItems);
+    const { isAuthenticated, token } = useAuthStore();
+    const { data: cartItems = [], isLoading } = useGetCart(isAuthenticated ? token : null);
+    const updateCartMutation = useUpdateCartItem(isAuthenticated ? token : null);
+    const removeFromCartMutation = useRemoveFromCart(isAuthenticated ? token : null);
 
     const subtotal = cartItems.reduce(
-        (acc, item) => acc + item.price * item.quantity,
+        (acc, item) => acc + ((item.product?.price || 0) * item.quantity),
         0
     );
     const deliveryFee = 16.0;
     const taxes = 10.0;
     const total = subtotal + deliveryFee + taxes;
+
+    const handleRemoveItem = async (productId: string) => {
+        try {
+            await removeFromCartMutation.mutateAsync(productId);
+            toast.success("Item removed from cart");
+        } catch {
+            toast.error("Failed to remove item");
+        }
+    };
+
+    const handleUpdateQuantity = async (productId: string, newQuantity: number) => {
+        if (newQuantity < 0) return;
+        try {
+            await updateCartMutation.mutateAsync({ productId, quantity: newQuantity });
+        } catch {
+            toast.error("Failed to update quantity");
+        }
+    };
+
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-screen bg-gray-50 p-4 md:p-8 flex items-center justify-center">
+                <Card className="border-none shadow-sm text-center">
+                    <CardContent className="p-12 space-y-6">
+                        <div className="size-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+                            <ShoppingBasket01Icon className="size-10 text-gray-400" />
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-semibold text-gray-600 mb-2">Please Sign In</h3>
+                            <p className="text-gray-500 mb-6">You need to sign in to view your cart</p>
+                        </div>
+                        <Link
+                            href="/login"
+                            className={cn(
+                                buttonVariants(),
+                                "bg-[#003d29] hover:bg-[#002a1c] rounded-full"
+                            )}
+                        >
+                            Sign In
+                        </Link>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gray-50 p-4 md:p-8 flex items-center justify-center">
+                <Loading03Icon className="size-8 animate-spin text-[#003d29]" />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 p-4 md:p-8">
@@ -97,20 +121,32 @@ export default function CartPage() {
                             </div>
                             <CardContent className="p-0">
                                 {cartItems.map((item, index) => (
-                                    <div key={item.id}>
+                                    <div key={item.productId}>
                                         <div className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                                             {/* Product Info */}
                                             <div className="md:col-span-6 flex gap-4">
-                                                <div className="size-20 md:size-24 bg-gray-100 rounded-xl shrink-0 flex items-center justify-center">
-                                                    {/* Placeholder for image */}
-                                                    <ShoppingBasket01Icon className="size-8 text-gray-300" />
-                                                </div>
+                                                <Link href={'/products/'+item.productId} className="size-20 md:size-24 bg-gray-100 rounded-xl shrink-0 flex items-center justify-center overflow-hidden hover:border">
+                                                    {item.product?.image?.url ? (
+                                                        <Image
+                                                            src={item.product.image.url}
+                                                            alt={item.product.name}
+                                                            width={96}
+                                                            height={96}
+                                                            className="object-contain"
+                                                        />
+                                                    ) : (
+                                                        <ShoppingBasket01Icon className="size-8 text-gray-300" />
+                                                    )}
+                                                </Link>
                                                 <div className="flex flex-col justify-center">
-                                                    <h3 className="font-bold text-[#003d29] text-lg">
-                                                        {item.name}
-                                                    </h3>
-                                                    <p className="text-sm text-gray-500">{item.store}</p>
-                                                    <button className="text-red-500 text-sm font-medium flex items-center gap-1 mt-2 hover:underline w-fit">
+                                                    <Link href={'/products/'+item.productId} className="hover:underline font-bold text-[#003d29] text-lg">
+                                                        {item.product?.name || `Product ${item.productId}`}
+                                                    </Link>
+                                                    <button
+                                                        onClick={() => handleRemoveItem(item.productId)}
+                                                        disabled={removeFromCartMutation.isPending}
+                                                        className="text-red-500 text-sm font-medium flex items-center gap-1 mt-2 hover:underline w-fit disabled:opacity-50"
+                                                    >
                                                         <Delete02Icon className="size-4" />
                                                         Remove
                                                     </button>
@@ -121,18 +157,26 @@ export default function CartPage() {
                                             <div className="md:col-span-2 text-center md:text-center flex justify-between md:block">
                                                 <span className="md:hidden text-gray-500 font-medium">Price:</span>
                                                 <span className="font-semibold text-gray-700">
-                                                    ${item.price.toFixed(2)}
+                                                    ${(item.product?.price || 0).toFixed(2)}
                                                 </span>
                                             </div>
 
                                             {/* Quantity Control */}
                                             <div className="md:col-span-2 flex justify-end md:justify-center">
                                                 <div className="flex items-center gap-3 bg-gray-100 rounded-full border px-2 py-1">
-                                                    <button className="p-1 hover:bg-white rounded-full transition-shadow shadow-sm disabled:opacity-50">
+                                                    <button
+                                                        onClick={() => handleUpdateQuantity(item.productId, item.quantity - 1)}
+                                                        disabled={updateCartMutation.isPending || item.quantity <= 1}
+                                                        className="p-1 hover:bg-white rounded-full transition-shadow shadow-sm disabled:opacity-50"
+                                                    >
                                                         <Remove01Icon className="size-4 text-[#003d29]" />
                                                     </button>
                                                     <span className="font-semibold text-[#003d29] w-4 text-center">{item.quantity}</span>
-                                                    <button className="p-1 hover:bg-white rounded-full transition-shadow shadow-sm">
+                                                    <button
+                                                        onClick={() => handleUpdateQuantity(item.productId, item.quantity + 1)}
+                                                        disabled={updateCartMutation.isPending}
+                                                        className="p-1 hover:bg-white rounded-full transition-shadow shadow-sm disabled:opacity-50"
+                                                    >
                                                         <Add01Icon className="size-4 text-[#003d29]" />
                                                     </button>
                                                 </div>
@@ -142,7 +186,7 @@ export default function CartPage() {
                                             <div className="md:col-span-2 text-right md:text-center flex justify-between md:block">
                                                 <span className="md:hidden text-gray-500 font-medium">Total:</span>
                                                 <span className="font-bold text-[#003d29] text-lg">
-                                                    ${(item.price * item.quantity).toFixed(2)}
+                                                    ${((item.product?.price || 0) * item.quantity).toFixed(2)}
                                                 </span>
                                             </div>
                                         </div>

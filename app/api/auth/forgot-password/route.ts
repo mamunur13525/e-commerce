@@ -8,11 +8,15 @@ import nodemailer from "nodemailer";
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
+    user: process.env.NEXT_PUBLIC_EMAIL_USER,
+    pass: process.env.NEXT_PUBLIC_EMAIL_PASS,
   },
 });
 
+console.log({
+    user: process.env.NEXT_PUBLIC_EMAIL_USER,
+    pass: process.env.NEXT_PUBLIC_EMAIL_PASS,
+  })
 export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json();

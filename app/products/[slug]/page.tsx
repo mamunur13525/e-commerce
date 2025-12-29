@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { StarIcon, ArrowLeft01Icon } from "hugeicons-react";
+import { StarIcon, ArrowLeft01Icon, Loading03Icon } from "hugeicons-react";
 import { Button } from "@/components/ui/button";
 import { ProductSection } from "@/components/home/product-section";
 import { useCartAnimation } from "@/components/context/cart-animation-context";
@@ -12,24 +12,57 @@ import { cn } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ProductDetailsSkeleton } from "@/components/skeleton";
 import { toast } from "sonner";
-import { useProduct, type Product } from "@/hooks";
+import { useAddToCart, useProduct, type Product } from "@/hooks";
 import { FeaturedStore } from "@/components/home/featured-store";
+import { useAuthStore } from "@/store/auth-store";
+import { useAuthModalStore } from "@/store/auth-modal-store";
 
 export default function ProductPage() {
   const params = useParams();
   const productId = params.slug as string;
 
-  const [cartQuantity, setCartQuantity] = useState(1);
+  const { isAuthenticated, token } = useAuthStore();
+  const addToCartMutation = useAddToCart(isAuthenticated ? token : null);
+
   const [selectedImage, setSelectedImage] = useState(0);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const { startAnimation } = useCartAnimation();
+  const { openAuthModal } = useAuthModalStore();
+  const imageRef = useRef<HTMLImageElement>(null);
+
 
   // Fetch product using TanStack Query
   const { data: product, isLoading, error } = useProduct(productId);
+  console.log({ imageRef: imageRef?.current?.src })
+  const handleAddToCart = async () => {
+    if (!isAuthenticated) {
+      openAuthModal();
+      return;
+    }
 
-  const handleIncrement = () => setCartQuantity((p) => p + 1);
-  const handleDecrement = () => setCartQuantity((p) => Math.max(1, p - 1));
+    try {
+      await addToCartMutation.mutateAsync({
+        productId,
+        quantity: 1,
+      });
 
+      const targetRef = imageRef && imageRef.current;
+      if (targetRef) {
+        const rect = targetRef.getBoundingClientRect();
+        console.log({ targetSrc: targetRef.src, rect })
+        const originalUrl = decodeURIComponent(
+          targetRef.src.split("url=")[1].split("&")[0]
+        );
+        
+        startAnimation(originalUrl, rect);
+      }
+      toast.success("Added to cart!");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to add to cart"
+      );
+    }
+  };
   if (isLoading) {
     return <ProductDetailsSkeleton />;
   }
@@ -100,6 +133,7 @@ export default function ProductPage() {
                 </div>
               )}
               <Image
+                ref={imageRef}
                 key={selectedImage}
                 src={
                   allImages[selectedImage]?.url ||
@@ -220,11 +254,10 @@ export default function ProductPage() {
                 {[...Array(5)].map((_, i) => (
                   <StarIcon
                     key={i}
-                    className={`size-4 ${
-                      i < Math.floor(product.rating || 0)
-                        ? "text-yellow-400 fill-yellow-400"
-                        : "text-gray-300 fill-gray-300"
-                    }`}
+                    className={`size-4 ${i < Math.floor(product.rating || 0)
+                      ? "text-yellow-400 fill-yellow-400"
+                      : "text-gray-300 fill-gray-300"
+                      }`}
                   />
                 ))}
               </div>
@@ -265,25 +298,20 @@ export default function ProductPage() {
             <div className="flex gap-3 pt-4">
               <Button
                 variant="outline"
-                onClick={() => {
-                  const imageElement = document.querySelector(
-                    `img[alt="${product.name}"]`
-                  ) as HTMLImageElement;
-                  if (imageElement) {
-                    const rect = imageElement.getBoundingClientRect();
-                    const imageSrc =
-                      product.image.url || product.image.display_url || "";
-                    startAnimation(imageSrc, rect);
-                  }
-                }}
+                onClick={handleAddToCart}
                 className="flex-1 h-14 border-2 border-gray-200 hover:bg-gray-50 text-gray-900 font-semibold rounded-full cursor-pointer"
-                disabled={(product.quantity || 0) === 0}
+                disabled={addToCartMutation.isPending}
               >
-                Add to bucket
+                {
+                  addToCartMutation.isPending ?
+                    <Loading03Icon className="w-5 h-5 animate-spin" />
+                    :
+                    "Add to bucket"
+                }
               </Button>
               <Button
                 onClick={() => {
-                  console.log(`Buying ${cartQuantity} of ${product.name}`);
+                  // console.log(`Buying ${cartQuantity} of ${product.name}`);
                 }}
                 className="flex-1 h-14 bg-[#003d29] hover:bg-[#003d29] text-white font-semibold rounded-full cursor-pointer"
                 disabled={(product.quantity || 0) === 0}
@@ -431,7 +459,7 @@ export default function ProductPage() {
             </div>
           </div>
         </div>
-      <FeaturedStore />
+        <FeaturedStore />
 
         {/* Related Products */}
         <ProductSection title="You might also like" />

@@ -71,7 +71,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           toast:
             "cn-toast flex items-center gap-3 p-4 rounded-lg shadow-md border max-w-md",
           title: "text-sm font-semibold pl-2",
-          description: "text-sm",
+          description: "text-sm pl-2",
         },
       }}
       {...props}

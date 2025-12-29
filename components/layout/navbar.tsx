@@ -35,10 +35,12 @@ import { SearchBar } from "@/components/layout/search-bar";
 import { CartSheet } from "@/components/layout/cart-sheet";
 import { useAuthStore } from "@/store/auth-store";
 import { toast } from "sonner";
+import { useState } from "react";
 
 export function Navbar() {
   const router = useRouter();
   const { user, logout, isAuthenticated } = useAuthStore();
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -66,7 +68,7 @@ export function Navbar() {
       {/* Left: Menu & Logo */}
       <div className="flex items-center gap-4">
         {/* Sidebar Trigger */}
-        <Sheet>
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger className="p-2 hover:bg-white/10 rounded-full transition-colors cursor-pointer">
             <Menu01Icon className="size-6 text-white" />
           </SheetTrigger>
@@ -83,6 +85,7 @@ export function Navbar() {
               <Link
                 href="/"
                 className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
+                onClick={() => setSheetOpen(false)}
               >
                 <Home01Icon className="size-6 text-[#003d29]" />
                 Home
@@ -90,6 +93,7 @@ export function Navbar() {
               <Link
                 href="/categories"
                 className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
+                onClick={() => setSheetOpen(false)}
               >
                 <VegetarianFoodIcon className="size-6 text-[#003d29]" />
                 Shop by Category
@@ -97,6 +101,8 @@ export function Navbar() {
               <Link
                 href="/cart"
                 className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
+                onClick={() => setSheetOpen(false)}
+
               >
                 <ShoppingBasket01Icon className="size-6 text-[#003d29]" />
                 My Orders
@@ -104,6 +110,7 @@ export function Navbar() {
               <Link
                 href="/account/settings"
                 className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
+                onClick={() => setSheetOpen(false)}
               >
                 <Settings02Icon className="size-6 text-[#003d29]" />
                 Settings
@@ -170,24 +177,24 @@ export function Navbar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuGroup>
-               <div className="py-2">
-               <DropdownMenuLabel className={'py-0'}>{getUserName()}</DropdownMenuLabel>
-               <div className="px-2 text-sm font-semibold line-clamp-1 overflow-hidden w-full truncate">{user?.email||""}</div>
-               </div>
+                <div className="py-2">
+                  <DropdownMenuLabel className={'py-0'}>{getUserName()}</DropdownMenuLabel>
+                  <div className="px-2 text-sm font-semibold line-clamp-1 overflow-hidden w-full truncate">{user?.email || ""}</div>
+                </div>
                 <DropdownMenuSeparator />
-              <Link href="/account/profile">
-                <DropdownMenuItem className="cursor-pointer">
-                  <UserIcon className="mr-2 size-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-              </Link>
-              <Link href="/wishlist">
-                <DropdownMenuItem className="cursor-pointer">
-                  <HeartAddIcon className="mr-2 size-4" />
-                  <span>Wishlist</span>
-                </DropdownMenuItem>
-              </Link>
-            </DropdownMenuGroup>
+                <Link href="/account/profile">
+                  <DropdownMenuItem className="cursor-pointer">
+                    <UserIcon className="mr-2 size-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                </Link>
+                <Link href="/wishlist">
+                  <DropdownMenuItem className="cursor-pointer">
+                    <HeartAddIcon className="mr-2 size-4" />
+                    <span>Wishlist</span>
+                  </DropdownMenuItem>
+                </Link>
+              </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem

@@ -3,8 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
-    domains: ["i.ibb.co", "ik.imagekit.io"],
+    domains: ["i.ibb.co", "ik.imagekit.io", "localhost"],
+
   },
+  
 };
 
 export default nextConfig;

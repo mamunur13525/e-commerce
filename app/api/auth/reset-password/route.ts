@@ -14,7 +14,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (password.length < 6) {
+    const trimmedPassword = password.trim();
+    if (trimmedPassword.length < 6) {
       return NextResponse.json(
         { message: "Password must be at least 6 characters" },
         { status: 400 }
@@ -42,11 +43,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update password
-    user.password = password;
+    // Update password - explicitly set the password field
+    user.password = trimmedPassword;
     user.passwordResetToken = null;
     user.passwordResetTokenExpires = null;
-    await user.save();
+    user.isPasswordLogin = true;
+    // Mark password as modified to trigger hashing
+    user.markModified("password");
+    
+    // Save the user
+    const savedUser = await user.save();
+    console.log("Password reset for user:", savedUser.email, "Password updated:", !!savedUser.password);
 
     return NextResponse.json(
       { message: "Password reset successfully" },

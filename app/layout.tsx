@@ -5,9 +5,11 @@ import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { Toaster } from "@/components/ui/sonner";
 import { CartAnimationProvider } from "@/components/context/cart-animation-context";
-import { CartAnimationLayer } from "@/components/layout/cart-animation-layer";
+
 import { QueryClientProviderWrapper } from "@/providers/query-client-provider";
 import { GoogleOAuthProviderWrapper } from "@/providers/google-oauth-provider";
+import { AuthModal } from "@/components/auth/auth-modal";
+import { CartAnimationLayer } from "@/components/layout/cart-animation-layer";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -40,11 +42,14 @@ export default function RootLayout({
           <QueryClientProviderWrapper>
             <CartAnimationProvider>
               <CartAnimationLayer />
+              <AuthModal />
               <Navbar />
               {children}
               <Footer />
               <Toaster
                 duration={5000}
+                closeButton
+                position="bottom-left"
               />
             </CartAnimationProvider>
           </QueryClientProviderWrapper>

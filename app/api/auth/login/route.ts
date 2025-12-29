@@ -9,7 +9,8 @@ export async function POST(request: Request) {
 
     const body = await request.json();
     const { email, password } = body;
-
+    const trimmedPassword = password.trim();
+console.log({email, password: trimmedPassword})
     // Validation
     if (!email || !password) {
       return NextResponse.json(
@@ -41,7 +42,10 @@ export async function POST(request: Request) {
   console.log({user:user})
 
     // Verify password
-    const isPasswordValid = await user.comparePassword(password);
+    console.log("Stored password hash:", user.password ? user.password.substring(0, 20) + "..." : "NULL/EMPTY");
+    console.log("Attempting to compare password:", trimmedPassword);
+    const isPasswordValid = await user.comparePassword(trimmedPassword);
+    console.log({isPasswordValid, storedPasswordExists: !!user.password})
     if (!isPasswordValid) {
       return NextResponse.json(
         { success: false, message: "Invalid email or password" },

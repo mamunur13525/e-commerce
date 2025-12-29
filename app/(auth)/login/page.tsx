@@ -11,7 +11,7 @@ import { useLogin } from "@/hooks/api/queries";
 import { useAuthStore } from "@/store/auth-store";
 import { toast } from "sonner";
 
-export default function LoginPage() {
+export default function LoginPage({ onClose }: { onClose: () => void }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
@@ -38,6 +38,7 @@ export default function LoginPage() {
         const user = JSON.parse(decodeURIComponent(userParam));
         setAuth(user, token);
         toast.success("Login successful!");
+      
         router.replace("/");
       } catch (err) {
         toast.error("Failed to process login");
@@ -59,6 +60,7 @@ export default function LoginPage() {
       if (response.success && response.token && response.user) {
         setAuth(response.user, response.token);
         toast.success("Login successful!");
+        onClose?.();
         router.push("/");
       }
     } catch (error: any) {
@@ -170,6 +172,7 @@ export default function LoginPage() {
           <Link
             href="/forgot-password"
             className="text-sm font-semibold text-blue-600 hover:underline"
+            onClick={onClose}
           >
             Forgot Your Password?
           </Link>
@@ -189,6 +192,7 @@ export default function LoginPage() {
           <Link
             href="/signup"
             className="font-semibold text-[#003d29] hover:underline"
+            onClick={onClose}
           >
             Register Now.
           </Link>
