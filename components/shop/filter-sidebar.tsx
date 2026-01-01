@@ -18,10 +18,12 @@ import {
     RefreshIcon,
 } from "hugeicons-react";
 import { cn } from "@/lib/utils";
+import { FiltersSkeleton } from "@/components/skeleton/filters-skeleton";
+import { useFilters } from "@/hooks";
 
 export function FilterSidebar() {
     return (
-        <Suspense fallback={<div>Loading filters...</div>}>
+        <Suspense fallback={<FiltersSkeleton />}>
             <FilterSidebarContent />
         </Suspense>
     );
@@ -32,37 +34,16 @@ function FilterSidebarContent() {
     const router = useRouter();
     const pathname = usePathname();
 
-    // Helper to update URL params
-    const createQueryString = (name: string, value: string) => {
-        const params = new URLSearchParams(searchParams.toString());
+    // Fetch filters using TanStack Query
+    const { data: filters, isLoading } = useFilters();
 
-        // Handle multiple values for same key (arrays)
-        if (value === null) {
-            params.delete(name);
-        } else {
-            // For simplicity in this demo, we'll just set it. 
-            // In a real complex app, you might want toggle logic for arrays.
-            params.set(name, value);
-        }
+    const [priceRange, setPriceRange] = useState([
+        Number(searchParams.get("minPrice") || 0),
+        Number(searchParams.get("maxPrice") || filters?.maxPrice || 500)
+    ]);
 
-        return params.toString();
-    };
-
-    // Helper for specialized toggle logic (arrays like categories)
-    const toggleFilter = (section: string, value: string) => {
-        const params = new URLSearchParams(searchParams.toString());
-        const current = params.get(section);
-
-        if (current === value) {
-            params.delete(section); // rudimentary toggle off
-        } else {
-            params.set(section, value); // rudimentary toggle on (single select behavior for simplicity or replace)
-        }
-
-        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-    };
-
-    const toggleCategory = (slug:any) => {
+    // Helper for category toggle
+    const toggleCategory = (slug: string) => {
         const params = new URLSearchParams(searchParams.toString());
         const currentCategories = params.get("category")?.split(",") || [];
 
@@ -81,49 +62,46 @@ function FilterSidebarContent() {
         router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     };
 
-    const [priceRange, setPriceRange] = useState([
-        Number(searchParams.get("minPrice") || 0),
-        Number(searchParams.get("maxPrice") || 500)
-    ]);
-
-    // Debounce price update
+    // Handle price range changes
     const handlePriceChange = (value: number | readonly number[]) => {
         const val = value as number[];
         setPriceRange(val);
-        // In real app, debounce this URL update
         const params = new URLSearchParams(searchParams.toString());
         params.set("minPrice", val[0].toString());
         params.set("maxPrice", val[1].toString());
         router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     };
 
-    // Check if a value is active
-    const isActive = (section: string, value: string) => {
-        return searchParams.get(section) === value;
-    };
-
-    const isCategoryActive = (slug:any) => {
+    // Check if category is active
+    const isCategoryActive = (slug: string) => {
         const currentCategories = searchParams.get("category")?.split(",") || [];
         return currentCategories.includes(slug);
     };
 
+    // Check if filter is active
+    const isActive = (section: string, value: string) => {
+        return searchParams.get(section) === value;
+    };
+
+    // Get applied filters
     const appliedFilters = () => {
-        const filters = [];
+        const filterList = [];
         if (searchParams.has("category")) {
-            filters.push({ name: `Category: ${searchParams.get("category")}`, key: "category" });
+            filterList.push({ name: `Category: ${searchParams.get("category")}`, key: "category" });
         }
         if (searchParams.has("minPrice") || searchParams.has("maxPrice")) {
             const minPrice = searchParams.get("minPrice") || "0";
             const maxPrice = searchParams.get("maxPrice") || "500";
-            filters.push({ name: `Price: $${minPrice} - $${maxPrice}`, key: "price" });
+            filterList.push({ name: `Price: $${minPrice} - $${maxPrice}`, key: "price" });
         }
         if (searchParams.has("rating")) {
-            filters.push({ name: `Rating: ${searchParams.get("rating")}★`, key: "rating" });
+            filterList.push({ name: `Rating: ${searchParams.get("rating")}★`, key: "rating" });
         }
-        return filters;
+        return filterList;
     };
 
-    const removeFilter = (key:any) => {
+    // Remove individual filter
+    const removeFilter = (key: string) => {
         const params = new URLSearchParams(searchParams.toString());
         if (key === "price") {
             params.delete("minPrice");
@@ -134,14 +112,32 @@ function FilterSidebarContent() {
         router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     };
 
-    const filters = appliedFilters();
+    // Toggle filter
+    const toggleFilter = (section: string, value: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        const current = params.get(section);
+
+        if (current === value) {
+            params.delete(section);
+        } else {
+            params.set(section, value);
+        }
+
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    };
+
+    const appliedFiltersList = appliedFilters();
+
+    if (isLoading) {
+        return <FiltersSkeleton />;
+    }
 
     return (
         <div className="w-full bg-white p-4 rounded-xl border border-gray-100 h-fit">
             {/* Header */}
             <div className="flex items-center justify-between mb-2">
                 <h2 className="text-xl font-bold text-[#003d29]">Filters</h2>
-                {filters.length > 0 && (
+                {appliedFiltersList.length > 0 && (
                     <button
                         onClick={() => router.push(pathname)}
                         className="text-xs text-gray-500 hover:text-[#003d29] underline"
@@ -152,9 +148,9 @@ function FilterSidebarContent() {
             </div>
 
             {/* Applied Filters */}
-            {filters.length > 0 && (
+            {appliedFiltersList.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-4">
-                    {filters.map((filter) => (
+                    {appliedFiltersList.map((filter) => (
                         <div
                             key={filter.key}
                             className="flex items-center bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full border border-gray-300"
@@ -172,34 +168,25 @@ function FilterSidebarContent() {
             )}
 
             <Accordion defaultValue={["categories", "price", "rating"]} className="w-full">
-
                 {/* Categories */}
                 <AccordionItem value="categories" className="border-b-gray-100">
                     <AccordionTrigger className="hover:no-underline text-[#003d29] font-bold">Categories</AccordionTrigger>
                     <AccordionContent>
                         <div className="space-y-3 pt-2">
-                            {[
-                                { name: "Indoor Plants", count: 42, slug: "indoor-plants" },
-                                { name: "Outdoor Plants", count: 28, slug: "outdoor-plants" },
-                                { name: "Succulents & Cacti", count: 15, slug: "succulents" },
-                                { name: "Pots & Planters", count: 64, slug: "pots-planters" },
-                                { name: "Seeds & Bulbs", count: 32, slug: "seeds-bulbs" },
-                                { name: "Garden Tools", count: 12, slug: "garden-tools" },
-                                { name: "Fertilizers & Soil", count: 18, slug: "fertilizers" },
-                            ].map((cat) => (
+                            {filters?.categories?.map((cat) => (
                                 <div
-                                    key={cat.name}
+                                    key={cat.slug}
                                     className="flex items-center justify-between group cursor-pointer"
                                 >
                                     <div className="flex items-center space-x-3">
                                         <Checkbox
-                                            id={cat.name}
+                                            id={cat.slug}
                                             checked={isCategoryActive(cat.slug)}
                                             onCheckedChange={() => toggleCategory(cat.slug)}
                                             className="rounded-lg border-gray-300 data-[state=checked]:bg-[#003d29] data-[state=checked]:border-[#003d29]"
                                         />
                                         <label
-                                            htmlFor={cat.name}
+                                            htmlFor={cat.slug}
                                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-600 group-hover:text-[#003d29] cursor-pointer"
                                         >
                                             {cat.name}
@@ -220,8 +207,8 @@ function FilterSidebarContent() {
                     <AccordionContent>
                         <div className="px-2 py-4">
                             <Slider
-                                defaultValue={[0, 500]}
-                                max={1000}
+                                defaultValue={[0, filters?.maxPrice || 500]}
+                                max={filters?.maxPrice || 1000}
                                 step={10}
                                 value={priceRange}
                                 onValueChange={handlePriceChange}

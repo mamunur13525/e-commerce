@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,40 +23,69 @@ import {
 import {
   FlashIcon,
   Menu01Icon,
-  Search01Icon,
   ShoppingBasket01Icon,
   UserIcon,
   Settings02Icon,
   Logout01Icon,
   Home01Icon,
   VegetarianFoodIcon,
+  HeartAddIcon,
 } from "hugeicons-react";
 import { SearchBar } from "@/components/layout/search-bar";
 import { CartSheet } from "@/components/layout/cart-sheet";
+import { useAuthStore } from "@/store/auth-store";
+import { toast } from "sonner";
+import { useState } from "react";
 
 export function Navbar() {
+  const router = useRouter();
+  const { user, logout, isAuthenticated } = useAuthStore();
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    toast.success("Logged out successfully");
+    router.push("/login");
+  };
+
+  const getInitials = () => {
+    if (user) {
+      const first = user.first_name?.[0]?.toUpperCase() || "";
+      const last = user.last_name?.[0]?.toUpperCase() || "";
+      return first + last || "U";
+    }
+    return "U";
+  };
+
+  const getUserName = () => {
+    if (user) {
+      return `${user.first_name || ""} ${user.last_name || ""}`.trim() || "User";
+    }
+    return "Guest";
+  };
   return (
-    <nav className="bg-[#003d29] text-white py-4 px-6 md:px-12 flex items-center justify-between gap-4 sticky top-0 z-50">
+    <nav className="bg-[#003d29] backdrop-blur-2xl text-white py-4 px-6 md:px-12 flex items-center justify-between gap-4 sticky top-0 z-50">
       {/* Left: Menu & Logo */}
       <div className="flex items-center gap-4">
         {/* Sidebar Trigger */}
-        <Sheet>
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger className="p-2 hover:bg-white/10 rounded-full transition-colors cursor-pointer">
             <Menu01Icon className="size-6 text-white" />
           </SheetTrigger>
           <SheetContent
             side="left"
-            className="bg-white text-gray-900 w-[300px] sm:w-[350px]"
+            className="bg-white text-gray-900 w-75 sm:w-87.5"
           >
             <SheetHeader>
               <SheetTitle className="text-left px-4 text-xl font-bold text-[#003d29]">
-                Gromuse Menu
+                Gromuse
               </SheetTitle>
             </SheetHeader>
             <div className="flex flex-col gap-4 px-4 mt-8">
               <Link
                 href="/"
                 className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
+                onClick={() => setSheetOpen(false)}
               >
                 <Home01Icon className="size-6 text-[#003d29]" />
                 Home
@@ -63,6 +93,7 @@ export function Navbar() {
               <Link
                 href="/categories"
                 className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
+                onClick={() => setSheetOpen(false)}
               >
                 <VegetarianFoodIcon className="size-6 text-[#003d29]" />
                 Shop by Category
@@ -70,6 +101,8 @@ export function Navbar() {
               <Link
                 href="/cart"
                 className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
+                onClick={() => setSheetOpen(false)}
+
               >
                 <ShoppingBasket01Icon className="size-6 text-[#003d29]" />
                 My Orders
@@ -77,6 +110,7 @@ export function Navbar() {
               <Link
                 href="/account/settings"
                 className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
+                onClick={() => setSheetOpen(false)}
               >
                 <Settings02Icon className="size-6 text-[#003d29]" />
                 Settings
@@ -110,7 +144,7 @@ export function Navbar() {
               />
             </svg>
           </div>
-          <span className="text-xl font-semibold tracking-tight">Garden Shop</span>
+          <span className="text-xl font-semibold tracking-tight">Gromuse</span>
         </Link>
       </div>
 
@@ -128,60 +162,61 @@ export function Navbar() {
           </span>
         </div>
 
-        {/* Cart Sidebar */}
-        <Link
-          href="/wishlist"
-          className="relative p-2 hover:bg-white/10 rounded-full transition-colors cursor-pointer"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
-          {/* Badge for wishlist count */}
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-            0
-          </span>
-        </Link>
-
         <CartSheet />
 
         {/* User Profile Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger className="outline-none rounded-full">
-            <Avatar className="size-10 border-2 border-white/20 hover:border-white transition-colors cursor-pointer">
-              <AvatarImage src="/placeholder-user.jpg" />
-              <AvatarFallback className="bg-[#002a1c] text-white">
-                JD
-              </AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        {isAuthenticated && user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger className="outline-none rounded-full">
+              <Avatar className="size-10 border-2 border-white/20 hover:border-white transition-colors cursor-pointer">
+                <AvatarImage src={user.image || "/placeholder-user.jpg"} />
+                <AvatarFallback className="bg-[#002a1c] text-white">
+                  {getInitials()}
+                </AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuGroup>
+                <div className="py-2">
+                  <DropdownMenuLabel className={'py-0'}>{getUserName()}</DropdownMenuLabel>
+                  <div className="px-2 text-sm font-semibold line-clamp-1 overflow-hidden w-full truncate">{user?.email || ""}</div>
+                </div>
+                <DropdownMenuSeparator />
+                <Link href="/account/profile">
+                  <DropdownMenuItem className="cursor-pointer">
+                    <UserIcon className="mr-2 size-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                </Link>
+                <Link href="/wishlist">
+                  <DropdownMenuItem className="cursor-pointer">
+                    <HeartAddIcon className="mr-2 size-4" />
+                    <span>Wishlist</span>
+                  </DropdownMenuItem>
+                </Link>
+              </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <Link href="/account/profile">
-                <DropdownMenuItem className="cursor-pointer">
-                  <UserIcon className="mr-2 size-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-              </Link>
-              <Link href="/account/settings">
-                <DropdownMenuItem className="cursor-pointer">
-                  <Settings02Icon className="mr-2 size-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-              </Link>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <Link href="/login">
-                <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50">
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
+                  onClick={handleLogout}
+                >
                   <Logout01Icon className="mr-2 size-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>
-              </Link>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Link href="/login">
+            <Button
+              variant="ghost"
+              className="text-white hover:text-white cursor-pointer hover:bg-white/10 border border-white/20"
+            >
+              Sign In
+            </Button>
+          </Link>
+        )}
       </div>
     </nav>
   );

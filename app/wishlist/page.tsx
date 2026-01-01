@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft01Icon, Delete02Icon, ShoppingBasket01Icon } from "hugeicons-react";
+import { useAuthStore } from "@/store/auth-store";
 
 // Mock wishlist data - replace with actual state management
 const MOCK_WISHLIST = [
@@ -20,7 +22,22 @@ const MOCK_WISHLIST = [
 ];
 
 export default function WishlistPage() {
+    const router = useRouter();
+    const { isAuthenticated, user } = useAuthStore();
     const [wishlistItems, setWishlistItems] = useState(MOCK_WISHLIST);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        if (!isAuthenticated || !user) {
+            router.push("/login");
+        } else {
+            setIsLoading(false);
+        }
+    }, [isAuthenticated, user, router]);
+
+    if (isLoading) {
+        return null;
+    }
 
     const removeFromWishlist = (id: string) => {
         setWishlistItems(wishlistItems.filter((item) => item._id !== id));

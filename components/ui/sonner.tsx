@@ -23,28 +23,28 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group fixed z-50 right-6 bottom-6 space-y-3 pointer-events-auto"
       icons={{
         success: (
-          <span className="flex items-center justify-center w-10 h-10 rounded-full  text-emerald-800 ring-1 ring-white/20">
-            <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={2} className="w-5 h-5" />
+          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white flex-shrink-0">
+            <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={2} className="w-4 h-4" />
           </span>
         ),
         info: (
-          <span className="flex items-center justify-center w-10 h-10 rounded-full  text-blue-500 ring-1 ring-white/10">
-            <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={2} className="w-5 h-5" />
+          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500 text-white flex-shrink-0">
+            <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={2} className="w-4 h-4" />
           </span>
         ),
         warning: (
-          <span className="flex items-center justify-center w-10 h-10 rounded-full text-[#FEF3C7] ring-1 ring-white/10">
-            <HugeiconsIcon icon={Alert02Icon} strokeWidth={2} className="w-5 h-5" />
+          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-amber-500 text-white flex-shrink-0">
+            <HugeiconsIcon icon={Alert02Icon} strokeWidth={2} className="w-4 h-4" />
           </span>
         ),
         error: (
-          <span className="flex items-center justify-center w-10 h-10 rounded-full  text-red-500 ring-1 ring-white/10">
-            <HugeiconsIcon icon={MultiplicationSignCircleIcon} strokeWidth={2} className="w-5 h-5" />
+          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-red-500 text-white flex-shrink-0">
+            <HugeiconsIcon icon={MultiplicationSignCircleIcon} strokeWidth={2} className="w-4 h-4" />
           </span>
         ),
         loading: (
-          <span className="flex items-center justify-center w-10 h-10 rounded-full text-black ring-1 ring-white/10 animate-pulse">
-            <HugeiconsIcon icon={Loading03Icon} strokeWidth={2} className="w-5 h-5 animate-spin" />
+          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-500 text-white flex-shrink-0">
+            <HugeiconsIcon icon={Loading03Icon} strokeWidth={2} className="w-4 h-4 animate-spin" />
           </span>
         ),
       }}
@@ -52,26 +52,26 @@ const Toaster = ({ ...props }: ToasterProps) => {
         "--normal-bg": "transparent",
         "--normal-text": "var(--popover-foreground)",
         "--normal-border": "transparent",
-        "--border-radius": "12px",
-        "--success-bg": "#ECFDF5",
+        "--border-radius": "8px",
+        "--success-bg": "#D1FAE5",
         "--success-border": "#D1FAE5",
         "--success-text": "#065F46",
-        "--info-bg": "#EFF6FF",
+        "--info-bg": "#DBEAFE",
         "--info-border": "#DBEAFE",
-        "--info-text": "#0F172A",
-        "--warning-bg": "#FFFBEB",
+        "--info-text": "#1E40AF",
+        "--warning-bg": "#FEF3C7",
         "--warning-border": "#FEF3C7",
         "--warning-text": "#92400E",
-        "--error-bg": "#FEF2F2",
+        "--error-bg": "#FEE2E2",
         "--error-border": "#FEE2E2",
-        "--error-text": "#7F1D1D",
+        "--error-text": "#991B1B",
       } as React.CSSProperties}
       toastOptions={{
         classNames: {
           toast:
-            "cn-toast flex items-start gap-3 p-3 md:p-4 rounded-2xl shadow-2xl backdrop-blur-sm bg-white/70 dark:bg-slate-900/70 border border-white/10 dark:border-white/6 max-w-md",
-          title: "text-sm font-semibold text-slate-900 dark:text-slate-100 pl-4",
-          description: "text-sm text-slate-700 dark:text-slate-300 pl-4",
+            "cn-toast flex items-center gap-3 p-4 rounded-lg shadow-md border max-w-md",
+          title: "text-sm font-semibold pl-2",
+          description: "text-sm pl-2",
         },
       }}
       {...props}

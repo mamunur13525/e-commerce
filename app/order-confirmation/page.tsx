@@ -13,9 +13,9 @@ export default function OrderConfirmationPage() {
             <div className="pt-8 mb-8">
                 <CheckoutProgress currentStep={3} />
             </div>
-            <div className="flex items-center justify-center">
-                <Card className="w-full max-w-md shadow-xl border-none">
-                    <CardContent className="flex flex-col items-center p-8 sm:p-12 text-center space-y-6">
+            <div className="flex items-center justify-center mt-40">
+                <div className="w-full max-w-md  border-none">
+                    <div className="border-green-500! flex flex-col items-center p-8 sm:p-12 text-center space-y-6">
                         {/* Success Icon */}
                         <div className="size-24 bg-linear-to-tr from-lime-500 to-green-600 rounded-3xl rotate-12 flex items-center justify-center shadow-lg shadow-green-200 mb-4 transform hover:rotate-6 transition-transform duration-500">
                             <Tick01Icon className="size-12 text-white" strokeWidth={3} />
@@ -26,7 +26,7 @@ export default function OrderConfirmationPage() {
                                 Order Confirmed
                             </h1>
                             <p className="text-gray-500 max-w-xs mx-auto">
-                                We have receive your order. You'll get a confirmation email to{" "}
+                                We have receive your order. You&apos;ll get a confirmation email to{" "}
                                 <span className="font-semibold text-[#003d29]">
                                     hello@musemind.agency
                                 </span>
@@ -50,8 +50,8 @@ export default function OrderConfirmationPage() {
                                 Continue shopping
                             </Link>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
             </div>
         </div>
     );
