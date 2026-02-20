@@ -8,7 +8,11 @@ import { toast } from "sonner";
 import { Loading03Icon } from "hugeicons-react";
 import { useGoogleLogin } from "@react-oauth/google";
 
-const GoogleLogin = () => {
+interface GoogleLoginProps {
+    onClose: () => void;
+}
+
+const GoogleLogin = ({ onClose }: GoogleLoginProps) => {
     const router = useRouter();
     const { setAuth } = useAuthStore();
     const googleLoginMutation = useGoogleLoginMutation();
@@ -39,6 +43,7 @@ const GoogleLogin = () => {
                 if (result.success && result.user && result.token) {
                     setAuth(result.user, result.token);
                     toast.success("Successfully signed in with Google!");
+                    onClose?.();
                     router.push("/");
                 }
             } catch (error: any) {

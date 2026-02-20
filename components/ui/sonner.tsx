@@ -1,82 +1,80 @@
-"use client"
+"use client";
 
-import { useTheme } from "next-themes"
-import { Toaster as Sonner, type ToasterProps } from "sonner"
-import { HugeiconsIcon } from "@hugeicons/react"
+import { useTheme } from "next-themes";
+import { Toaster as Sonner, type ToasterProps } from "sonner";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
   CheckmarkCircle02Icon,
-  InformationCircleIcon,
   Alert02Icon,
   MultiplicationSignCircleIcon,
-  Loading03Icon,
-} from "@hugeicons/core-free-icons"
+} from "@hugeicons/core-free-icons";
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  const { theme = "system" } = useTheme();
+
+  // Base style for the icons to ensure they look uniform
+  const iconBase =
+    "flex items-center justify-center w-10 h-10 rounded-full flex-shrink-0";
 
   return (
     <Sonner
       theme={theme as ToasterProps["theme"]}
       richColors
       position="bottom-right"
-      duration={4000}
-      className="toaster group fixed z-50 right-6 bottom-6 space-y-3 pointer-events-auto"
+      className="toaster group fixed z-50 right-6 bottom-6 space-y-3 pointer-events-auto font-sans"
+      // Custom Icons with specific colors from the image
       icons={{
         success: (
-          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 text-white flex-shrink-0">
-            <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={2} className="w-4 h-4" />
-          </span>
-        ),
-        info: (
-          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500 text-white flex-shrink-0">
-            <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={2} className="w-4 h-4" />
+          <span className={`${iconBase} bg-emerald-500/10 text-emerald-400`}>
+            <HugeiconsIcon icon={CheckmarkCircle02Icon} className="w-5 h-5" />
           </span>
         ),
         warning: (
-          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-amber-500 text-white flex-shrink-0">
-            <HugeiconsIcon icon={Alert02Icon} strokeWidth={2} className="w-4 h-4" />
+          <span className={`${iconBase} bg-yellow-500/10 text-yellow-400`}>
+            <HugeiconsIcon icon={Alert02Icon} className="w-5 h-5" />
           </span>
         ),
         error: (
-          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-red-500 text-white flex-shrink-0">
-            <HugeiconsIcon icon={MultiplicationSignCircleIcon} strokeWidth={2} className="w-4 h-4" />
-          </span>
-        ),
-        loading: (
-          <span className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-500 text-white flex-shrink-0">
-            <HugeiconsIcon icon={Loading03Icon} strokeWidth={2} className="w-4 h-4 animate-spin" />
+          <span className={`${iconBase} bg-rose-500/10 text-rose-400`}>
+            <HugeiconsIcon icon={MultiplicationSignCircleIcon} className="w-5 h-5" />
           </span>
         ),
       }}
-      style={{
-        "--normal-bg": "transparent",
-        "--normal-text": "var(--popover-foreground)",
-        "--normal-border": "transparent",
-        "--border-radius": "8px",
-        "--success-bg": "#D1FAE5",
-        "--success-border": "#D1FAE5",
-        "--success-text": "#065F46",
-        "--info-bg": "#DBEAFE",
-        "--info-border": "#DBEAFE",
-        "--info-text": "#1E40AF",
-        "--warning-bg": "#FEF3C7",
-        "--warning-border": "#FEF3C7",
-        "--warning-text": "#92400E",
-        "--error-bg": "#FEE2E2",
-        "--error-border": "#FEE2E2",
-        "--error-text": "#991B1B",
-      } as React.CSSProperties}
       toastOptions={{
+        unstyled: true, // Allows us to fully control the styling
         classNames: {
-          toast:
-            "cn-toast flex items-center gap-3 p-4 rounded-lg shadow-md border max-w-md",
-          title: "text-sm font-semibold pl-2",
-          description: "text-sm pl-2",
+          toast: `
+            flex items-start gap-4 p-4 w-full md:w-[356px]
+            rounded-2xl border border-white/5 shadow-xl
+            transition-all duration-300
+            
+            /* Base Background */
+            bg-neutral-950 text-white
+            
+            /* Gradient Overlays based on type */
+            data-[type=success]:bg-gradient-to-r 
+            data-[type=success]:from-emerald-900/30 
+            data-[type=success]:to-neutral-950
+
+            data-[type=warning]:bg-gradient-to-r 
+            data-[type=warning]:from-yellow-900/30 
+            data-[type=warning]:to-neutral-950
+
+            data-[type=error]:bg-gradient-to-r 
+            data-[type=error]:from-rose-900/30 
+            data-[type=error]:to-neutral-950
+          `,
+          title: "text-[15px] font-semibold leading-snug tracking-tight",
+          description: "text-[13px] text-white/60 leading-5 mt-1",
+          actionButton:
+            "bg-white text-black text-xs font-medium px-3 py-1.5 rounded-md",
+          cancelButton:
+            "bg-white/10 text-white text-xs font-medium px-3 py-1.5 rounded-md",
         },
       }}
       {...props}
     />
-  )
-}
+  );
+};
 
-export { Toaster }
+export { Toaster };

@@ -49,7 +49,7 @@ export default function RootLayout({
               <Toaster
                 duration={5000}
                 closeButton
-                position="bottom-left"
+                position="bottom-center"
               />
             </CartAnimationProvider>
           </QueryClientProviderWrapper>

@@ -185,7 +185,7 @@ export default function LoginPage({ onClose }: { onClose: () => void }) {
           >
             {loginMutation.isPending ? "Logging in..." : "Log In"}
           </Button>
-          <GoogleLogin />
+          <GoogleLogin onClose={onClose}/>
         </div>
         <div className="mt-6 text-center text-sm">
           <span className="text-gray-500">Don't Have An Account? </span>

@@ -45,8 +45,12 @@ export function CartSheet() {
         }
     };
 
+    const handleClose = (value: boolean) => {
+        setIsOpen(value)
+    }
+
     return (
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <Sheet open={isOpen} onOpenChange={handleClose}>
             <SheetTrigger className="relative p-2 bg-white rounded-full hover:bg-gray-100 transition-colors cursor-pointer outline-none">
                 <div ref={registerCartIcon} className="relative flex items-center justify-center">
                     <ShoppingBasket01Icon className="size-6 text-[#003d29]" />
@@ -149,7 +153,7 @@ export function CartSheet() {
                             <div className="grid grid-cols-2 gap-4">
                                 <Link
                                     href="/cart"
-                                    onClick={() => setIsOpen(false)}
+                                    onClick={() => handleClose(false)}
                                     className={cn(
                                         buttonVariants({ variant: "outline" }),
                                         "w-full border-[#003d29] text-[#003d29] hover:bg-[#003d29] hover:text-white"
@@ -159,7 +163,7 @@ export function CartSheet() {
                                 </Link>
                                 <Link
                                     href="/checkout"
-                                    onClick={() => setIsOpen(false)}
+                                    onClick={() => handleClose(false)}
                                     className={cn(
                                         buttonVariants(),
                                         "w-full bg-[#003d29] hover:bg-[#002a1c]"

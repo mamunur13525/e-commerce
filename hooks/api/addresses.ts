@@ -25,7 +25,7 @@ export const useGetAddresses = (token: string | null) => {
         return { addresses: [], defaultAddress: null };
       }
 
-      const response = await axios.get("/api/account/addresses", {
+      const response = await axios.get(`/api/account/addresses/${token}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

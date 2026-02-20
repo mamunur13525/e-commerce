@@ -112,7 +112,7 @@ export default function CartPage() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Left: Cart Items */}
                     <div className="lg:col-span-2 space-y-4">
-                        <Card className="border-none shadow-sm overflow-hidden">
+                        <Card className="border-none shadow-sm overflow-hidden pt-0">
                             <div className="bg-[#003d29] text-white p-4 grid-cols-12 gap-4 text-sm font-semibold uppercase tracking-wider hidden md:grid">
                                 <div className="col-span-6">Product</div>
                                 <div className="col-span-2 text-center">Price</div>
@@ -125,7 +125,7 @@ export default function CartPage() {
                                         <div className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                                             {/* Product Info */}
                                             <div className="md:col-span-6 flex gap-4">
-                                                <Link href={'/products/'+item.productId} className="size-20 md:size-24 bg-gray-100 rounded-xl shrink-0 flex items-center justify-center overflow-hidden hover:border">
+                                                <Link href={'/products/' + item.productId} className="size-20 md:size-24 bg-gray-100 rounded-xl shrink-0 flex items-center justify-center overflow-hidden hover:border">
                                                     {item.product?.image?.url ? (
                                                         <Image
                                                             src={item.product.image.url}
@@ -139,7 +139,7 @@ export default function CartPage() {
                                                     )}
                                                 </Link>
                                                 <div className="flex flex-col justify-center">
-                                                    <Link href={'/products/'+item.productId} className="hover:underline font-bold text-[#003d29] text-lg">
+                                                    <Link href={'/products/' + item.productId} className="hover:underline font-bold text-[#003d29] text-lg">
                                                         {item.product?.name || `Product ${item.productId}`}
                                                     </Link>
                                                     <button
@@ -256,7 +256,7 @@ export default function CartPage() {
                                     href="/checkout"
                                     className={cn(
                                         buttonVariants(),
-                                        "w-full bg-[#beef63] hover:bg-[#aedf4d] text-[#003d29] font-bold rounded-full py-6 text-base shadow-sm hover:shadow-md transition-all flex justify-center items-center sm:h-auto"
+                                        "w-full bg-[#beef63] hover:bg-[#aedf4d] text-[#003d29] font-bold rounded-full py-3 text-base shadow-sm hover:shadow-md transition-all flex justify-center items-center sm:h-auto"
                                     )}
                                 >
                                     Proceed to Checkout
