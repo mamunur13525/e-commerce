@@ -12,10 +12,7 @@ export interface Address {
   isDefault: boolean;
 }
 
-export interface AddressesResponse {
-  addresses: Address[];
-  defaultAddress: Address | null;
-}
+export type AddressesResponse = Address[]
 
 export const useGetAddresses = (token: string | null) => {
   return useQuery<AddressesResponse>({
@@ -25,12 +22,16 @@ export const useGetAddresses = (token: string | null) => {
         return { addresses: [], defaultAddress: null };
       }
 
-      const response = await axios.get(`/api/account/addresses/${token}`, {
+      const response = await axios.get(`/api/account/addresses`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      return response.data.data;
+      console.log({response})
+      if(response.data.success){
+        return response.data.addresses;
+      }
+      return { addresses: [], defaultAddress: null };
     },
     enabled: !!token,
   });

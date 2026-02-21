@@ -64,3 +64,28 @@ export async function POST(request: NextRequest) {
   }
 }
 
+export async function GET(request: NextRequest) {
+  try {
+    const user = await getUserFromToken(request);
+    
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    await connectToDatabase();
+    
+    return NextResponse.json({
+      success: true,
+      addresses: user.addresses,
+    });
+  } catch (error: any) {
+    console.error("Get addresses error:", error);
+    return NextResponse.json(
+      { success: false, message: error.message || "Internal server error" },
+      { status: 500 }
+    );
+  }
+}

@@ -11,7 +11,7 @@ import { GoogleOAuthProviderWrapper } from "@/providers/google-oauth-provider";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { CartAnimationLayer } from "@/components/layout/cart-animation-layer";
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,8 +48,15 @@ export default function RootLayout({
               <Footer />
               <Toaster
                 duration={5000}
-                closeButton
                 position="bottom-center"
+                toastOptions={{
+                  classNames: {
+                    toast: "p-0", // remove default padding
+                    content: "px-5", // apply your custom padding here
+                    title: "text-base font-bolg",
+                    description: "text-xs text-muted-foreground mt-1",
+                  },
+                }}
               />
             </CartAnimationProvider>
           </QueryClientProviderWrapper>

@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-
 export function AnimatedLoadingIcon() {
   return (
     <div className="flex items-center justify-center w-20 h-32">
@@ -23,7 +21,11 @@ export function AnimatedLoadingIcon() {
             }
 
             @keyframes strokePulse {
-              0%, 100% {
+              0%{
+                stroke-width: 2;
+                opacity: 1;
+              }
+              100% {
                 stroke-width: 2;
                 opacity: 1;
               }
@@ -60,9 +62,19 @@ export function AnimatedLoadingIcon() {
               animation: fillBag 2s ease-in-out infinite;
             }
 
-            .bag-stroke {
-              animation: strokePulse 1.5s ease-in-out infinite;
-            }
+         @keyframes fillGrow {
+    0% {
+      transform: scaleY(0);
+    }
+    100% {
+      transform: scaleY(1);
+    }
+  }
+
+  .bag-fill {
+    transform-origin: bottom;
+    animation: fillGrow 2.5s ease-in-out infinite;
+  }
 
             .arrow-group {
               animation: arrowRotate 2s ease-in-out infinite;
@@ -70,21 +82,39 @@ export function AnimatedLoadingIcon() {
             }
 
             .arrow-path {
-              animation: arrowBounce 1s ease-in-out infinite;
+              animation: arrowBounce 2s ease-in-out infinite;
               animation-delay: 0.3s;
             }
           `}</style>
         </defs>
 
         {/* Bag */}
-        <g className="bag-stroke">
+        <g>
+          <defs>
+            <clipPath id="bagClip">
+              <path d="M4 8h16l-2 12H6L4 8z" />
+            </clipPath>
+          </defs>
+
+          {/* Animated orange fill (clipped inside bag shape) */}
+          <g clipPath="url(#bagClip)">
+            <rect
+              x="4"
+              y="8"
+              width="16"
+              height="12"
+              fill="currentColor"
+              className="bag-fill"
+            />
+          </g>
+
+          {/* White border on top */}
           <path
             d="M4 8h16l-2 12H6L4 8z"
-            fill="currentColor"
+            fill="none"
             stroke="white"
             strokeWidth="2"
             strokeLinejoin="round"
-            className="bag"
           />
         </g>
 

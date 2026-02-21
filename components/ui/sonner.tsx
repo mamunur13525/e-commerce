@@ -36,7 +36,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
         ),
         error: (
           <span className={`${iconBase} bg-rose-500/10 text-rose-400`}>
-            <HugeiconsIcon icon={MultiplicationSignCircleIcon} className="w-5 h-5" />
+            <HugeiconsIcon
+              icon={MultiplicationSignCircleIcon}
+              className="w-5 h-5"
+            />
           </span>
         ),
       }}
@@ -44,7 +47,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
         unstyled: true, // Allows us to fully control the styling
         classNames: {
           toast: `
-            flex items-start gap-4 p-4 w-full md:w-[356px]
+            flex items-start gap-4  w-full md:w-[356px]
             rounded-2xl border border-white/5 shadow-xl
             transition-all duration-300
             
@@ -64,7 +67,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
             data-[type=error]:from-rose-900/30 
             data-[type=error]:to-neutral-950
           `,
-          title: "text-[15px] font-semibold leading-snug tracking-tight",
+          title: " text-[15px] font-semibold leading-snug tracking-tight",
           description: "text-[13px] text-white/60 leading-5 mt-1",
           actionButton:
             "bg-white text-black text-xs font-medium px-3 py-1.5 rounded-md",

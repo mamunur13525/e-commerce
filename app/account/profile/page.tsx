@@ -6,51 +6,26 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { FloatingInput } from "@/components/ui/floating-input";
 import { Separator } from "@/components/ui/separator";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+
 import { toast } from "sonner";
 import {
   UserIcon,
   Mail01Icon,
   SmartPhone01Icon,
   SecurityCheckIcon,
-  Add01Icon,
-  Delete01Icon,
-  Location01Icon,
-  CheckmarkCircle01Icon,
   Edit02Icon,
   Cancel01Icon,
-  Tick02Icon,
   Loading03Icon,
 } from "hugeicons-react";
 import { useAuthStore } from "@/store/auth-store";
 import {
   useProfile,
   useUpdateProfile,
-  useAddAddress,
-  useDeleteAddress,
-  useSetDefaultAddress,
   useUpdatePassword,
 } from "@/hooks/api/queries";
 import { ProfileSkeleton } from "@/components/skeleton";
-import { cn } from "@/lib/utils";
+import AddressCard from "@/components/address/AddressCard";
+import AddAddressModalButton from "@/components/address/AddAddressModalButton";
 
 interface ProfileFormData {
   first_name: string;
@@ -89,9 +64,6 @@ export default function ProfilePage() {
     error: profileError,
   } = useProfile(token);
   const updateProfileMutation = useUpdateProfile(token);
-  const addAddressMutation = useAddAddress(token);
-  const deleteAddressMutation = useDeleteAddress(token);
-  const setDefaultAddressMutation = useSetDefaultAddress(token);
   const updatePasswordMutation = useUpdatePassword(token);
 
   // Profile form
@@ -200,45 +172,6 @@ export default function ProfilePage() {
   const handleCancelPassword = () => {
     resetPassword();
     setIsEditPassword(false);
-  };
-
-  const handleAddAddress = async (addressForm: any) => {
-    if (
-      !addressForm.full_name ||
-      !addressForm.street ||
-      !addressForm.city ||
-      !addressForm.state ||
-      !addressForm.zip
-    ) {
-      toast.error("Please fill in all address fields");
-      return;
-    }
-
-    try {
-      await addAddressMutation.mutateAsync(addressForm);
-      setIsDialogOpen(false);
-      toast.success("Address added successfully!");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to add address");
-    }
-  };
-
-  const handleDeleteAddress = async (addressId: string) => {
-    try {
-      await deleteAddressMutation.mutateAsync(addressId);
-      toast.success("Address deleted successfully!");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to delete address");
-    }
-  };
-
-  const handleSetDefault = async (addressId: string) => {
-    try {
-      await setDefaultAddressMutation.mutateAsync(addressId);
-      toast.success("Default address updated!");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to set default address");
-    }
   };
 
   if (isLoading) {
@@ -381,29 +314,7 @@ export default function ProfilePage() {
         <div className="bg-white p-6 rounded-xl border border-gray-100 space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold text-[#003d29]">Addresses</h2>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger
-                render={
-                  <Button
-                    type="button"
-                    className="bg-[#003d29] hover:bg-[#002a1c] text-white"
-                  >
-                    <Add01Icon className="size-4 mr-2" />
-                    Add Address
-                  </Button>
-                }
-              />
-              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>Add New Address</DialogTitle>
-                </DialogHeader>
-                <AddressFormDialog
-                  onSubmit={handleAddAddress}
-                  onCancel={() => setIsDialogOpen(false)}
-                  isLoading={addAddressMutation.isPending}
-                />
-              </DialogContent>
-            </Dialog>
+            <AddAddressModalButton />
           </div>
           <Separator />
           {isLoadingProfile ? (
@@ -417,112 +328,12 @@ export default function ProfilePage() {
           ) : (
             <div className="space-y-4">
               {profileData.addresses.map((address) => (
-                <div
-                  key={address._id}
-                  className={cn(
-                    "flex flex-col md:flex-row md:items-center justify-between p-4 rounded-lg border transition-all",
-                    address.isDefault
-                      ? "border-[#aedf4d] bg-[#f7fdec]"
-                      : "border-gray-200 bg-white hover:border-gray-300"
-                  )}
-                >
-                  <div className="flex items-start gap-4 mb-4 md:mb-0">
-                    <div
-                      className={cn(
-                        "p-2 rounded-full",
-                        address.isDefault
-                          ? "bg-[#aedf4d] text-[#003d29]"
-                          : "bg-gray-100 text-gray-500"
-                      )}
-                    >
-                      <Location01Icon className="size-5" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-bold text-[#003d29]">
-                          {address.full_name}
-                        </h4>
-                        {address.isDefault && (
-                          <span className="text-[10px] font-bold bg-[#003d29] text-white px-2 py-0.5 rounded-full">
-                            DEFAULT
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-gray-600 text-sm mt-1">
-                        {address.street}
-                      </p>
-                      <p className="text-gray-500 text-sm">
-                        {address.city}, {address.state} {address.zip}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    {!address.isDefault && (
-                      <>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleSetDefault(address._id!)}
-                          disabled={
-                            deleteAddressMutation.isPending ||
-                            setDefaultAddressMutation.isPending
-                          }
-                          className="text-gray-500 hover:text-[#003d29] cursor-pointer"
-                        >
-                          Set as Default
-                        </Button>
-                        <div className="h-4 w-px bg-gray-200" />
-                      </>
-                    )}
-
-                    <AlertDialog>
-                      <AlertDialogTrigger
-                        render={
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            <Delete01Icon className="size-4" />
-                          </Button>
-                        }
-                      />
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Address?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to delete this address? This
-                            action cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDeleteAddress(address._id!)}
-                            className="bg-red-600 hover:bg-red-700"
-                            disabled={deleteAddressMutation.isPending}
-                          >
-                            {deleteAddressMutation.isPending ? (
-                              <span className="flex items-center gap-1">
-                                <Loading03Icon className="animate-spin" />
-                                Deleting...
-                              </span>
-                            ) : (
-                              "Delete"
-                            )}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                </div>
+                <AddressCard key={address._id!} address={address || {}} />
               ))}
             </div>
           )}
         </div>
-        
+
         {/* Security */}
         {profileData?.isPasswordLogin && (
           <div className="bg-white p-6 rounded-xl border border-gray-100 space-y-6">
@@ -642,141 +453,5 @@ export default function ProfilePage() {
         )}
       </div>
     </div>
-  );
-}
-
-// Address Form Dialog Component
-function AddressFormDialog({
-  onSubmit,
-  onCancel,
-  isLoading,
-}: {
-  onSubmit: (data: any) => void;
-  onCancel: () => void;
-  isLoading: boolean;
-}) {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      full_name: "",
-      street: "",
-      city: "",
-      state: "",
-      zip: "",
-      country: "Bangladesh",
-      isDefault: false,
-    },
-  });
-
-  const handleFormSubmit = (data: any) => {
-    onSubmit(data);
-    reset();
-  };
-
-  return (
-    <form onSubmit={handleSubmit(handleFormSubmit)}>
-      <div className="grid gap-4 py-4">
-        <div>
-          <FloatingInput
-            id="address-full-name"
-            label="Full Name"
-            {...register("full_name", { required: "Full name is required" })}
-            startIcon={<UserIcon className="size-5" />}
-          />
-          {errors.full_name && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.full_name.message as string}
-            </p>
-          )}
-        </div>
-        <div>
-          <FloatingInput
-            id="address-street"
-            label="Street Address"
-            {...register("street", { required: "Street address is required" })}
-            startIcon={<Location01Icon className="size-5" />}
-          />
-          {errors.street && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.street.message as string}
-            </p>
-          )}
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <FloatingInput
-              id="address-city"
-              label="City"
-              {...register("city", { required: "City is required" })}
-            />
-            {errors.city && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.city.message as string}
-              </p>
-            )}
-          </div>
-          <div>
-            <FloatingInput
-              id="address-state"
-              label="State"
-              {...register("state", { required: "State is required" })}
-            />
-            {errors.state && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.state.message as string}
-              </p>
-            )}
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <FloatingInput
-              id="address-zip"
-              label="ZIP Code"
-              {...register("zip", { required: "ZIP code is required" })}
-            />
-            {errors.zip && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.zip.message as string}
-              </p>
-            )}
-          </div>
-          <div>
-            <FloatingInput
-              id="address-country"
-              label="Country"
-              {...register("country")}
-            />
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="address-default"
-            {...register("isDefault")}
-            className="size-4"
-          />
-          <label htmlFor="address-default" className="text-sm text-gray-700">
-            Set as default address
-          </label>
-        </div>
-      </div>
-      <DialogFooter>
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          disabled={isLoading}
-          className="bg-[#003d29] hover:bg-[#002a1c] text-white"
-        >
-          {isLoading ? "Adding..." : "Add Address"}
-        </Button>
-      </DialogFooter>
-    </form>
   );
 }

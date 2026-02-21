@@ -420,6 +420,8 @@ export const useAddAddress = (token: string | null): UseMutationResult<AddAddres
     onSuccess: () => {
       // Invalidate profile query to refetch with new address
       queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["addresses"] });
+
     },
   });
 };
@@ -456,6 +458,7 @@ export const useDeleteAddress = (token: string | null): UseMutationResult<Delete
     onSuccess: () => {
       // Invalidate profile query to refetch without deleted address
       queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["addresses"] });
     },
   });
 };
@@ -491,6 +494,7 @@ export const useSetDefaultAddress = (token: string | null): UseMutationResult<Se
     onSuccess: () => {
       // Invalidate profile query to refetch with updated default address
       queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["addresses"] });
     },
   });
 };

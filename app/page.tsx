@@ -15,7 +15,7 @@ function HomeContent() {
   // Fetch metadata using TanStack Query
   const { data: metadata, isLoading } = useMetadata();
 
-  console.log({ Categories: metadata?.categories })
+  console.log({ Categories: metadata?.categories });
   if (isLoading) {
     return <LoadingScreen />;
   }
@@ -23,19 +23,18 @@ function HomeContent() {
     return null;
   }
 
-  const categories = Array.isArray(metadata.categories) ? metadata?.categories : [];
-  console.log({categories})
+  const categories = Array.isArray(metadata.categories)
+    ? metadata?.categories
+    : [];
+  console.log({ categories });
   return (
     <main className="bg-[#f4f6f6] min-h-screen">
       <Hero
         slides={Array.isArray(metadata.hero_slider) ? metadata.hero_slider : []}
       />
-      {
-        categories && categories?.length &&
-        <CategoryRail
-          categories={categories}
-        />
-      }
+      {categories && categories?.length && (
+        <CategoryRail categories={categories} />
+      )}
       <ProductSection title="You might need" />
       <PromoBanners offers={metadata.offers} />
       <ProductSection
