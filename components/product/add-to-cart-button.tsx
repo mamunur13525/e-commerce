@@ -6,7 +6,7 @@ import type { ButtonHTMLAttributes } from "react";
 import { Loading03Icon, PlusSignIcon, Remove01Icon } from "hugeicons-react";
 import { useAuthStore } from "@/store/auth-store";
 import { useAuthModalStore } from "@/store/auth-modal-store";
-import { useAddToCart, useUpdateCartItem } from "@/hooks";
+import { useAddToCart, useUpdateCartItem, useGetCart } from "@/hooks";
 import { useCartAnimation } from "@/components/context/cart-animation-context";
 import { toast } from "sonner";
 
@@ -26,9 +26,14 @@ export function AddToCartButton({
   flyOriginRef,
   ...buttonProps
 }: AddToCartButtonProps) {
-  const [cartQuantity, setCartQuantity] = useState(0);
   const { isAuthenticated, token } = useAuthStore();
   const { openAuthModal } = useAuthModalStore();
+  const { data: cartItems = [] } = useGetCart(isAuthenticated ? token : null);
+
+  const cartItem = cartItems.find((item) => item.productId === productId);
+  // Default to local state if optimistic update needed, but better to derive:
+  const cartQuantity = cartItem?.quantity || 0;
+
   const addToCartMutation = useAddToCart(isAuthenticated ? token : null);
   const updateCartMutation = useUpdateCartItem(isAuthenticated ? token : null);
   const { startAnimation } = useCartAnimation();
@@ -49,16 +54,14 @@ export function AddToCartButton({
       const targetRef = flyOriginRef || imageRef;
       if (imageSrc && targetRef?.current) {
         const rect = targetRef.current.getBoundingClientRect();
-        console.log({ imageSrc })
         startAnimation(imageSrc, rect);
       }
 
-      setCartQuantity(1);
       toast.success("Added to cart!");
       onAddToCart?.();
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to add to cart"
+        error instanceof Error ? error.message : "Failed to add to cart",
       );
     }
   };
@@ -81,11 +84,9 @@ export function AddToCartButton({
         const rect = targetRef.current.getBoundingClientRect();
         startAnimation(imageSrc, rect);
       }
-
-      setCartQuantity(newQuantity);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to update cart"
+        error instanceof Error ? error.message : "Failed to update cart",
       );
     }
   };
@@ -97,10 +98,9 @@ export function AddToCartButton({
         productId,
         quantity: newQuantity,
       });
-      setCartQuantity(newQuantity);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to update cart"
+        error instanceof Error ? error.message : "Failed to update cart",
       );
     }
   };
@@ -114,16 +114,19 @@ export function AddToCartButton({
             disabled={addToCartMutation.isPending}
             {...buttonProps}
           >
-            {
-              addToCartMutation.isPending ? (
-                <Loading03Icon className="size-4 animate-spin" />
-              ) : (
-                'Add to Cart'
-              )
-            }
+            {addToCartMutation.isPending ? (
+              <Loading03Icon className="size-4 animate-spin" />
+            ) : (
+              "Add to Cart"
+            )}
           </Button>
           {/* Hidden image for animation fallback */}
-          <img ref={imageRef} src={imageSrc} className="fixed opacity-0 pointer-events-none size-1" alt="" />
+          <img
+            ref={imageRef}
+            src={imageSrc}
+            className="fixed opacity-0 pointer-events-none size-1"
+            alt=""
+          />
         </>
       );
     }
@@ -135,13 +138,11 @@ export function AddToCartButton({
           disabled={updateCartMutation.isPending}
           className="px-3 h-full bg-white/30 hover:bg-white/50 disabled:opacity-50 text-[#003d29] transition-colors flex items-center justify-center"
         >
-          {
-            updateCartMutation.isPending ? (
-              <Loading03Icon className="size-4 animate-spin" />
-            ) : (
-              <Remove01Icon className="size-4" />
-            )
-          }
+          {updateCartMutation.isPending ? (
+            <Loading03Icon className="size-4 animate-spin" />
+          ) : (
+            <Remove01Icon className="size-4" />
+          )}
         </Button>
         <span className="font-bold text-sm text-[#003d29]">{cartQuantity}</span>
         <Button
@@ -149,13 +150,11 @@ export function AddToCartButton({
           disabled={updateCartMutation.isPending}
           className="px-3 h-full bg-white/30 hover:bg-white/50 disabled:opacity-50 text-[#003d29] transition-colors flex items-center justify-center"
         >
-          {
-            updateCartMutation.isPending ? (
-              <Loading03Icon className="size-4 animate-spin" />
-            ) : (
-              <PlusSignIcon className="size-4" />
-            )
-          }
+          {updateCartMutation.isPending ? (
+            <Loading03Icon className="size-4 animate-spin" />
+          ) : (
+            <PlusSignIcon className="size-4" />
+          )}
         </Button>
       </div>
     );
@@ -168,17 +167,19 @@ export function AddToCartButton({
         disabled={addToCartMutation.isPending}
         {...buttonProps}
       >
-        {
-          addToCartMutation.isPending ? (
-            <Loading03Icon className="size-4 animate-spin" />
-          ) : (
-            'Add to Cart'
-          )
-        }
-
+        {addToCartMutation.isPending ? (
+          <Loading03Icon className="size-4 animate-spin" />
+        ) : (
+          "Add to Cart"
+        )}
       </Button>
       {/* Hidden image for animation fallback */}
-      <img ref={imageRef} src={imageSrc} className="fixed opacity-0 pointer-events-none size-1" alt="" />
+      <img
+        ref={imageRef}
+        src={imageSrc}
+        className="fixed opacity-0 pointer-events-none size-1"
+        alt=""
+      />
     </>
   );
 }

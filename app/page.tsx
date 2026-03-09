@@ -15,7 +15,6 @@ function HomeContent() {
   // Fetch metadata using TanStack Query
   const { data: metadata, isLoading } = useMetadata();
 
-  console.log({ Categories: metadata?.categories });
   if (isLoading) {
     return <LoadingScreen />;
   }
@@ -26,7 +25,7 @@ function HomeContent() {
   const categories = Array.isArray(metadata.categories)
     ? metadata?.categories
     : [];
-  console.log({ categories });
+
   return (
     <main className="bg-[#f4f6f6] min-h-screen">
       <Hero

@@ -2,7 +2,15 @@ import { Location01Icon, UserIcon } from "hugeicons-react";
 import { FloatingInput } from "../ui/floating-input";
 import { DialogFooter } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { countries } from "@/lib/countries";
 import { toast } from "sonner";
 import { useAddAddress } from "@/hooks";
 import { useAuthStore } from "@/store/auth-store";
@@ -13,6 +21,7 @@ function CreateAddressFormDialog({ onCancel }: { onCancel: () => void }) {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -122,11 +131,29 @@ function CreateAddressFormDialog({ onCancel }: { onCancel: () => void }) {
               </p>
             )}
           </div>
-          <div>
-            <FloatingInput
-              id="address-country"
-              label="Country"
-              {...register("country")}
+          <div className="flex flex-col  w-full">
+            <Controller
+              control={control}
+              name="country"
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger
+                    id="address-country"
+                    className="h-[55px]! shadow-none w-full text-base border-input dark:bg-input/30 rounded-lg"
+                  >
+                    <SelectValue>
+                      {field.value || "Select a country"}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countries.map((country) => (
+                      <SelectItem key={country} value={country}>
+                        {country}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             />
           </div>
         </div>

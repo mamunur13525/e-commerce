@@ -2,7 +2,6 @@
 
 import { cn } from "@/lib/utils";
 import { Tick02Icon } from "hugeicons-react";
-import { toast } from "sonner";
 
 interface CheckoutProgressProps {
   currentStep: 1 | 2 | 3;
@@ -17,22 +16,6 @@ export function CheckoutProgress({ currentStep }: CheckoutProgressProps) {
 
   return (
     <div className="w-full max-w-2xl mx-auto mb-12 px-4">
-      <button
-        onClick={() => {
-          toast.success("helel", {
-            description: "sodgienwgg",
-          });
-        }}
-      >
-        CLIck me
-      </button>
-      <button
-        onClick={() => {
-          toast.success("helel");
-        }}
-      >
-        CLIck me
-      </button>
       <div className="relative flex items-center justify-between">
         {/* Background Line */}
         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-gray-200 rounded-full" />

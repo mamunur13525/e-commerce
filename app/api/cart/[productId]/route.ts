@@ -1,45 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/jwt";
-import User from "@/models/User";
+import Cart from "@/models/Cart";
 import Product from "@/models/Product";
 import connectDB from "@/lib/db";
 
-async function formatCartWithProducts(
-  cartItems: Record<string, unknown>[]
-) {
-  const formattedCart = [];
-
-  for (const item of cartItems) {
-    let cartItem: Record<string, unknown> = {};
-
-    if (typeof item === "string") {
-      cartItem = { productId: item, quantity: 1 };
-    } else {
-      cartItem = item;
-    }
-
-    const productId = cartItem.productId;
-    let product = null;
-
-    try {
-      product = await Product.findById(productId).lean();
-    } catch {
-      // Product not found, continue without it
-    }
-
-    formattedCart.push({
-      productId,
-      quantity: cartItem.quantity || 1,
-      ...(product && { product }),
-    });
-  }
-
-  return formattedCart;
-}
-
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { productId: string } }
+  { params }: { params: Promise<{ productId: string }> }
 ) {
   try {
     await connectDB();
@@ -62,24 +29,33 @@ export async function DELETE(
 
     const { productId } = await params;
 
-    const user = await User.findById(decoded.userId);
-    if (!user) {
+    let cart = await Cart.findOne({ user: decoded.userId, status: "active" });
+
+    if (!cart) {
       return NextResponse.json(
-        { success: false, message: "User not found" },
+        { success: false, message: "Cart not found" },
         { status: 404 }
       );
     }
 
     // Remove specific item from cart
-    user.cart = user.cart.filter((item: Record<string, unknown>) =>
-      typeof item === "string"
-        ? item !== productId
-        : item.productId !== productId
+    cart.items = cart.items.filter(
+      (item: any) => item.product.toString() !== productId
     );
 
-    await user.save();
+    await cart.save();
 
-    const formattedCart = await formatCartWithProducts(user.cart);
+    await cart.populate({
+      path: "items.product",
+      model: Product
+    });
+
+    const formattedCart = cart.items.map((item: any) => ({
+      productId: item.product?._id || item.product,
+      quantity: item.quantity,
+      price: item.price,
+      product: item.product
+    }));
 
     return NextResponse.json({
       success: true,

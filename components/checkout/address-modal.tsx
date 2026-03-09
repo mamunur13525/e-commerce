@@ -72,9 +72,9 @@ export function AddressModal({
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            className={"px-20 w-32"}
+            className={"w-32"}
           >
-            Close Modal
+            Close
           </Button>
         </div>
       </DialogContent>

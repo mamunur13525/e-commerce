@@ -34,7 +34,6 @@ export interface CartMutationResponse {
 
 /**
  * Fetch user's cart
- * @param token - Authentication token
  */
 export const useGetCart = (token: string | null): UseQueryResult<CartItem[], Error> => {
   return useQuery({
@@ -115,7 +114,6 @@ export const useAddToCart = (token: string | null): UseMutationResult<CartMutati
 
 /**
  * Update cart item quantity
- * @param token - Authentication token
  */
 export const useUpdateCartItem = (token: string | null): UseMutationResult<CartMutationResponse, Error, { productId: string; quantity: number }> => {
   const queryClient = useQueryClient();
@@ -154,7 +152,6 @@ export const useUpdateCartItem = (token: string | null): UseMutationResult<CartM
 
 /**
  * Remove item from cart
- * @param token - Authentication token
  */
 export const useRemoveFromCart = (token: string | null): UseMutationResult<CartMutationResponse, Error, string> => {
   const queryClient = useQueryClient();
@@ -191,7 +188,6 @@ export const useRemoveFromCart = (token: string | null): UseMutationResult<CartM
 
 /**
  * Clear entire cart
- * @param token - Authentication token
  */
 export const useClearCart = (token: string | null): UseMutationResult<CartMutationResponse, Error, void> => {
   const queryClient = useQueryClient();

@@ -1,41 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/jwt";
 import User from "@/models/User";
+import Cart from "@/models/Cart";
 import Product from "@/models/Product";
 import connectDB from "@/lib/db";
-
-async function formatCartWithProducts(
-  cartItems: Record<string, unknown>[]
-) {
-  const formattedCart = [];
-
-  for (const item of cartItems) {
-    let cartItem: Record<string, unknown> = {};
-
-    if (typeof item === "string") {
-      cartItem = { productId: item, quantity: 1 };
-    } else {
-      cartItem = item;
-    }
-
-    const productId = cartItem.productId;
-    let product = null;
-
-    try {
-      product = await Product.findById(productId).lean();
-    } catch {
-      // Product not found, continue without it
-    }
-
-    formattedCart.push({
-      productId,
-      quantity: cartItem.quantity || 1,
-      ...(product && { product }),
-    });
-  }
-
-  return formattedCart;
-}
 
 export async function GET(request: NextRequest) {
   try {
@@ -57,17 +25,29 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const user = await User.findById(decoded.userId);
-    if (!user) {
-      return NextResponse.json(
-        { success: false, message: "User not found" },
-        { status: 404 }
-      );
+    // Find the cart and populate product details
+    const cart = await Cart.findOne({ user: decoded.userId, status: "active" })
+      .populate({
+        path: "items.product",
+        model: Product
+      })
+      .lean();
+
+    if (!cart) {
+      return NextResponse.json({
+        success: true,
+        data: [],
+      });
     }
 
-    // Transform cart array to include quantity
-    const cartItems = user.cart || [];
-    const formattedCart = await formatCartWithProducts(cartItems);
+    // Format the response to match the existing frontend expectations if possible
+    // The previous format was: [{ productId: "123", quantity: 1, product: { ... } }]
+    const formattedCart = cart.items.map((item: any) => ({
+      productId: item.product?._id || item.product,
+      quantity: item.quantity,
+      price: item.price,
+      product: item.product
+    }));
 
     return NextResponse.json({
       success: true,
@@ -103,7 +83,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { productId, quantity = 1 } = await request.json();
-
+console.log({productId, quantity})
     if (!productId) {
       return NextResponse.json(
         { success: false, message: "Product ID is required" },
@@ -111,37 +91,49 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const user = await User.findById(decoded.userId);
-    if (!user) {
-      return NextResponse.json(
-        { success: false, message: "User not found" },
+    const product = await Product.findById(productId);
+    if (!product) {
+       return NextResponse.json(
+        { success: false, message: "Product not found" },
         { status: 404 }
       );
     }
 
-    // Check if product already in cart
-    const existingItemIndex = user.cart.findIndex((item: Record<string, unknown>) =>
-      typeof item === "string"
-        ? item === productId
-        : item.productId === productId
-    );
+    let cart = await Cart.findOne({ user: decoded.userId, status: "active" });
 
-    if (existingItemIndex > -1) {
-      // Update quantity
-      if (typeof user.cart[existingItemIndex] === "string") {
-        user.cart[existingItemIndex] = { productId, quantity };
-      } else {
-        user.cart[existingItemIndex].quantity += quantity;
-      }
+    if (!cart) {
+      // Create new cart
+      cart = new Cart({
+        user: decoded.userId,
+        items: [{ product: productId, quantity, price: product.price }],
+      });
     } else {
-      // Add new item
-      user.cart.push({ productId, quantity });
+      // Check if product already in cart
+      const existingItemIndex = cart.items.findIndex(
+        (item: any) => item.product.toString() === productId
+      );
+
+      if (existingItemIndex > -1) {
+        cart.items[existingItemIndex].quantity += quantity;
+      } else {
+        cart.items.push({ product: productId, quantity, price: product.price });
+      }
     }
 
-    await user.save();
+    await cart.save();
+    
+    // Populate to return the updated format
+    await cart.populate({
+        path: "items.product",
+        model: Product
+    });
 
-    // Format response with product details
-    const formattedCart = await formatCartWithProducts(user.cart);
+    const formattedCart = cart.items.map((item: any) => ({
+      productId: item.product?._id || item.product,
+      quantity: item.quantity,
+      price: item.price,
+      product: item.product
+    }));
 
     return NextResponse.json({
       success: true,
@@ -186,38 +178,49 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const user = await User.findById(decoded.userId);
-    if (!user) {
+    let cart = await Cart.findOne({ user: decoded.userId, status: "active" });
+
+    if (!cart) {
       return NextResponse.json(
-        { success: false, message: "User not found" },
+        { success: false, message: "Cart not found" },
         { status: 404 }
       );
     }
 
-    // Update or remove item
     if (quantity <= 0) {
-      user.cart = user.cart.filter((item: Record<string, unknown>) =>
-        typeof item === "string"
-          ? item !== productId
-          : item.productId !== productId
+      // Remove item
+      cart.items = cart.items.filter(
+        (item: any) => item.product.toString() !== productId
       );
     } else {
-      const itemIndex = user.cart.findIndex((item: Record<string, unknown>) =>
-        typeof item === "string"
-          ? item === productId
-          : item.productId === productId
+      const existingItemIndex = cart.items.findIndex(
+        (item: any) => item.product.toString() === productId
       );
 
-      if (itemIndex > -1) {
-        user.cart[itemIndex] = { productId, quantity };
+      if (existingItemIndex > -1) {
+        cart.items[existingItemIndex].quantity = quantity;
       } else {
-        user.cart.push({ productId, quantity });
+        // Technically this shouldn't happen on PUT to existing item, but to be safe:
+        const product = await Product.findById(productId);
+        if (product) {
+            cart.items.push({ product: productId, quantity, price: product.price });
+        }
       }
     }
 
-    await user.save();
+    await cart.save();
+    
+    await cart.populate({
+        path: "items.product",
+        model: Product
+    });
 
-    const formattedCart = await formatCartWithProducts(user.cart);
+    const formattedCart = cart.items.map((item: any) => ({
+      productId: item.product?._id || item.product,
+      quantity: item.quantity,
+      price: item.price,
+      product: item.product
+    }));
 
     return NextResponse.json({
       success: true,
@@ -238,7 +241,6 @@ export async function DELETE(request: NextRequest) {
     await connectDB();
 
     const token = request.headers.get("authorization")?.split(" ")[1];
-    console.log({token})
     if (!token) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
@@ -254,17 +256,18 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const user = await User.findById(decoded.userId);
-    if (!user) {
-      return NextResponse.json(
-        { success: false, message: "User not found" },
-        { status: 404 }
-      );
+    let cart = await Cart.findOne({ user: decoded.userId, status: "active" });
+    if (!cart) {
+      return NextResponse.json({
+        success: true,
+        data: [],
+        message: "Cart already empty",
+      });
     }
 
-    // Clear entire cart
-    user.cart = [];
-    await user.save();
+    // Clear entire cart by emptying items
+    cart.items = [];
+    await cart.save();
 
     return NextResponse.json({
       success: true,

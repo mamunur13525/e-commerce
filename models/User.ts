@@ -77,23 +77,6 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
-    cart: {
-      type: [
-        {
-          productId: {
-            type: String,
-            required: true,
-          },
-          quantity: {
-            type: Number,
-            default: 1,
-            min: 1,
-          },
-        },
-      ],
-      required: false,
-      default: [],
-    },
     passwordResetToken: {
       type: String,
       default: null,

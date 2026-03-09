@@ -4,13 +4,8 @@ import React, { useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-  Edit02Icon,
-  Location01Icon,
-  Add01Icon,
-  Remove01Icon,
-  Tick02Icon,
-} from "hugeicons-react";
+import { Edit02Icon, Add01Icon, Remove01Icon } from "hugeicons-react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -22,6 +17,7 @@ import { useGetAddresses, type Address } from "@/hooks/api/addresses";
 import { useValidatePromo } from "@/hooks/api/promo";
 import { toast } from "sonner";
 import AddressCard from "@/components/address/AddressCard";
+import AddAddressModalButton from "@/components/address/AddAddressModalButton";
 
 export default function CheckoutPage() {
   const { isAuthenticated, token } = useAuthStore();
@@ -46,6 +42,8 @@ export default function CheckoutPage() {
     description?: string;
   } | null>(null);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [isConfirming, setIsConfirming] = useState(false);
+  const router = useRouter();
 
   const selectedAddress = addressesData?.find((addr) => addr.isDefault);
   // Group items by store (mock implementation - would need API endpoint)
@@ -68,6 +66,61 @@ export default function CheckoutPage() {
   const promoDiscount = appliedPromo?.discount || 0;
   const taxes = (subtotal - promoDiscount) * 0.1; // 10% tax
   const total = subtotal + deliveryFee - promoDiscount + taxes;
+
+  const handleConfirmOrder = async () => {
+    if (!selectedAddress) {
+      toast.error("Please select a delivery address.");
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty.");
+      return;
+    }
+
+    setIsConfirming(true);
+
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          orderItems: cartItems,
+          deliveryAddress: selectedAddress,
+          subtotal,
+          deliveryFee,
+          promoDiscount,
+          taxes,
+          totalPrice: total,
+          paymentMethod: paymentMethod === "online" ? "STRIPE" : "COD",
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Failed to confirm order");
+      }
+
+      if (paymentMethod === "online" && data.url) {
+        // Redirect to Stripe Checkout Session
+        window.location.href = data.url;
+      } else {
+        // Redirect to success page for COD
+        router.push(`/checkout/success`);
+      }
+    } catch (error: any) {
+      console.error("Order confirmation error:", error);
+      toast.error(
+        error.message || "Failed to process order. Please try again.",
+      );
+    } finally {
+      setIsConfirming(false);
+    }
+  };
 
   const handleApplyPromo = async () => {
     if (!promoCode.trim()) {
@@ -132,7 +185,6 @@ export default function CheckoutPage() {
       },
     );
   };
-  console.log({ addressesData });
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gray-50 p-4 md:p-8 flex items-center justify-center">
@@ -208,13 +260,16 @@ export default function CheckoutPage() {
             <CardContent>
               <div>
                 <p className="font-semibold text-[#003d29] mb-2">Delivery to</p>
-                <div className="w-full ">
+                <div className="w-full">
                   {selectedAddress ? (
                     <AddressCard address={selectedAddress} deleteIcon={false} />
                   ) : (
-                    <p className="text-gray-500 text-sm mt-1">
-                      No address selected. Click Edit to choose one.
-                    </p>
+                    <>
+                      <p className="text-gray-500 text-sm mt-1 mb-2">
+                        No address selected. Click "Add Address" to choose one.
+                      </p>
+                      <AddAddressModalButton />
+                    </>
                   )}
                 </div>
               </div>
@@ -355,7 +410,10 @@ export default function CheckoutPage() {
             <CardContent className="space-y-6">
               {/* Payment Methods */}
               <div className="space-y-3">
-                <label className="flex items-center gap-3 cursor-pointer group">
+                <label
+                  onClick={() => setPaymentMethod("online")}
+                  className="flex items-center gap-3 cursor-pointer group w-fit"
+                >
                   <div
                     className={cn(
                       "size-5 rounded-full border flex items-center justify-center",
@@ -363,7 +421,6 @@ export default function CheckoutPage() {
                         ? "border-red-400"
                         : "border-gray-300",
                     )}
-                    onClick={() => setPaymentMethod("online")}
                   >
                     {paymentMethod === "online" && (
                       <div className="size-2.5 bg-red-400 rounded-full" />
@@ -380,7 +437,10 @@ export default function CheckoutPage() {
                     Online Payment
                   </span>
                 </label>
-                <label className="flex items-center gap-3 cursor-pointer group">
+                <label
+                  onClick={() => setPaymentMethod("cod")}
+                  className="flex items-center gap-3 cursor-pointer group w-fit"
+                >
                   <div
                     className={cn(
                       "size-5 rounded-full border flex items-center justify-center",
@@ -388,7 +448,6 @@ export default function CheckoutPage() {
                         ? "border-red-400"
                         : "border-gray-300",
                     )}
-                    onClick={() => setPaymentMethod("cod")}
                   >
                     {paymentMethod === "cod" && (
                       <div className="size-2.5 bg-red-400 rounded-full" />
@@ -504,15 +563,16 @@ export default function CheckoutPage() {
               )} */}
 
               {/* Confirm Order */}
-              <Link
-                href="/order-confirmation"
+              <Button
+                onClick={handleConfirmOrder}
+                disabled={isConfirming}
                 className={cn(
                   buttonVariants(),
                   "w-full bg-[#beef63] hover:bg-[#aedf4d] text-[#003d29] font-bold rounded-full py-3.5 text-base flex justify-center items-center sm:h-auto",
                 )}
               >
-                Confirm order
-              </Link>
+                {isConfirming ? "Processing..." : "Confirm order"}
+              </Button>
             </CardContent>
           </Card>
         </div>

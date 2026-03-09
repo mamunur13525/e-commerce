@@ -30,10 +30,8 @@ export default function ProductPage() {
   const { openAuthModal } = useAuthModalStore();
   const imageRef = useRef<HTMLImageElement>(null);
 
-
   // Fetch product using TanStack Query
   const { data: product, isLoading, error } = useProduct(productId);
-  console.log({ imageRef: imageRef?.current?.src })
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
       openAuthModal();
@@ -49,17 +47,17 @@ export default function ProductPage() {
       const targetRef = imageRef && imageRef.current;
       if (targetRef) {
         const rect = targetRef.getBoundingClientRect();
-        console.log({ targetSrc: targetRef.src, rect })
+        console.log({ targetSrc: targetRef.src, rect });
         const originalUrl = decodeURIComponent(
-          targetRef.src.split("url=")[1].split("&")[0]
+          targetRef.src.split("url=")[1].split("&")[0],
         );
-        
+
         startAnimation(originalUrl, rect);
       }
       toast.success("Added to cart!");
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to add to cart"
+        error instanceof Error ? error.message : "Failed to add to cart",
       );
     }
   };
@@ -154,7 +152,7 @@ export default function ProductPage() {
                     onClick={(e) => {
                       e.stopPropagation();
                       setSelectedImage((prev) =>
-                        prev === 0 ? allImages.length - 1 : prev - 1
+                        prev === 0 ? allImages.length - 1 : prev - 1,
                       );
                     }}
                     className="w-10 h-10 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center transition-all cursor-pointer"
@@ -180,7 +178,7 @@ export default function ProductPage() {
                     onClick={(e) => {
                       e.stopPropagation();
                       setSelectedImage((prev) =>
-                        prev === allImages.length - 1 ? 0 : prev + 1
+                        prev === allImages.length - 1 ? 0 : prev + 1,
                       );
                     }}
                     className="w-10 h-10 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center transition-all cursor-pointer"
@@ -215,7 +213,7 @@ export default function ProductPage() {
                       "relative w-20 h-20 shrink-0 rounded-lg overflow-hidden transition-all bg-[#f4f6f6] cursor-pointer border-2 hover:bg-[#f4f6f6]",
                       selectedImage === idx
                         ? "border-[#0c762e]"
-                        : "border-transparent"
+                        : "border-transparent",
                     )}
                   >
                     <Image
@@ -254,10 +252,11 @@ export default function ProductPage() {
                 {[...Array(5)].map((_, i) => (
                   <StarIcon
                     key={i}
-                    className={`size-4 ${i < Math.floor(product.rating || 0)
-                      ? "text-yellow-400 fill-yellow-400"
-                      : "text-gray-300 fill-gray-300"
-                      }`}
+                    className={`size-4 ${
+                      i < Math.floor(product.rating || 0)
+                        ? "text-yellow-400 fill-yellow-400"
+                        : "text-gray-300 fill-gray-300"
+                    }`}
                   />
                 ))}
               </div>
@@ -302,12 +301,11 @@ export default function ProductPage() {
                 className="flex-1 h-14 border-2 border-gray-200 hover:bg-gray-50 text-gray-900 font-semibold rounded-full cursor-pointer"
                 disabled={addToCartMutation.isPending}
               >
-                {
-                  addToCartMutation.isPending ?
-                    <Loading03Icon className="w-5 h-5 animate-spin" />
-                    :
-                    "Add to bucket"
-                }
+                {addToCartMutation.isPending ? (
+                  <Loading03Icon className="w-5 h-5 animate-spin" />
+                ) : (
+                  "Add to bucket"
+                )}
               </Button>
               <Button
                 onClick={() => {
@@ -488,7 +486,7 @@ export default function ProductPage() {
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedImage((prev) =>
-                      prev === 0 ? allImages.length - 1 : prev - 1
+                      prev === 0 ? allImages.length - 1 : prev - 1,
                     );
                   }}
                   className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition-all z-50"
@@ -512,7 +510,7 @@ export default function ProductPage() {
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedImage((prev) =>
-                      prev === allImages.length - 1 ? 0 : prev + 1
+                      prev === allImages.length - 1 ? 0 : prev + 1,
                     );
                   }}
                   className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition-all z-50"

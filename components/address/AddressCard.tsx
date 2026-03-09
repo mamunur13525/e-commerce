@@ -18,7 +18,6 @@ interface AddressProps {
 }
 
 const AddressCard = ({ address, deleteIcon = true }: AddressProps) => {
-  console.log({ address });
   const {
     isDefault = false,
     _id = "",

@@ -59,7 +59,9 @@ export function Navbar() {
 
   const getUserName = () => {
     if (user) {
-      return `${user.first_name || ""} ${user.last_name || ""}`.trim() || "User";
+      return (
+        `${user.first_name || ""} ${user.last_name || ""}`.trim() || "User"
+      );
     }
     return "Guest";
   };
@@ -102,7 +104,6 @@ export function Navbar() {
                 href="/cart"
                 className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
                 onClick={() => setSheetOpen(false)}
-
               >
                 <ShoppingBasket01Icon className="size-6 text-[#003d29]" />
                 My Orders
@@ -178,14 +179,24 @@ export function Navbar() {
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuGroup>
                 <div className="py-2">
-                  <DropdownMenuLabel className={'py-0'}>{getUserName()}</DropdownMenuLabel>
-                  <div className="px-2 text-sm font-semibold line-clamp-1 overflow-hidden w-full truncate">{user?.email || ""}</div>
+                  <DropdownMenuLabel className={"py-0"}>
+                    {getUserName()}
+                  </DropdownMenuLabel>
+                  <div className="px-2 text-sm font-semibold line-clamp-1 overflow-hidden w-full truncate">
+                    {user?.email || ""}
+                  </div>
                 </div>
                 <DropdownMenuSeparator />
                 <Link href="/account/profile">
                   <DropdownMenuItem className="cursor-pointer">
                     <UserIcon className="mr-2 size-4" />
                     <span>Profile</span>
+                  </DropdownMenuItem>
+                </Link>
+                <Link href="/account/orders">
+                  <DropdownMenuItem className="cursor-pointer">
+                    <ShoppingBasket01Icon className="mr-2 size-4" />
+                    <span>Orders</span>
                   </DropdownMenuItem>
                 </Link>
                 <Link href="/wishlist">

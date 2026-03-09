@@ -10,7 +10,6 @@ export async function PUT(
   try {
     const { id } = await params;
     const addressId = id;
-    console.log({ addressId });
 
     if (!mongoose.Types.ObjectId.isValid(addressId)) {
       return NextResponse.json(
