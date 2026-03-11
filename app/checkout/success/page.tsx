@@ -8,6 +8,7 @@ import { Tick02Icon, InformationCircleIcon } from "hugeicons-react";
 import { useAuthStore } from "@/store/auth-store";
 import Link from "next/link";
 import { toast } from "sonner";
+import { getUserFromToken } from "@/lib/auth";
 
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
