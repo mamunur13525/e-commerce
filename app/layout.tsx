@@ -10,6 +10,7 @@ import { QueryClientProviderWrapper } from "@/providers/query-client-provider";
 import { GoogleOAuthProviderWrapper } from "@/providers/google-oauth-provider";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { CartAnimationLayer } from "@/components/layout/cart-animation-layer";
+import NextTopLoader from "nextjs-toploader";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -43,12 +44,13 @@ export default function RootLayout({
             <CartAnimationProvider>
               <CartAnimationLayer />
               <AuthModal />
+              <NextTopLoader color="lab(64.272% 57.1788 90.3583)" showSpinner={false} />
               <Navbar />
               {children}
               <Footer />
               <Toaster
                 duration={5000}
-                position="bottom-center"
+                position="bottom-left"
                 toastOptions={{
                   classNames: {
                     toast: "p-0", // remove default padding

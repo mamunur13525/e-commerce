@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       totalPrice,
       paymentMethod,
       paymentStatus: "pending",
-      status: "processing",
+      status: "pending",
       orderId: newOrderId,
     });
 

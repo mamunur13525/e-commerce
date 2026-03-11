@@ -50,12 +50,12 @@ export default function CheckoutPage() {
   const storeItems =
     cartItems.length > 0
       ? [
-          {
-            storeName: "Main Store",
-            deliveryTime: "15 minute",
-            items: cartItems,
-          },
-        ]
+        {
+          storeName: "Main Store",
+          deliveryTime: "15 minute",
+          items: cartItems,
+        },
+      ]
       : [];
 
   const subtotal = cartItems.reduce(
@@ -571,7 +571,9 @@ export default function CheckoutPage() {
                   "w-full bg-[#beef63] hover:bg-[#aedf4d] text-[#003d29] font-bold rounded-full py-3.5 text-base flex justify-center items-center sm:h-auto",
                 )}
               >
-                {isConfirming ? "Processing..." : "Confirm order"}
+                {isConfirming ? "Processing..." : paymentMethod === "online"
+                  ? "Make Payment"
+                  : "Confirm order"}
               </Button>
             </CardContent>
           </Card>

@@ -61,6 +61,8 @@ export default function OrderDetailsPage({
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
+      case "pending":
+        return "bg-amber-100 text-amber-800";
       case "processing":
         return "bg-blue-100 text-blue-800";
       case "shipped":
@@ -131,23 +133,26 @@ export default function OrderDetailsPage({
               {/* Desktop Timeline */}
               <div className="hidden sm:flex justify-between items-start pt-4 relative">
                 {/* Background line */}
-                <div className="absolute top-10 left-[16.66%] right-[16.66%] h-0.5 bg-gray-100 z-0"></div>
+                <div className="absolute top-10 left-[12.5%] right-[12.5%] h-0.5 bg-gray-100 z-0"></div>
 
                 {/* Dynamic progress line */}
                 <div
-                  className="absolute top-10 left-[16.66%] h-0.5 bg-[#beef63] transition-all duration-500 ease-in-out z-0"
+                  className="absolute top-10 left-[12.5%] h-0.5 bg-[#beef63] transition-all duration-500 ease-in-out z-0"
                   style={{
                     width:
                       order.status === "delivered"
-                        ? "66.66%"
+                        ? "75%"
                         : order.status === "shipped"
-                          ? "33.33%"
-                          : "0%",
+                          ? "50%"
+                          : order.status === "processing"
+                            ? "25%"
+                            : "0%",
                   }}
                 ></div>
 
                 {/* Steps */}
                 {[
+                  { key: "pending", label: "Pending", icon: PackageIcon },
                   { key: "processing", label: "Processing", icon: PackageIcon },
                   {
                     key: "shipped",
@@ -156,7 +161,7 @@ export default function OrderDetailsPage({
                   },
                   { key: "delivered", label: "Delivered", icon: Tick02Icon },
                 ].map((step, idx) => {
-                  const statusOrder = ["processing", "shipped", "delivered"];
+                  const statusOrder = ["pending", "processing", "shipped", "delivered"];
                   const currentIndex = statusOrder.indexOf(order.status);
                   const stepIndex = statusOrder.indexOf(step.key);
                   const isCompleted = stepIndex <= currentIndex;
@@ -165,7 +170,7 @@ export default function OrderDetailsPage({
                   return (
                     <div
                       key={step.key}
-                      className="flex flex-col items-center relative z-10 w-1/3"
+                      className="flex flex-col items-center relative z-10 w-1/4"
                     >
                       <div
                         className={`size-12 rounded-full flex items-center justify-center transition-colors duration-300 ${
@@ -207,12 +212,20 @@ export default function OrderDetailsPage({
                       order.status === "delivered"
                         ? "calc(100% - 32px)"
                         : order.status === "shipped"
-                          ? "calc(50% - 16px)"
-                          : "0%",
+                          ? "calc(66.66% - 21px)"
+                          : order.status === "processing"
+                            ? "calc(33.33% - 10px)"
+                            : "0%",
                   }}
                 ></div>
 
                 {[
+                  {
+                    key: "pending",
+                    label: "Pending",
+                    icon: PackageIcon,
+                    desc: "Order received",
+                  },
                   {
                     key: "processing",
                     label: "Processing",
@@ -232,7 +245,7 @@ export default function OrderDetailsPage({
                     desc: "Order received successfully",
                   },
                 ].map((step) => {
-                  const statusOrder = ["processing", "shipped", "delivered"];
+                  const statusOrder = ["pending", "processing", "shipped", "delivered"];
                   const stepIndex = statusOrder.indexOf(step.key);
                   const isCompleted =
                     stepIndex <= statusOrder.indexOf(order.status);
@@ -349,6 +362,8 @@ export default function OrderDetailsPage({
                     className={
                       order.paymentStatus === "paid"
                         ? "border-green-500 text-green-600 bg-green-50"
+                        : order.paymentStatus === "refunded"
+                        ? "border-amber-500 text-amber-600 bg-amber-50"
                         : "text-yellow-600 border-yellow-500 bg-yellow-50"
                     }
                   >

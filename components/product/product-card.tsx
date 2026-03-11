@@ -6,6 +6,9 @@ import Image from "next/image";
 import { StarIcon } from "hugeicons-react";
 import { getCurrencySymbol } from "@/lib/currency";
 import { AddToCartButton } from "@/components/product/add-to-cart-button";
+import { useAuthStore } from "@/store/auth-store";
+import { useGetWishlist, useAddToWishlist, useRemoveFromWishlist } from "@/hooks";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   title: string;
@@ -30,15 +33,38 @@ export function ProductCard({
 }: ProductCardProps) {
   const imageRef = useRef<HTMLImageElement>(null);
 
+  const { isAuthenticated, token } = useAuthStore();
+  const { data: wishlist = [] } = useGetWishlist(isAuthenticated ? token : null);
+  const addToWishlistMutation = useAddToWishlist(isAuthenticated ? token : null);
+  const removeFromWishlistMutation = useRemoveFromWishlist(isAuthenticated ? token : null);
+
   const discountedPrice = discount > 0 ? price - (price * discount) / 100 : price;
   const currencySymbol = getCurrencySymbol(currency || "'");
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  
+  const isWishlisted = wishlist.some((item) => item._id === id);
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsWishlisted(!isWishlisted);
-    console.log(`${isWishlisted ? 'Removed from' : 'Added to'} wishlist:`, title);
+
+    if (!isAuthenticated) {
+        toast.error("Please login to manage your wishlist.");
+        return;
+    }
+
+    if (isWishlisted) {
+        removeFromWishlistMutation.mutate(id, {
+             onSuccess: () => {
+                 toast.success(`${title} removed from wishlist`);
+             }
+        });
+    } else {
+        addToWishlistMutation.mutate(id, {
+             onSuccess: () => {
+                 toast.success(`${title} added to wishlist`);
+             }
+        });
+    }
   };
   return (
     <div className="bg-white shadow shadow-zinc-100 rounded-lg p-4 relative flex flex-col items-start text-left group transition-all hover:shadow-lg h-full">
@@ -56,6 +82,7 @@ export function ProductCard({
         {/* Wishlist Button */}
         <button
           onClick={handleWishlistToggle}
+          disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
           className={`absolute top-2 left-2 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 z-20 ${isWishlisted
             ? 'bg-red-500 text-white shadow-lg scale-110'
             : 'bg-white/90 backdrop-blur-sm text-gray-600 hover:bg-red-50 hover:text-red-500 opacity-0 group-hover:opacity-100'

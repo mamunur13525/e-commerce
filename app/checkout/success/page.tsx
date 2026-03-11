@@ -8,33 +8,38 @@ import { Tick02Icon, InformationCircleIcon } from "hugeicons-react";
 import { useAuthStore } from "@/store/auth-store";
 import Link from "next/link";
 import { toast } from "sonner";
-import { getUserFromToken } from "@/lib/auth";
+import { useQueryClient } from "@tanstack/react-query";
 
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const sessionId = searchParams.get("session_id");
   const { token, isAuthenticated } = useAuthStore();
+  const queryClient = useQueryClient();
 
   const [status, setStatus] = useState<"loading" | "success" | "error">(
     "loading",
   );
 
   useEffect(() => {
-    // If not authenticated, they shouldn't be here, but let the page render then redirect
-    if (!isAuthenticated) {
-      router.push("/");
-      return;
-    }
-
     // If there's a session ID, verify the Stripe payment
     if (sessionId) {
+      console.log({ sessionId });
       verifyStripeSession(sessionId);
     } else {
       // If no session ID, it was a COD order which is already confirmed
       setStatus("success");
+      clearLocalCart();
     }
   }, [sessionId, isAuthenticated, router]);
+
+  const clearLocalCart = () => {
+    // Invalidate cart query so it fetches the empty cart from the backend
+    queryClient.invalidateQueries({ queryKey: ["cart"] });
+    if (token) {
+      queryClient.setQueryData(["cart", token], []);
+    }
+  };
 
   const verifyStripeSession = async (id: string) => {
     try {
@@ -51,6 +56,7 @@ function CheckoutSuccessContent() {
 
       if (response.ok && data.success) {
         setStatus("success");
+        clearLocalCart();
       } else {
         setStatus("error");
         toast.error(data.message || "Payment verification failed");

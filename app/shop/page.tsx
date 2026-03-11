@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { FilterSidebar } from "@/components/shop/filter-sidebar";
 import { buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -29,17 +29,19 @@ function ShopPageContent() {
   const category = searchParams.get("category");
   const minPrice = Number(searchParams.get("minPrice") || 0);
   const maxPrice = Number(searchParams.get("maxPrice") || 10000);
+  const rating = searchParams.get("rating") ? Number(searchParams.get("rating")) : undefined;
 
   // Fetch products using TanStack Query
-  const { data: allProducts = [], isLoading, error } = useProducts(category || undefined, 100);
+  const { data: allProducts = [], isLoading, error } = useProducts({
+      category: category || undefined, 
+      limit: 100,
+      minPrice,
+      maxPrice,
+      rating
+  });
 
-  // Filter by price range on client-side
-  const filteredProducts = useMemo(() => {
-    return allProducts.filter((p: Product) => p.price >= minPrice && p.price <= maxPrice);
-  }, [allProducts, minPrice, maxPrice]);
-
-  const displayedProducts = filteredProducts.slice(0, page * 12);
-  const hasMore = displayedProducts.length < filteredProducts.length;
+  const displayedProducts = allProducts.slice(0, page * 12);
+  const hasMore = displayedProducts.length < allProducts.length;
 
   // Load more when scrolling
   const handleLoadMore = () => {
@@ -61,7 +63,7 @@ function ShopPageContent() {
             <div>
               <h1 className="text-3xl font-bold text-[#003d29]">Shop</h1>
               <p className="text-gray-500 mt-1">
-                Showing {displayedProducts.length} of {filteredProducts.length} products
+                Showing {displayedProducts.length} of {allProducts.length} products
               </p>
             </div>
             {/* Mobile Filter Trigger */}

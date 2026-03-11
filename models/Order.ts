@@ -70,7 +70,7 @@ const orderSchema = new mongoose.Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ["pending", "paid", "failed"],
+      enum: ["pending", "paid", "failed", "refunded"],
       default: "pending",
     },
     stripeSessionId: {
@@ -83,8 +83,8 @@ const orderSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["processing", "shipped", "delivered", "cancelled"],
-      default: "processing",
+      enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
+      default: "pending",
     }
   },
   {

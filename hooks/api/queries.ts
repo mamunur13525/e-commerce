@@ -43,18 +43,39 @@ export interface ProductResponse {
  * Fetch products with optional filters
  * @param category - Filter by category (optional)
  * @param limit - Limit number of results (default: 10)
+ * @param minPrice - Filter by minimum price
+ * @param maxPrice - Filter by maximum price 
+ * @param rating - Filter by minimum rating
  */
-export const useProducts = (
-  category?: string,
-  limit: number = 10
-): UseQueryResult<Product[]> => {
+export const useProducts = ({
+  category,
+  limit = 10,
+  minPrice,
+  maxPrice,
+  rating
+}: {
+  category?: string;
+  limit?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  rating?: number;
+} = {}): UseQueryResult<Product[]> => {
   return useQuery({
-    queryKey: ["products", category, limit],
+    queryKey: ["products", category, limit, minPrice, maxPrice, rating],
     queryFn: async () => {
       const params = new URLSearchParams();
       params.append("limit", limit.toString());
       if (category && category !== "All") {
         params.append("category", category);
+      }
+      if (minPrice !== undefined) {
+         params.append("minPrice", minPrice.toString());
+      }
+      if (maxPrice !== undefined) {
+         params.append("maxPrice", maxPrice.toString());
+      }
+      if (rating !== undefined) {
+         params.append("rating", rating.toString());
       }
 
       const res = await fetch(`/api/products?${params.toString()}`);

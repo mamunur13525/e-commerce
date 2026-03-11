@@ -53,7 +53,10 @@ export function ProductSection({ title, isShowingCategoryFilter = false }: { tit
   const [activeCategory, setActiveCategory] = useState("All");
 
   // Fetch products using TanStack Query
-  const { data: allProducts = [], isLoading, error, refetch } = useProducts(activeCategory === "All" ? undefined : activeCategory, 10);
+  const { data: allProducts = [], isLoading, error, refetch } = useProducts({
+      category: activeCategory === "All" ? undefined : activeCategory,
+      limit: 10
+  });
 
   // Memoize filtered products to avoid unnecessary recalculations
   const products = useMemo(() => allProducts.slice(0, 10), [allProducts]);

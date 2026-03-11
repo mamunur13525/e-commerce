@@ -12,7 +12,7 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { PackageIcon, ArrowRight01Icon } from "hugeicons-react";
 
-const statuses = ["All", "Processing", "Shipped", "Delivered", "Cancelled"];
+const statuses = ["All", "Pending", "Processing", "Shipped", "Delivered", "Cancelled"];
 
 export default function OrdersPage() {
   const { token } = useAuthStore();
@@ -123,6 +123,8 @@ const Orders = ({
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
+      case "pending":
+        return "bg-amber-100 text-amber-700 hover:bg-amber-100";
       case "processing":
         return "bg-blue-100 text-blue-700 hover:bg-blue-100";
       case "shipped":

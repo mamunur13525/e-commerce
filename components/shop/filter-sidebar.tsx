@@ -67,8 +67,18 @@ function FilterSidebarContent() {
         const val = value as number[];
         setPriceRange(val);
         const params = new URLSearchParams(searchParams.toString());
-        params.set("minPrice", val[0].toString());
-        params.set("maxPrice", val[1].toString());
+        if (val[0] > 0) {
+           params.set("minPrice", val[0].toString());
+        } else {
+           params.delete("minPrice");
+        }
+        
+        if (val[1] < (filters?.maxPrice || 1000)) {
+           params.set("maxPrice", val[1].toString());
+        } else {
+           params.delete("maxPrice");
+        }
+
         router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     };
 
