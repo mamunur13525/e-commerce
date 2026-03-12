@@ -1,4 +1,4 @@
-import { useQuery, useMutation, UseQueryResult, UseMutationResult, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, UseQueryResult, UseMutationResult, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import type { Filters } from "@/lib/types/filters";
 import type { Metadata } from "@/lib/types/metadata";
 import type { Address, AuthResponse, LoginCredentials, SignupCredentials, User } from "@/lib/types/auth";
@@ -22,11 +22,11 @@ export interface Product {
   currency?: string;
   quantity?: number;
   store?:
-    | {
-        id?: string;
-        name?: string;
-      }
-    | string;
+  | {
+    id?: string;
+    name?: string;
+  }
+  | string;
 }
 
 export interface ProductsResponse {
@@ -60,6 +60,7 @@ export const useProducts = ({
   maxPrice?: number;
   rating?: number;
 } = {}): UseQueryResult<Product[]> => {
+
   return useQuery({
     queryKey: ["products", category, limit, minPrice, maxPrice, rating],
     queryFn: async () => {
@@ -69,13 +70,13 @@ export const useProducts = ({
         params.append("category", category);
       }
       if (minPrice !== undefined) {
-         params.append("minPrice", minPrice.toString());
+        params.append("minPrice", minPrice.toString());
       }
       if (maxPrice !== undefined) {
-         params.append("maxPrice", maxPrice.toString());
+        params.append("maxPrice", maxPrice.toString());
       }
       if (rating !== undefined) {
-         params.append("rating", rating.toString());
+        params.append("rating", rating.toString());
       }
 
       const res = await fetch(`/api/products?${params.toString()}`);
@@ -90,6 +91,72 @@ export const useProducts = ({
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 30, // 30 minutes (previously cacheTime)
+  });
+};
+
+export interface PaginatedProductsResponse {
+  success: boolean;
+  data: Product[];
+  pagination: {
+    total: number;
+    page: number;
+    pages: number;
+    hasMore: boolean;
+  };
+}
+
+/**
+ * Fetch products with infinite scroll support
+ */
+export const useInfiniteProducts = ({
+  category,
+  limit = 12,
+  minPrice,
+  maxPrice,
+  rating
+}: {
+  category?: string;
+  limit?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  rating?: number;
+} = {}) => {
+  return useInfiniteQuery({
+    queryKey: ["infinite_products", category, limit, minPrice, maxPrice, rating],
+    queryFn: async ({ pageParam = 1 }) => {
+      const params = new URLSearchParams();
+      params.append("limit", limit.toString());
+      params.append("page", pageParam.toString());
+      if (category && category !== "All") {
+        params.append("category", category);
+      }
+      if (minPrice !== undefined) {
+        params.append("minPrice", minPrice.toString());
+      }
+      if (maxPrice !== undefined) {
+        params.append("maxPrice", maxPrice.toString());
+      }
+      if (rating !== undefined) {
+        params.append("rating", rating.toString());
+      }
+
+      const res = await fetch(`/api/products?${params.toString()}`);
+      if (!res.ok) {
+        throw new Error(`Failed to fetch products: ${res.status}`);
+      }
+      const data: PaginatedProductsResponse = await res.json();
+      if (!data.success) {
+        throw new Error("Failed to fetch products");
+      }
+      return data;
+    },
+    getNextPageParam: (lastPage: PaginatedProductsResponse) => {
+      if (lastPage.pagination && lastPage.pagination.hasMore) {
+        return lastPage.pagination.page + 1;
+      }
+      return undefined;
+    },
+    initialPageParam: 1,
   });
 };
 

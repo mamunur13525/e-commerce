@@ -14,7 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function WishlistPage() {
     const router = useRouter();
     const { isAuthenticated, user, token } = useAuthStore();
-    
+
     const { data: wishlistItems = [], isLoading, error } = useGetWishlist(isAuthenticated ? token : null);
     const removeFromWishlistMutation = useRemoveFromWishlist(isAuthenticated ? token : null);
     const addToCartMutation = useAddToCart(isAuthenticated ? token : null);
@@ -103,12 +103,9 @@ export default function WishlistPage() {
                     </div>
                 ) : wishlistItems.length === 0 ? (
                     /* Empty State */
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 md:p-20 text-center max-w-3xl mx-auto mt-8">
+                    <div className="rounded-2xl border border-gray-100 p-12 md:p-20 text-center max-w-3xl mx-auto mt-8">
                         <div className="w-32 h-32 bg-[#beef63]/20 rounded-full flex items-center justify-center mx-auto mb-8 relative">
-                           <FavouriteIcon className="size-16 text-[#003d29]" />
-                           <div className="absolute -top-2 -right-2 bg-white rounded-full p-1">
-                               <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-500 font-bold">0</div>
-                           </div>
+                            <FavouriteIcon className="size-16 text-[#003d29]" />
                         </div>
                         <h2 className="text-3xl font-bold text-[#003d29] mb-4">Your wishlist is empty</h2>
                         <p className="text-gray-500 mb-10 text-lg max-w-md mx-auto">

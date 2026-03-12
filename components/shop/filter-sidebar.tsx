@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
     Accordion,
@@ -36,12 +36,19 @@ function FilterSidebarContent() {
 
     // Fetch filters using TanStack Query
     const { data: filters, isLoading } = useFilters();
-
+    console.log({ filters })
     const [priceRange, setPriceRange] = useState([
         Number(searchParams.get("minPrice") || 0),
         Number(searchParams.get("maxPrice") || filters?.maxPrice || 500)
     ]);
+    console.log({ priceRange })
 
+    useEffect(() => {
+        setPriceRange([
+            Number(searchParams.get("minPrice") || 0),
+            Number(searchParams.get("maxPrice") || filters?.maxPrice || 500)
+        ]);
+    }, [searchParams, filters])
     // Helper for category toggle
     const toggleCategory = (slug: string) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -68,15 +75,15 @@ function FilterSidebarContent() {
         setPriceRange(val);
         const params = new URLSearchParams(searchParams.toString());
         if (val[0] > 0) {
-           params.set("minPrice", val[0].toString());
+            params.set("minPrice", val[0].toString());
         } else {
-           params.delete("minPrice");
+            params.delete("minPrice");
         }
-        
+
         if (val[1] < (filters?.maxPrice || 1000)) {
-           params.set("maxPrice", val[1].toString());
+            params.set("maxPrice", val[1].toString());
         } else {
-           params.delete("maxPrice");
+            params.delete("maxPrice");
         }
 
         router.replace(`${pathname}?${params.toString()}`, { scroll: false });
@@ -142,6 +149,20 @@ function FilterSidebarContent() {
         return <FiltersSkeleton />;
     }
 
+
+    const calculateStep = () => {
+        console.log('holala')
+        if (priceRange) {
+            const max = priceRange[1];
+            if (max < 100) {
+                return 10;
+            }
+            if (max < 1000) {
+                return 100;
+            }
+        }
+        return 1000;
+    }
     return (
         <div className="w-full bg-white p-4 rounded-xl border border-gray-100 h-fit">
             {/* Header */}
@@ -219,7 +240,7 @@ function FilterSidebarContent() {
                             <Slider
                                 defaultValue={[0, filters?.maxPrice || 500]}
                                 max={filters?.maxPrice || 1000}
-                                step={10}
+                                step={calculateStep()}
                                 value={priceRange}
                                 onValueChange={handlePriceChange}
                                 className="[&_.block]:bg-[#003d29] [&_.block]:border-white [&_.block]:ring-4 [&_.block]:ring-[#aedf4d] [&_.h-2]:bg-gray-100 [&_.h-2]:h-1"

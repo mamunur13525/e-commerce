@@ -9,12 +9,14 @@ export async function GET(req: NextRequest) {
         const searchParams = req.nextUrl.searchParams;
         const category = searchParams.get("category");
         const limit = searchParams.get("limit");
-        
+        const page = searchParams.get("page") || "1";
+
         // New filter params
         const minPrice = searchParams.get("minPrice");
         const maxPrice = searchParams.get("maxPrice");
         const rating = searchParams.get("rating");
 
+        console.log({ category, minPrice, maxPrice, rating, limit, page })
         const query: Record<string, any> = {};
 
         if (category && category !== "All") {
@@ -22,7 +24,7 @@ export async function GET(req: NextRequest) {
             if (categories.length > 1) {
                 query.category = { $in: categories.map(c => new RegExp(`^${c}$`, "i")) };
             } else {
-                 query.category = { $regex: new RegExp(`^${category}$`, "i") };
+                query.category = { $regex: new RegExp(`^${category}$`, "i") };
             }
         }
 
@@ -35,21 +37,33 @@ export async function GET(req: NextRequest) {
 
         // Add rating filter
         if (rating) {
-            query.rating = { $gte: Number(rating) };
+            query.rating = { $lte: Number(rating) };
         }
-
+        console.log({ query })
         let productQuery = Product.find(query);
 
-        if (limit) {
-            const limitNumber = parseInt(limit);
-            if (!isNaN(limitNumber)) {
-                productQuery = productQuery.limit(limitNumber);
+        const pageNumber = parseInt(page) || 1;
+        let limitNumber = limit ? parseInt(limit) : undefined;
+        if (limitNumber === undefined) limitNumber = 12;
+
+        const skip = (pageNumber - 1) * limitNumber;
+        productQuery = productQuery.skip(skip).limit(limitNumber);
+
+        const [products, total] = await Promise.all([
+            productQuery.exec(),
+            Product.countDocuments(query)
+        ]);
+
+        return NextResponse.json({ 
+            success: true, 
+            data: products,
+            pagination: {
+                total,
+                page: pageNumber,
+                pages: Math.ceil(total / limitNumber),
+                hasMore: (pageNumber * limitNumber) < total
             }
-        }
-
-        const products = await productQuery.exec();
-
-        return NextResponse.json({ success: true, data: products });
+        });
     } catch (error) {
         console.error("Error fetching products:", error);
         return NextResponse.json(

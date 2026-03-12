@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 import { FilterSidebar } from "@/components/shop/filter-sidebar";
 import { buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -11,7 +11,7 @@ import { Suspense } from "react";
 import { useInView } from "react-intersection-observer";
 import { ProductCard } from "@/components/product/product-card";
 import { ProductCardSkeleton } from "@/components/skeleton";
-import { useProducts, type Product } from "@/hooks";
+import { useInfiniteProducts, type Product } from "@/hooks";
 
 export default function ShopPage() {
   return (
@@ -23,36 +23,39 @@ export default function ShopPage() {
 
 function ShopPageContent() {
   const searchParams = useSearchParams();
-  const [page, setPage] = useState(1);
   const { ref, inView } = useInView();
 
   const category = searchParams.get("category");
   const minPrice = Number(searchParams.get("minPrice") || 0);
-  const maxPrice = Number(searchParams.get("maxPrice") || 10000);
+  const maxPrice = Number(searchParams.get("maxPrice") || 1000);
   const rating = searchParams.get("rating") ? Number(searchParams.get("rating")) : undefined;
+  console.log({ maxPrice, minPrice })
 
   // Fetch products using TanStack Query
-  const { data: allProducts = [], isLoading, error } = useProducts({
-      category: category || undefined, 
-      limit: 100,
-      minPrice,
-      maxPrice,
-      rating
+  const {
+    data,
+    isLoading,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
+  } = useInfiniteProducts({
+    category: category || undefined,
+    limit: 12,
+    minPrice,
+    maxPrice,
+    rating
   });
 
-  const displayedProducts = allProducts.slice(0, page * 12);
-  const hasMore = displayedProducts.length < allProducts.length;
+  const displayedProducts = data?.pages.flatMap((page) => page.data) || [];
+  const totalProducts = data?.pages[0]?.pagination?.total || 0;
 
   // Load more when scrolling
-  const handleLoadMore = () => {
-    if (hasMore && inView) {
-      setPage((prev) => prev + 1);
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
     }
-  };
-
-  if (inView && hasMore) {
-    handleLoadMore();
-  }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -63,7 +66,7 @@ function ShopPageContent() {
             <div>
               <h1 className="text-3xl font-bold text-[#003d29]">Shop</h1>
               <p className="text-gray-500 mt-1">
-                Showing {displayedProducts.length} of {allProducts.length} products
+                Showing {displayedProducts.length} of {totalProducts} products
               </p>
             </div>
             {/* Mobile Filter Trigger */}
@@ -122,10 +125,19 @@ function ShopPageContent() {
                 ))}
 
                 {/* Skeletons for initial loading state */}
-                {isLoading && page === 1 && (
+                {isLoading && (
                   <>
-                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => (
                       <ProductCardSkeleton key={`skeleton-${i}`} />
+                    ))}
+                  </>
+                )}
+
+                {/* Skeletons for fetching more state */}
+                {isFetchingNextPage && (
+                  <>
+                    {[1, 2, 3, 4].map((i) => (
+                      <ProductCardSkeleton key={`skeleton-more-${i}`} />
                     ))}
                   </>
                 )}
@@ -133,20 +145,14 @@ function ShopPageContent() {
             )}
 
             {/* Infinite Scroll Trigger */}
-            {hasMore && (
+            {hasNextPage && (
               <div
                 ref={ref}
-                className="h-20 flex items-center justify-center mt-8"
-              >
-                {isLoading ? null : (
-                  <div className="text-gray-400 text-sm">
-                    Scroll to load more...
-                  </div>
-                )}
-              </div>
+                className="h-10 mt-8"
+              />
             )}
 
-            {!hasMore && displayedProducts.length > 0 && (
+            {!hasNextPage && displayedProducts.length > 0 && (
               <div className="text-center text-gray-400 text-sm mt-12 mb-8">
                 You&apos;ve reached the end of the list.
               </div>

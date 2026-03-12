@@ -44,9 +44,6 @@ export function ProductCard({
   const isWishlisted = wishlist.some((item) => item._id === id);
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
     if (!isAuthenticated) {
         toast.error("Please login to manage your wishlist.");
         return;
@@ -75,9 +72,11 @@ export function ProductCard({
         </div>
       )}
 
-      {/* Image */}
-      <Link href={`/products/${id}`} className="relative w-full aspect-square mb-3 group-hover:scale-105 transition-transform duration-300 block self-center">
-        <Image ref={imageRef} src={imageSrc} alt={title} fill className="object-contain" />
+      {/* Image and Wishlist Container */}
+      <div className="relative w-full aspect-square mb-3 group-hover:scale-105 transition-transform duration-300 self-center">
+        <Link href={`/products/${id}`} className="block w-full h-full">
+          <Image ref={imageRef} src={imageSrc} alt={title} fill className="object-contain" />
+        </Link>
 
         {/* Wishlist Button */}
         <button
@@ -93,7 +92,7 @@ export function ProductCard({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
           </svg>
         </button>
-      </Link>
+      </div>
 
       {/* Content */}
       <Link href={`/products/${id}`} className="block w-full mb-1">

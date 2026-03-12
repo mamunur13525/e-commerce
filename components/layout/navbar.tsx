@@ -30,6 +30,7 @@ import {
   Home01Icon,
   VegetarianFoodIcon,
   HeartAddIcon,
+  FavouriteIcon,
 } from "hugeicons-react";
 import { SearchBar } from "@/components/layout/search-bar";
 import { CartSheet } from "@/components/layout/cart-sheet";
@@ -65,6 +66,8 @@ export function Navbar() {
     }
     return "Guest";
   };
+
+  const handleCloseSidebar = () => setSheetOpen(false);
   return (
     <nav className="bg-[#003d29] backdrop-blur-2xl text-white py-4 px-6 md:px-12 flex items-center justify-between gap-4 sticky top-0 z-50">
       {/* Left: Menu & Logo */}
@@ -87,7 +90,7 @@ export function Navbar() {
               <Link
                 href="/"
                 className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
-                onClick={() => setSheetOpen(false)}
+                onClick={handleCloseSidebar}
               >
                 <Home01Icon className="size-6 text-[#003d29]" />
                 Home
@@ -95,15 +98,23 @@ export function Navbar() {
               <Link
                 href="/categories"
                 className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
-                onClick={() => setSheetOpen(false)}
+                onClick={handleCloseSidebar}
               >
                 <VegetarianFoodIcon className="size-6 text-[#003d29]" />
                 Shop by Category
               </Link>
               <Link
+                href="/wishlist"
+                className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
+                onClick={handleCloseSidebar}
+              >
+                <FavouriteIcon className="size-6 text-[#003d29]" />
+                Wishlist
+              </Link>
+              <Link
                 href="/cart"
                 className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
-                onClick={() => setSheetOpen(false)}
+                onClick={handleCloseSidebar}
               >
                 <ShoppingBasket01Icon className="size-6 text-[#003d29]" />
                 My Orders
@@ -111,7 +122,7 @@ export function Navbar() {
               <Link
                 href="/account/settings"
                 className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
-                onClick={() => setSheetOpen(false)}
+                onClick={handleCloseSidebar}
               >
                 <Settings02Icon className="size-6 text-[#003d29]" />
                 Settings
