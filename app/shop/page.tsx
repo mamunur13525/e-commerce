@@ -29,7 +29,6 @@ function ShopPageContent() {
   const minPrice = Number(searchParams.get("minPrice") || 0);
   const maxPrice = Number(searchParams.get("maxPrice") || 1000);
   const rating = searchParams.get("rating") ? Number(searchParams.get("rating")) : undefined;
-  console.log({ maxPrice, minPrice })
 
   // Fetch products using TanStack Query
   const {

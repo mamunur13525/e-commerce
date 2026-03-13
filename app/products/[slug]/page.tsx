@@ -1,37 +1,54 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { StarIcon, ArrowLeft01Icon, Loading03Icon } from "hugeicons-react";
 import { Button } from "@/components/ui/button";
 import { ProductSection } from "@/components/home/product-section";
+import { FeaturedStore } from "@/components/home/featured-store";
 import { useCartAnimation } from "@/components/context/cart-animation-context";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ProductDetailsSkeleton } from "@/components/skeleton";
 import { toast } from "sonner";
-import { useAddToCart, useProduct, type Product } from "@/hooks";
-import { FeaturedStore } from "@/components/home/featured-store";
+import {
+  useAddToCart,
+  useProduct,
+  useAddToWishlist,
+  useRemoveFromWishlist,
+  useGetWishlist,
+  type Product,
+} from "@/hooks";
 import { useAuthStore } from "@/store/auth-store";
 import { useAuthModalStore } from "@/store/auth-modal-store";
+import { useCompareStore } from "@/store/compare-store";
 
 export default function ProductPage() {
   const params = useParams();
+  const router = useRouter();
   const productId = params.slug as string;
 
   const { isAuthenticated, token } = useAuthStore();
   const addToCartMutation = useAddToCart(isAuthenticated ? token : null);
+  const addToWishlistMutation = useAddToWishlist(isAuthenticated ? token : null);
+  const removeFromWishlistMutation = useRemoveFromWishlist(isAuthenticated ? token : null);
+  const { data: wishlist = [] } = useGetWishlist(isAuthenticated ? token : null);
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const { startAnimation } = useCartAnimation();
   const { openAuthModal } = useAuthModalStore();
+  const { addToCompare, isInCompare, removeFromCompare } = useCompareStore();
   const imageRef = useRef<HTMLImageElement>(null);
 
   // Fetch product using TanStack Query
   const { data: product, isLoading, error } = useProduct(productId);
+
+  const isWishlisted = wishlist.some((item) => item._id === productId);
+  const isCompared = product ? isInCompare(product._id) : false;
+
   const handleAddToCart = async () => {
     if (!isAuthenticated) {
       openAuthModal();
@@ -47,11 +64,9 @@ export default function ProductPage() {
       const targetRef = imageRef && imageRef.current;
       if (targetRef) {
         const rect = targetRef.getBoundingClientRect();
-        console.log({ targetSrc: targetRef.src, rect });
         const originalUrl = decodeURIComponent(
           targetRef.src.split("url=")[1].split("&")[0],
         );
-
         startAnimation(originalUrl, rect);
       }
       toast.success("Added to cart!");
@@ -61,6 +76,69 @@ export default function ProductPage() {
       );
     }
   };
+
+  const handleBuyNow = async () => {
+    if (!isAuthenticated) {
+      openAuthModal();
+      return;
+    }
+
+    try {
+      await addToCartMutation.mutateAsync({
+        productId,
+        quantity: 1,
+      });
+      router.push("/checkout");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to add to cart",
+      );
+    }
+  };
+
+  const handleWishlistToggle = () => {
+    if (!isAuthenticated) {
+      openAuthModal();
+      return;
+    }
+
+    if (isWishlisted) {
+      removeFromWishlistMutation.mutate(productId, {
+        onSuccess: () => {
+          toast.success("Removed from wishlist");
+        },
+      });
+    } else {
+      addToWishlistMutation.mutate(productId, {
+        onSuccess: () => {
+          toast.success("Added to wishlist");
+        },
+      });
+    }
+  };
+
+  const handleCompareToggle = () => {
+    if (!product) return;
+
+    if (isCompared) {
+      removeFromCompare(product._id);
+      toast.success(`${product.name} removed from compare`);
+    } else {
+      const { items } = useCompareStore.getState();
+      if (items.length >= 4) {
+        toast.error("You can compare up to 4 products at a time");
+        return;
+      }
+      addToCompare(product);
+      toast.success(`${product.name} added to compare`, {
+        action: {
+          label: "View Compare",
+          onClick: () => router.push("/compare"),
+        },
+      });
+    }
+  };
+
   if (isLoading) {
     return <ProductDetailsSkeleton />;
   }
@@ -90,16 +168,20 @@ export default function ProductPage() {
     );
   }
 
+  const finalPrice = product.final_price ?? product.price;
   const discountedPrice =
     product.discount && product.discount > 0
       ? product.price - (product.price * product.discount) / 100
       : product.price;
+  const displayPrice = product.final_price ?? discountedPrice;
 
   const allImages = [product.image, ...(product.images || [])];
   const storeName =
     typeof product.store === "string"
       ? product.store
       : product.store?.name || "Unknown Store";
+  const storeId =
+    typeof product.store === "object" ? product.store?.id : undefined;
 
   return (
     <main className="min-h-screen bg-white">
@@ -231,7 +313,16 @@ export default function ProductPage() {
           {/* Product Info */}
           <div className="space-y-5">
             {/* Store Name */}
-            <p className="text-sm text-gray-500">{storeName}</p>
+            {storeId ? (
+              <Link
+                href={`/vendors/${storeId}`}
+                className="text-sm text-[#003d29] hover:underline font-medium"
+              >
+                {storeName}
+              </Link>
+            ) : (
+              <p className="text-sm text-gray-500">{storeName}</p>
+            )}
 
             <div>
               {/* Product Title */}
@@ -246,33 +337,37 @@ export default function ProductPage() {
                 </p>
               </div>
             </div>
+
             {/* Rating */}
             <div className="flex items-center gap-1 mb">
               <div className="flex items-center">
                 {[...Array(5)].map((_, i) => (
                   <StarIcon
                     key={i}
-                    className={`size-4 ${
-                      i < Math.floor(product.rating || 0)
-                        ? "text-yellow-400 fill-yellow-400"
-                        : "text-gray-300 fill-gray-300"
-                    }`}
+                    className={`size-4 ${i < Math.floor(product.rating || 0)
+                      ? "text-yellow-400 fill-yellow-400"
+                      : "text-gray-300 fill-gray-300"
+                      }`}
                   />
                 ))}
               </div>
               <span className="text-sm font-medium text-gray-700 ml-1">
                 {product.rating?.toFixed(1)}
               </span>
-              <span className="text-sm text-gray-500">(15 reviews)</span>
             </div>
+
+            {/* Weight info */}
+            {product.weight && (
+              <p className="text-sm text-gray-500">Weight: {product.weight}</p>
+            )}
 
             {/* Price */}
             <div className="flex items-end gap-1">
               <span className="font-black text-5xl text-gray-900">
-                {Math.floor(discountedPrice)}
+                {Math.floor(displayPrice)}
               </span>
               <span className="font-black text-2xl text-gray-900 mb-1">
-                .{(discountedPrice % 1).toFixed(2).split(".")[1]}
+                .{(displayPrice % 1).toFixed(2).split(".")[1]}
               </span>
               <span className="font-black text-2xl text-gray-900 mb-1">
                 {getCurrencySymbol(product.currency)}
@@ -288,7 +383,7 @@ export default function ProductPage() {
                 </span>
                 <span className="text-sm font-medium text-red-600">
                   Save {getCurrencySymbol(product.currency)}
-                  {(product.price - discountedPrice).toFixed(2)}
+                  {(product.price - displayPrice).toFixed(2)}
                 </span>
               </div>
             )}
@@ -308,13 +403,17 @@ export default function ProductPage() {
                 )}
               </Button>
               <Button
-                onClick={() => {
-                  // console.log(`Buying ${cartQuantity} of ${product.name}`);
-                }}
+                onClick={handleBuyNow}
                 className="flex-1 h-14 bg-[#003d29] hover:bg-[#003d29] text-white font-semibold rounded-full cursor-pointer"
-                disabled={(product.quantity || 0) === 0}
+                disabled={(product.quantity || 0) === 0 || addToCartMutation.isPending}
               >
-                {(product.quantity || 0) === 0 ? "Out of Stock" : "Buy now"}
+                {addToCartMutation.isPending ? (
+                  <Loading03Icon className="w-5 h-5 animate-spin" />
+                ) : (product.quantity || 0) === 0 ? (
+                  "Out of Stock"
+                ) : (
+                  "Buy now"
+                )}
               </Button>
             </div>
 
@@ -322,16 +421,18 @@ export default function ProductPage() {
             <div className="flex items-center gap-3 pt-2">
               <Button
                 variant="ghost"
-                className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-red-50 transition-colors px-4 py-2 rounded-lg"
-                onClick={() => {
-                  toast.info("Coming soon", {
-                    description: "It will come shortly",
-                  });
-                }}
+                className={cn(
+                  "flex items-center gap-2 text-sm font-medium transition-colors px-4 py-2 rounded-lg",
+                  isWishlisted
+                    ? "text-red-600 bg-red-50 hover:text-red-700 hover:bg-red-100"
+                    : "text-gray-700 hover:text-red-600 hover:bg-red-50"
+                )}
+                onClick={handleWishlistToggle}
+                disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
               >
                 <svg
                   className="w-5 h-5"
-                  fill="none"
+                  fill={isWishlisted ? "currentColor" : "none"}
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -342,16 +443,17 @@ export default function ProductPage() {
                     d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
                   />
                 </svg>
-                <span>Add to Wishlist</span>
+                <span>{isWishlisted ? "In Wishlist" : "Add to Wishlist"}</span>
               </Button>
               <Button
                 variant="ghost"
-                className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors px-4 py-2 rounded-lg"
-                onClick={() => {
-                  toast.info("Coming soon", {
-                    description: "It will come shortly",
-                  });
-                }}
+                className={cn(
+                  "flex items-center gap-2 text-sm font-medium transition-colors px-4 py-2 rounded-lg",
+                  isCompared
+                    ? "text-blue-600 bg-blue-50 hover:text-blue-700 hover:bg-blue-100"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                )}
+                onClick={handleCompareToggle}
               >
                 <svg
                   className="w-5 h-5"
@@ -366,7 +468,7 @@ export default function ProductPage() {
                     d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                   />
                 </svg>
-                <span>Compare</span>
+                <span>{isCompared ? "In Compare" : "Compare"}</span>
               </Button>
             </div>
 
@@ -375,7 +477,7 @@ export default function ProductPage() {
               <div className="flex items-center gap-2 text-sm pt-2">
                 <span className="text-red-600">🔥</span>
                 <span className="text-red-600 font-medium">
-                  100 sold in last 35 hour
+                  {product.quantity} items left in stock
                 </span>
               </div>
             )}
@@ -392,6 +494,23 @@ export default function ProductPage() {
                 <span className="font-semibold text-gray-900">Categories:</span>
                 <span className="text-gray-600 ml-2">{product.category}</span>
               </div>
+              {product.weight && (
+                <div className="text-sm">
+                  <span className="font-semibold text-gray-900">Weight:</span>
+                  <span className="text-gray-600 ml-2">{product.weight}</span>
+                </div>
+              )}
+              {storeId && (
+                <div className="text-sm">
+                  <span className="font-semibold text-gray-900">Store:</span>
+                  <Link
+                    href={`/vendors/${storeId}`}
+                    className="text-[#003d29] ml-2 hover:underline font-medium"
+                  >
+                    {storeName}
+                  </Link>
+                </div>
+              )}
             </div>
 
             {/* Delivery & Daily Deal Info */}
@@ -466,7 +585,7 @@ export default function ProductPage() {
       {/* Image Preview Dialog */}
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
         <DialogContent className="max-w-7xl w-full h-[90vh] p-0">
-          <div className="relative w-full h-full bg-black/95 flex items-center justify-center">
+          <div className="relative w-full h-full bg-black/95 flex items-center justify-center rounded-xl">
             <Image
               key={selectedImage}
               src={

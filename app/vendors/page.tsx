@@ -1,43 +1,41 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight01Icon, StarIcon, FlashIcon, Store04Icon } from "hugeicons-react";
+import Link from "next/link";
+import { StarIcon, Store04Icon, FlashIcon } from "hugeicons-react";
 import { useVendors, type Vendor } from "@/hooks";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 
-const colorClasses = [
-  "bg-orange-500",
-  "bg-blue-600",
-  "bg-emerald-500",
-  "bg-red-400",
-  "bg-purple-500",
-  "bg-yellow-400",
-  "bg-pink-500",
-  "bg-teal-500",
-];
+function VendorCard({ vendor }: { vendor: Vendor }) {
+  const colorClasses = [
+    "bg-orange-500",
+    "bg-blue-600",
+    "bg-emerald-500",
+    "bg-red-400",
+    "bg-purple-500",
+    "bg-yellow-400",
+    "bg-pink-500",
+    "bg-teal-500",
+  ];
 
-function getColorClass(vendorId: string) {
-  const index =
-    vendorId
+  // Deterministic color based on vendorId
+  const colorIndex =
+    vendor.vendorId
       .split("")
       .reduce((acc, char) => acc + char.charCodeAt(0), 0) %
     colorClasses.length;
-  return colorClasses[index];
-}
-
-function FeaturedStoreCard({ vendor }: { vendor: Vendor }) {
-  const colorClass = getColorClass(vendor.vendorId);
+  const colorClass = colorClasses[colorIndex];
 
   return (
     <Link href={`/vendors/${vendor.vendorId}`}>
       <div className="group relative flex flex-col overflow-hidden rounded-[2rem] bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-gray-100 h-full">
-        <div className={cn("relative h-28 w-full overflow-hidden transition-colors duration-300", colorClass)}>
+        {/* Top header color */}
+        <div className={`relative h-28 w-full overflow-hidden transition-colors duration-300 ${colorClass}`}>
           <div className="absolute -bottom-6 left-0 right-0 h-10 bg-white rounded-t-[50%] scale-x-110" />
           <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-300" />
         </div>
 
+        {/* Logo */}
         <div className="absolute left-1/2 -translate-x-1/2 top-12 h-20 w-20">
           <div className="relative h-full w-full overflow-hidden rounded-full border-[3px] border-white bg-white shadow-lg group-hover:scale-105 transition-transform duration-300">
             <div className="flex h-full w-full items-center justify-center bg-gray-50">
@@ -58,11 +56,13 @@ function FeaturedStoreCard({ vendor }: { vendor: Vendor }) {
           </div>
         </div>
 
+        {/* Content */}
         <div className="flex flex-col items-center px-6 pb-8 pt-12 text-center flex-1">
           <h3 className="mb-1 text-xl font-bold text-[#003d29] tracking-tight group-hover:text-emerald-700 transition-colors">
             {vendor.storeName}
           </h3>
 
+          {/* Rating */}
           {vendor.rating > 0 && (
             <div className="flex items-center gap-1 mb-2">
               <StarIcon className="size-3.5 text-yellow-400 fill-yellow-400" />
@@ -76,9 +76,16 @@ function FeaturedStoreCard({ vendor }: { vendor: Vendor }) {
             {vendor.description || "Visit this store for great products."}
           </p>
 
-          <div className="mt-auto inline-flex items-center gap-1.5 rounded-full bg-orange-50 px-3 py-1 text-xs font-medium text-orange-700">
-            <FlashIcon className="size-3.5 fill-orange-500 text-orange-500" />
-            <span>{vendor.totalProducts} products</span>
+          {/* Stats */}
+          <div className="mt-auto flex items-center gap-4 text-xs text-gray-500">
+            <div className="flex items-center gap-1">
+              <Store04Icon className="size-3.5" />
+              <span>{vendor.totalProducts} products</span>
+            </div>
+            <div className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-3 py-1 font-medium text-orange-700">
+              <FlashIcon className="size-3.5 fill-orange-500 text-orange-500" />
+              <span>{vendor.totalOrders} orders</span>
+            </div>
           </div>
         </div>
       </div>
@@ -86,7 +93,7 @@ function FeaturedStoreCard({ vendor }: { vendor: Vendor }) {
   );
 }
 
-function FeaturedStoreSkeleton() {
+function VendorCardSkeleton() {
   return (
     <div className="flex flex-col overflow-hidden rounded-[2rem] bg-white border border-gray-100 h-full">
       <Skeleton className="h-28 w-full rounded-none" />
@@ -99,36 +106,45 @@ function FeaturedStoreSkeleton() {
   );
 }
 
-export function FeaturedStore() {
-  const { data, isLoading } = useVendors({ limit: 3 });
-  const vendors = data?.data || [];
-  return (
-    <section className="container mx-auto px-4 py-8 md:py-12">
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900 md:text-3xl">
-          Featured store
-        </h2>
-        <Link
-          href="/vendors"
-          className="group flex items-center text-sm font-medium text-orange-600 transition-colors hover:text-orange-700"
-        >
-          Visit all stores
-          <ArrowRight01Icon className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
-        </Link>
-      </div>
+export default function VendorsPage() {
+  const { data, isLoading, error } = useVendors({ limit: 50 });
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
-        {isLoading
-          ? [...Array(3)].map((_, i) => <FeaturedStoreSkeleton key={`skeleton-${i}`} />)
-          : vendors.map((vendor) => (
-            <FeaturedStoreCard key={vendor._id} vendor={vendor} />
-          ))}
-        {!isLoading && vendors.length === 0 && (
-          <p className="col-span-3 text-center text-gray-500 py-8">
-            No stores available yet.
+  const vendors = data?.data || [];
+
+  return (
+    <main className="bg-[#fafaf9] min-h-screen">
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-[#003d29]">All Stores</h1>
+          <p className="text-gray-500 mt-1">
+            {isLoading
+              ? "Loading stores..."
+              : `${vendors.length} stores available`}
           </p>
+        </div>
+
+        {error && (
+          <div className="text-center py-12 text-red-600">
+            <p>Failed to load stores. Please try again.</p>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {isLoading
+            ? [...Array(8)].map((_, i) => (
+              <VendorCardSkeleton key={`skeleton-${i}`} />
+            ))
+            : vendors.map((vendor) => (
+              <VendorCard key={vendor._id} vendor={vendor} />
+            ))}
+        </div>
+
+        {!isLoading && vendors.length === 0 && !error && (
+          <div className="text-center py-20 text-gray-500">
+            No stores found.
+          </div>
         )}
       </div>
-    </section>
+    </main>
   );
 }

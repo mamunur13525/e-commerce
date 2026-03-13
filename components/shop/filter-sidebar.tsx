@@ -97,7 +97,8 @@ function FilterSidebarContent() {
 
     // Check if filter is active
     const isActive = (section: string, value: string) => {
-        return searchParams.get(section) === value;
+        console.log({ section: searchParams.get(section), value })
+        return Number(searchParams.get(section)) >= Number(value);
     };
 
     // Get applied filters
@@ -184,9 +185,9 @@ function FilterSidebarContent() {
                     {appliedFiltersList.map((filter) => (
                         <div
                             key={filter.key}
-                            className="flex items-center bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full border border-gray-300"
+                            className="flex  items-center bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full border border-gray-300"
                         >
-                            <span>{filter.name}</span>
+                            <span className="text-wrap">{filter.name}</span>
                             <button
                                 onClick={() => removeFilter(filter.key)}
                                 className="ml-2 text-gray-500 hover:text-red-500"
@@ -277,10 +278,12 @@ function FilterSidebarContent() {
                         <div className="flex flex-wrap gap-2 pt-2">
                             {[1, 2, 3, 4, 5].map((star) => {
                                 const active = isActive("rating", star.toString());
+
                                 return (
                                     <button
                                         key={star}
                                         onClick={() => toggleFilter("rating", star.toString())}
+
                                         className={cn(
                                             "w-10 h-10 rounded-full text-xs font-semibold flex items-center justify-center border transition-colors",
                                             active

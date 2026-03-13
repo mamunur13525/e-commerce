@@ -40,27 +40,27 @@ export function ProductCard({
 
   const discountedPrice = discount > 0 ? price - (price * discount) / 100 : price;
   const currencySymbol = getCurrencySymbol(currency || "'");
-  
+
   const isWishlisted = wishlist.some((item) => item._id === id);
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     if (!isAuthenticated) {
-        toast.error("Please login to manage your wishlist.");
-        return;
+      toast.error("Please login to manage your wishlist.");
+      return;
     }
 
     if (isWishlisted) {
-        removeFromWishlistMutation.mutate(id, {
-             onSuccess: () => {
-                 toast.success(`${title} removed from wishlist`);
-             }
-        });
+      removeFromWishlistMutation.mutate(id, {
+        onSuccess: () => {
+          toast.success(`${title} removed from wishlist`);
+        }
+      });
     } else {
-        addToWishlistMutation.mutate(id, {
-             onSuccess: () => {
-                 toast.success(`${title} added to wishlist`);
-             }
-        });
+      addToWishlistMutation.mutate(id, {
+        onSuccess: () => {
+          toast.success(`${title} added to wishlist`);
+        }
+      });
     }
   };
   return (
@@ -74,8 +74,8 @@ export function ProductCard({
 
       {/* Image and Wishlist Container */}
       <div className="relative w-full aspect-square mb-3 group-hover:scale-105 transition-transform duration-300 self-center">
-        <Link href={`/products/${id}`} className="block w-full h-full">
-          <Image ref={imageRef} src={imageSrc} alt={title} fill className="object-contain" />
+        <Link href={`/products/${id}`} className="block w-full h-full rounded-lg overflow-hidden">
+          <Image ref={imageRef} src={imageSrc} alt={title} fill className="object-cover rounded-lg" />
         </Link>
 
         {/* Wishlist Button */}

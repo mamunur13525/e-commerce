@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     domains: ["i.ibb.co", "ik.imagekit.io", "localhost"],
 
   },
-  
+
 };
 
 export default nextConfig;

@@ -11,11 +11,12 @@ export interface Product {
   description: string;
   weight: string;
   price: number;
+  final_price?: number;
   image: {
     url: string;
     display_url?: string;
   };
-  images?: any[];
+  images?: Array<{ url?: string; display_url?: string }>;
   category: string;
   rating?: number;
   discount?: number;

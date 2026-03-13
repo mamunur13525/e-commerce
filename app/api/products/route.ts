@@ -30,9 +30,9 @@ export async function GET(req: NextRequest) {
 
         // Add price filters
         if (minPrice || maxPrice) {
-            query.price = {};
-            if (minPrice) query.price.$gte = Number(minPrice);
-            if (maxPrice) query.price.$lte = Number(maxPrice);
+            query.final_price = {};
+            if (minPrice) query.final_price.$gte = Number(minPrice);
+            if (maxPrice) query.final_price.$lte = Number(maxPrice);
         }
 
         // Add rating filter
@@ -54,8 +54,8 @@ export async function GET(req: NextRequest) {
             Product.countDocuments(query)
         ]);
 
-        return NextResponse.json({ 
-            success: true, 
+        return NextResponse.json({
+            success: true,
             data: products,
             pagination: {
                 total,
