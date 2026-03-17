@@ -41,7 +41,8 @@ function FilterSidebarContent() {
         Number(searchParams.get("minPrice") || 0),
         Number(searchParams.get("maxPrice") || filters?.maxPrice || 500)
     ]);
-    console.log({ priceRange })
+    const [hoveredRating, setHoveredRating] = useState<number | null>(null);
+    console.log({ priceRange, hoveredRating })
 
     useEffect(() => {
         setPriceRange([
@@ -164,6 +165,7 @@ function FilterSidebarContent() {
         }
         return 1000;
     }
+    console.log({ hoveredRating })
     return (
         <div className="w-full bg-white p-4 rounded-xl border border-gray-100 h-fit">
             {/* Header */}
@@ -277,18 +279,16 @@ function FilterSidebarContent() {
                     <AccordionContent>
                         <div className="flex flex-wrap gap-2 pt-2">
                             {[1, 2, 3, 4, 5].map((star) => {
-                                const active = isActive("rating", star.toString());
-
+                                const selectedRating = Number(searchParams.get("rating") || 0);
                                 return (
                                     <button
                                         key={star}
                                         onClick={() => toggleFilter("rating", star.toString())}
-
+                                        onMouseEnter={() => setHoveredRating(star)}
+                                        onMouseLeave={() => setHoveredRating(null)}
                                         className={cn(
-                                            "w-10 h-10 rounded-full text-xs font-semibold flex items-center justify-center border transition-colors",
-                                            active
-                                                ? "bg-[#003d29] text-white border-[#003d29]"
-                                                : "bg-gray-100 text-gray-600 border-transparent hover:border-[#003d29]"
+                                            "w-10 h-10 rounded-full text-xs font-semibold flex items-center justify-center border transition-all duration-200 cursor-pointer",
+                                            hoveredRating ? hoveredRating >= star ? 'bg-[#003d29] text-white border-[#003d29] shadow-md' : '' : selectedRating >= star ? 'bg-[#003d29] text-white border-[#003d29] shadow-md' : ''
                                         )}
                                     >
                                         {star}★

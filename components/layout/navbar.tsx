@@ -31,6 +31,7 @@ import {
   VegetarianFoodIcon,
   HeartAddIcon,
   FavouriteIcon,
+  Store04Icon,
 } from "hugeicons-react";
 import { SearchBar } from "@/components/layout/search-bar";
 import { CartSheet } from "@/components/layout/cart-sheet";
@@ -126,6 +127,19 @@ export function Navbar() {
               >
                 <Settings02Icon className="size-6 text-[#003d29]" />
                 Settings
+              </Link>
+
+              {/* Separator */}
+              <div className="border-t border-gray-200 my-2" />
+
+              {/* Become a Seller */}
+              <Link
+                href="/become-seller"
+                className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
+                onClick={handleCloseSidebar}
+              >
+                <Store04Icon className="size-6 text-[#003d29]" />
+                Become a Seller
               </Link>
             </div>
           </SheetContent>
