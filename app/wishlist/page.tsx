@@ -10,6 +10,7 @@ import { useAuthStore } from "@/store/auth-store";
 import { useGetWishlist, useRemoveFromWishlist, useAddToCart, Product } from "@/hooks";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getCurrencySymbol } from "@/lib/currency";
 
 export default function WishlistPage() {
     const router = useRouter();
@@ -46,15 +47,6 @@ export default function WishlistPage() {
             }
         });
     }
-
-    const getCurrencySymbol = (currency?: string): string => {
-        const symbols: Record<string, string> = {
-            USD: "$",
-            EUR: "€",
-            GBP: "£",
-        };
-        return symbols[currency?.toUpperCase() || "USD"] || "$";
-    };
 
     if (!isAuthenticated) return null; // Let the useEffect redirect handle this gracefully
 

@@ -11,11 +11,12 @@ import { Suspense } from "react";
 import { useInView } from "react-intersection-observer";
 import { ProductCard } from "@/components/product/product-card";
 import { ProductCardSkeleton } from "@/components/skeleton";
-import { useInfiniteProducts, type Product } from "@/hooks";
+import { useInfiniteProducts } from "@/hooks";
+import ShoppingPageSkeleton from "@/components/skeleton/shoping-page";
 
 export default function ShopPage() {
   return (
-    <Suspense fallback={<div>Loading shop...</div>}>
+    <Suspense fallback={<ShoppingPageSkeleton />}>
       <ShopPageContent />
     </Suspense>
   );
@@ -28,7 +29,9 @@ function ShopPageContent() {
   const category = searchParams.get("category");
   const minPrice = Number(searchParams.get("minPrice") || 0);
   const maxPrice = Number(searchParams.get("maxPrice") || 1000);
-  const rating = searchParams.get("rating") ? Number(searchParams.get("rating")) : undefined;
+  const rating = searchParams.get("rating")
+    ? Number(searchParams.get("rating"))
+    : undefined;
 
   // Fetch products using TanStack Query
   const {
@@ -37,13 +40,13 @@ function ShopPageContent() {
     error,
     fetchNextPage,
     hasNextPage,
-    isFetchingNextPage
+    isFetchingNextPage,
   } = useInfiniteProducts({
     category: category || undefined,
     limit: 12,
     minPrice,
     maxPrice,
-    rating
+    rating,
   });
 
   const displayedProducts = data?.pages.flatMap((page) => page.data) || [];
@@ -73,7 +76,7 @@ function ShopPageContent() {
               <SheetTrigger
                 className={cn(
                   buttonVariants({ variant: "outline" }),
-                  "lg:hidden gap-2"
+                  "lg:hidden gap-2",
                 )}
               >
                 <FilterHorizontalIcon className="size-4" />
@@ -144,12 +147,7 @@ function ShopPageContent() {
             )}
 
             {/* Infinite Scroll Trigger */}
-            {hasNextPage && (
-              <div
-                ref={ref}
-                className="h-10 mt-8"
-              />
-            )}
+            {hasNextPage && <div ref={ref} className="h-10 mt-8" />}
 
             {!hasNextPage && displayedProducts.length > 0 && (
               <div className="text-center text-gray-400 text-sm mt-12 mb-8">

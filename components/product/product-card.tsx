@@ -82,7 +82,7 @@ export function ProductCard({
         <button
           onClick={handleWishlistToggle}
           disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
-          className={`absolute top-2 left-2 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 z-20 ${isWishlisted
+          className={`cursor-pointer absolute top-2 left-2 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 z-20 ${isWishlisted
             ? 'bg-red-500 text-white shadow-lg scale-110'
             : 'bg-white/90 backdrop-blur-sm text-gray-600 hover:bg-red-50 hover:text-red-500 opacity-0 group-hover:opacity-100'
             }`}

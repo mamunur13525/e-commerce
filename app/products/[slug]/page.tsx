@@ -24,6 +24,7 @@ import {
 import { useAuthStore } from "@/store/auth-store";
 import { useAuthModalStore } from "@/store/auth-modal-store";
 import { useCompareStore } from "@/store/compare-store";
+import { getCurrencySymbol } from "@/lib/currency";
 
 export default function ProductPage() {
   const params = useParams();
@@ -363,23 +364,24 @@ export default function ProductPage() {
 
             {/* Price */}
             <div className="flex items-end gap-1">
+               <span className="font-black text-2xl text-gray-900 mb-1">
+                {getCurrencySymbol(product.currency)}
+              </span>
               <span className="font-black text-5xl text-gray-900">
                 {Math.floor(displayPrice)}
               </span>
               <span className="font-black text-2xl text-gray-900 mb-1">
                 .{(displayPrice % 1).toFixed(2).split(".")[1]}
               </span>
-              <span className="font-black text-2xl text-gray-900 mb-1">
-                {getCurrencySymbol(product.currency)}
-              </span>
+            
             </div>
 
             {/* Discount Info */}
             {product.discount && product.discount > 0 && (
               <div className="flex items-center gap-3">
                 <span className="text-base text-gray-400 line-through">
-                  {product.price.toFixed(2)}
                   {getCurrencySymbol(product.currency)}
+                  {product.price.toFixed(2)}
                 </span>
                 <span className="text-sm font-medium text-red-600">
                   Save {getCurrencySymbol(product.currency)}
@@ -661,21 +663,4 @@ export default function ProductPage() {
       </Dialog>
     </main>
   );
-}
-
-// Currency symbol helper
-function getCurrencySymbol(currency?: string): string {
-  const symbols: Record<string, string> = {
-    USD: "$",
-    EUR: "€",
-    GBP: "£",
-    JPY: "¥",
-    INR: "₹",
-    BDT: "৳",
-    CNY: "¥",
-    AUD: "A$",
-    CAD: "C$",
-  };
-
-  return symbols[currency?.toUpperCase() || "USD"] || "$";
 }

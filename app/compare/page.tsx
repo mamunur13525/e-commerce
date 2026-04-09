@@ -6,22 +6,7 @@ import { ArrowLeft01Icon, StarIcon, Delete02Icon } from "hugeicons-react";
 import { Button } from "@/components/ui/button";
 import { useCompareStore } from "@/store/compare-store";
 import { toast } from "sonner";
-
-// Currency symbol helper
-function getCurrencySymbol(currency?: string): string {
-  const symbols: Record<string, string> = {
-    USD: "$",
-    EUR: "€",
-    GBP: "£",
-    JPY: "¥",
-    INR: "₹",
-    BDT: "৳",
-    CNY: "¥",
-    AUD: "A$",
-    CAD: "C$",
-  };
-  return symbols[currency?.toUpperCase() || "USD"] || "$";
-}
+import { getCurrencySymbol } from "@/lib/currency";
 
 export default function ComparePage() {
   const { items, removeFromCompare, clearCompare } = useCompareStore();
