@@ -96,50 +96,6 @@ function FilterSidebarContent() {
     return currentCategories.includes(slug);
   };
 
-  // Check if filter is active
-  const isActive = (section: string, value: string) => {
-    console.log({ section: searchParams.get(section), value });
-    return Number(searchParams.get(section)) >= Number(value);
-  };
-
-  // Get applied filters
-  const appliedFilters = () => {
-    const filterList = [];
-    if (searchParams.has("category")) {
-      filterList.push({
-        name: `Category: ${searchParams.get("category")}`,
-        key: "category",
-      });
-    }
-    if (searchParams.has("minPrice") || searchParams.has("maxPrice")) {
-      const minPrice = searchParams.get("minPrice") || "0";
-      const maxPrice = searchParams.get("maxPrice") || "500";
-      filterList.push({
-        name: `Price: $${minPrice} - $${maxPrice}`,
-        key: "price",
-      });
-    }
-    if (searchParams.has("rating")) {
-      filterList.push({
-        name: `Rating: ${searchParams.get("rating")}★`,
-        key: "rating",
-      });
-    }
-    return filterList;
-  };
-
-  // Remove individual filter
-  const removeFilter = (key: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (key === "price") {
-      params.delete("minPrice");
-      params.delete("maxPrice");
-    } else {
-      params.delete(key);
-    }
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  };
-
   // Toggle filter
   const toggleFilter = (section: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -153,8 +109,6 @@ function FilterSidebarContent() {
 
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
-
-  const appliedFiltersList = appliedFilters();
 
   if (isLoading) {
     return <FiltersSkeleton />;
@@ -177,37 +131,9 @@ function FilterSidebarContent() {
   return (
     <div className="w-full bg-white p-4 rounded-xl border border-gray-100 h-fit">
       {/* Header */}
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-[#003d29]">Filters</h2>
-        {appliedFiltersList.length > 0 && (
-          <button
-            onClick={() => router.push(pathname)}
-            className="text-xs text-gray-500 hover:text-[#003d29] underline"
-          >
-            Clear All
-          </button>
-        )}
       </div>
-
-      {/* Applied Filters */}
-      {appliedFiltersList.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-4">
-          {appliedFiltersList.map((filter) => (
-            <div
-              key={filter.key}
-              className="flex  items-center bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full border border-gray-300"
-            >
-              <span className="text-wrap">{filter.name}</span>
-              <button
-                onClick={() => removeFilter(filter.key)}
-                className="ml-2 text-gray-500 hover:text-red-500"
-              >
-                ✕
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
 
       <Accordion
         multiple={true}

@@ -6,7 +6,8 @@ export async function POST(request: NextRequest) {
   try {
     await connectDB();
 
-    const { code, subtotal } = await request.json();
+    let { code, subtotal, productIds, categoryIds, userId } = await request.json();
+    code = code?.trim();
 
     if (!code || !subtotal) {
       return NextResponse.json(
@@ -27,7 +28,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check expiry date
     if (new Date() > new Date(promo.expiryDate)) {
       return NextResponse.json(
         { success: false, message: "Promo code has expired" },
@@ -35,7 +35,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check usage limit
     if (
       promo.maxUsageCount &&
       promo.usageCount >= promo.maxUsageCount
@@ -46,7 +45,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check minimum order amount
     if (subtotal < promo.minOrderAmount) {
       return NextResponse.json(
         {
@@ -55,6 +53,48 @@ export async function POST(request: NextRequest) {
         },
         { status: 400 }
       );
+    }
+
+    if (promo.applicableToFirstOrder && userId) {
+      const existingOrders = await import("@/models/Order").then(m => m.default.countDocuments({ user: userId }));
+      if (existingOrders > 0) {
+        return NextResponse.json(
+          { success: false, message: "This promo code is only applicable to first order" },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (promo.specificProductIds?.length > 0) {
+      if (!productIds || productIds.length === 0) {
+        return NextResponse.json(
+          { success: false, message: "This promo code is only applicable to specific products" },
+          { status: 400 }
+        );
+      }
+      const hasValidProduct = productIds.some((id: string) => promo.specificProductIds.includes(id));
+      if (!hasValidProduct) {
+        return NextResponse.json(
+          { success: false, message: "This promo code is not applicable to the products in your cart" },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (promo.specificCategoryIds?.length > 0) {
+      if (!categoryIds || categoryIds.length === 0) {
+        return NextResponse.json(
+          { success: false, message: "This promo code is only applicable to specific categories" },
+          { status: 400 }
+        );
+      }
+      const hasValidCategory = categoryIds.some((id: string) => promo.specificCategoryIds.includes(id));
+      if (!hasValidCategory) {
+        return NextResponse.json(
+          { success: false, message: "This promo code is not applicable to the categories in your cart" },
+          { status: 400 }
+        );
+      }
     }
 
     // Calculate discount

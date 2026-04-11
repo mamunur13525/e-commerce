@@ -11,10 +11,10 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { CheckoutProgress } from "@/components/checkout/checkout-progress";
 import { AddressModal } from "@/components/checkout/address-modal";
+import { PromoCodeInput } from "@/components/checkout/promo-code-input";
 import { useAuthStore } from "@/store/auth-store";
 import { useGetCart, useUpdateCartItem, useRemoveFromCart } from "@/hooks";
-import { useGetAddresses, type Address } from "@/hooks/api/addresses";
-import { useValidatePromo } from "@/hooks/api/promo";
+import { useGetAddresses } from "@/hooks/api/addresses";
 import { toast } from "sonner";
 import AddressCard from "@/components/address/AddressCard";
 import AddAddressModalButton from "@/components/address/AddAddressModalButton";
@@ -30,12 +30,10 @@ export default function CheckoutPage() {
   const removeFromCartMutation = useRemoveFromCart(
     isAuthenticated ? token : null,
   );
-  const validatePromoMutation = useValidatePromo();
 
   const [paymentMethod, setPaymentMethod] = useState<"online" | "cod">(
     "online",
   );
-  const [promoCode, setPromoCode] = useState("");
   const [appliedPromo, setAppliedPromo] = useState<{
     code: string;
     discount: number;
@@ -46,16 +44,16 @@ export default function CheckoutPage() {
   const router = useRouter();
 
   const selectedAddress = addressesData?.find((addr) => addr.isDefault);
-  // Group items by store (mock implementation - would need API endpoint)
+
   const storeItems =
     cartItems.length > 0
       ? [
-        {
-          storeName: "Main Store",
-          deliveryTime: "15 minute",
-          items: cartItems,
-        },
-      ]
+          {
+            storeName: "Main Store",
+            deliveryTime: "15 minute",
+            items: cartItems,
+          },
+        ]
       : [];
 
   const subtotal = cartItems.reduce(
@@ -64,7 +62,7 @@ export default function CheckoutPage() {
   );
   const deliveryFee = 16.0;
   const promoDiscount = appliedPromo?.discount || 0;
-  const taxes = (subtotal - promoDiscount) * 0.1; // 10% tax
+  const taxes = (subtotal - promoDiscount) * 0.1;
   const total = subtotal + deliveryFee - promoDiscount + taxes;
 
   const handleConfirmOrder = async () => {
@@ -106,10 +104,8 @@ export default function CheckoutPage() {
       }
 
       if (paymentMethod === "online" && data.url) {
-        // Redirect to Stripe Checkout Session
         window.location.href = data.url;
       } else {
-        // Redirect to success page for COD
         router.push(`/checkout/success`);
       }
     } catch (error: any) {
@@ -120,40 +116,6 @@ export default function CheckoutPage() {
     } finally {
       setIsConfirming(false);
     }
-  };
-
-  const handleApplyPromo = async () => {
-    if (!promoCode.trim()) {
-      toast.error("Please enter a promo code");
-      return;
-    }
-
-    try {
-      const result = await validatePromoMutation.mutateAsync({
-        code: promoCode,
-        subtotal,
-      });
-
-      setAppliedPromo({
-        code: result.code,
-        discount: result.discount,
-        description: result.description,
-      });
-
-      toast.success(
-        `Promo code applied! Discount: $${result.discount.toFixed(2)}`,
-      );
-      setPromoCode("");
-    } catch (error) {
-      const message =
-        (error instanceof Error ? error.message : null) || "Invalid promo code";
-      toast.error(message);
-    }
-  };
-
-  const handleRemovePromo = () => {
-    setAppliedPromo(null);
-    setPromoCode("");
   };
 
   const handleRemoveItem = (productId: string) => {
@@ -185,6 +147,7 @@ export default function CheckoutPage() {
       },
     );
   };
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gray-50 p-4 md:p-8 flex items-center justify-center">
@@ -241,9 +204,7 @@ export default function CheckoutPage() {
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <CheckoutProgress currentStep={2} />
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column: Delivery & Items */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Delivery Information */}
           <Card className="border-none shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-xl font-bold text-[#003d29]">
@@ -276,7 +237,6 @@ export default function CheckoutPage() {
             </CardContent>
           </Card>
 
-          {/* Review Items */}
           <Card className="border-none shadow-sm">
             <CardHeader>
               <CardTitle className="text-xl font-bold text-[#003d29]">
@@ -286,11 +246,9 @@ export default function CheckoutPage() {
             <CardContent className="space-y-6">
               {storeItems.map((store, index) => (
                 <div key={index} className="space-y-4">
-                  {/* Store Header */}
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <div className="size-10 rounded-full bg-red-500 flex items-center justify-center text-white font-bold text-xs shrink-0">
-                        {/* Placeholder Logo */}
                         {store.storeName[0]}
                       </div>
                       <div>
@@ -302,10 +260,8 @@ export default function CheckoutPage() {
                         </p>
                       </div>
                     </div>
-                    {/* Collapsible Icon placeholder */}
                   </div>
 
-                  {/* Items */}
                   {store.items.length > 0 && (
                     <div className="bg-gray-50 p-4 rounded-xl space-y-4">
                       {store.items.map((item) => (
@@ -399,7 +355,6 @@ export default function CheckoutPage() {
           </Card>
         </div>
 
-        {/* Right Column: Order Summary */}
         <div className="space-y-6">
           <Card className="border-none shadow-sm h-fit">
             <CardHeader>
@@ -408,7 +363,6 @@ export default function CheckoutPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Payment Methods */}
               <div className="space-y-3">
                 <label
                   onClick={() => setPaymentMethod("online")}
@@ -466,44 +420,15 @@ export default function CheckoutPage() {
                 </label>
               </div>
 
-              {/* Promo Code */}
-              {!appliedPromo ? (
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Add Promo"
-                    value={promoCode}
-                    onChange={(e) => setPromoCode(e.target.value)}
-                    className="w-full bg-gray-100 rounded-full py-3 px-5 text-sm outline-none focus:ring-2 focus:ring-[#003d29]/20"
-                  />
-                  <Button
-                    onClick={handleApplyPromo}
-                    disabled={validatePromoMutation.isPending}
-                    className="absolute right-1 top-1 rounded-full bg-[#003d29] hover:bg-[#002a1c] h-auto py-2 px-6"
-                  >
-                    {validatePromoMutation.isPending ? "..." : "Apply"}
-                  </Button>
-                </div>
-              ) : (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center justify-between">
-                  <div>
-                    <p className="font-semibold text-green-700">
-                      {appliedPromo.code}
-                    </p>
-                    <p className="text-sm text-green-600">
-                      {appliedPromo.description || "Promo applied"}
-                    </p>
-                  </div>
-                  <button
-                    onClick={handleRemovePromo}
-                    className="text-red-500 hover:text-red-700 font-semibold"
-                  >
-                    Remove
-                  </button>
-                </div>
-              )}
+              <PromoCodeInput
+                subtotal={subtotal}
+                appliedPromo={appliedPromo}
+                onApplyPromo={setAppliedPromo}
+                onRemovePromo={() => setAppliedPromo(null)}
+                productIds={cartItems.length > 0 ? cartItems.map((item) => item.productId || item.product?._id).filter((id): id is string => !!id) : undefined}
+                userId={isAuthenticated ? token : undefined}
+              />
 
-              {/* Breakdown */}
               <div className="space-y-3 py-4 border-b">
                 <div className="flex justify-between text-sm text-gray-500 font-medium">
                   <span>Subtotal</span>
@@ -533,13 +458,11 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Total */}
               <div className="flex justify-between text-lg font-bold text-[#003d29]">
                 <span>Total</span>
                 <span>$ {total.toFixed(2)}</span>
               </div>
 
-              {/* Payment Method Info */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                 <p className="text-sm text-blue-700">
                   <span className="font-semibold">Payment Method:</span>{" "}
@@ -549,20 +472,6 @@ export default function CheckoutPage() {
                 </p>
               </div>
 
-              {/* Continue with Klarna */}
-              {/* {paymentMethod === "online" && (
-                <Button
-                  variant="outline"
-                  className="w-full rounded-full py-6 border-[#003d29] text-[#003d29] font-bold flex items-center justify-center gap-2"
-                >
-                  Continue with{" "}
-                  <span className="bg-pink-300 px-2 rounded text-black font-serif italic">
-                    Klarna.
-                  </span>
-                </Button>
-              )} */}
-
-              {/* Confirm Order */}
               <Button
                 onClick={handleConfirmOrder}
                 disabled={isConfirming}
@@ -571,16 +480,17 @@ export default function CheckoutPage() {
                   "w-full bg-[#beef63] hover:bg-[#aedf4d] text-[#003d29] font-bold rounded-full py-3.5 text-base flex justify-center items-center sm:h-auto",
                 )}
               >
-                {isConfirming ? "Processing..." : paymentMethod === "online"
-                  ? "Make Payment"
-                  : "Confirm order"}
+                {isConfirming
+                  ? "Processing..."
+                  : paymentMethod === "online"
+                    ? "Make order"
+                    : "Confirm order"}
               </Button>
             </CardContent>
           </Card>
         </div>
       </div>
 
-      {/* Address Modal */}
       <AddressModal
         open={isAddressModalOpen}
         onOpenChange={setIsAddressModalOpen}

@@ -1,4 +1,5 @@
 import mongoose, { models } from "mongoose";
+import { unique } from "next/dist/build/utils";
 
 const orderItemSchema = new mongoose.Schema({
   product: {
@@ -19,17 +20,20 @@ const orderItemSchema = new mongoose.Schema({
   variant: {
     type: String,
     required: false,
-  }
+  },
 });
 
-const deliveryAddressSchema = new mongoose.Schema({
-  full_name: { type: String, required: true },
-  street: { type: String, required: true },
-  city: { type: String, required: true },
-  state: { type: String, required: true },
-  zip: { type: String, required: true },
-  country: { type: String, default: 'Bangladesh' }
-}, { _id: false });
+const deliveryAddressSchema = new mongoose.Schema(
+  {
+    full_name: { type: String, required: true },
+    street: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    zip: { type: String, required: true },
+    country: { type: String, default: "Bangladesh" },
+  },
+  { _id: false },
+);
 
 const orderSchema = new mongoose.Schema(
   {
@@ -70,8 +74,8 @@ const orderSchema = new mongoose.Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ["pending", "paid", "failed", "refunded"],
-      default: "pending",
+      enum: ["unpaid", "paid", "failed", "refunded"],
+      default: "unpaid",
     },
     stripeSessionId: {
       type: String,
@@ -81,16 +85,27 @@ const orderSchema = new mongoose.Schema(
       type: String,
       unique: true,
     },
+    vendor: {
+      storeName: {
+        type: String,
+        require: true,
+      },
+      id: {
+        type: String,
+        require: true,
+        unique: true,
+      },
+    },
     status: {
       type: String,
       enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
       default: "pending",
-    }
+    },
   },
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 const Order = models.Order || mongoose.model("Order", orderSchema);

@@ -121,7 +121,7 @@ export function Navbar() {
                 My Orders
               </Link>
               <Link
-                href="/account/settings"
+                href="/account/profile"
                 className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
                 onClick={handleCloseSidebar}
               >

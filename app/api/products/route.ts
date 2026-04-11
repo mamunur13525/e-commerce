@@ -15,8 +15,9 @@ export async function GET(req: NextRequest) {
         const minPrice = searchParams.get("minPrice");
         const maxPrice = searchParams.get("maxPrice");
         const rating = searchParams.get("rating");
+        const search = searchParams.get("search");
 
-        console.log({ category, minPrice, maxPrice, rating, limit, page })
+        console.log({ category, minPrice, maxPrice, rating, limit, page, search })
         const query: Record<string, any> = {};
 
         if (category && category !== "All") {
@@ -26,6 +27,15 @@ export async function GET(req: NextRequest) {
             } else {
                 query.category = { $regex: new RegExp(`^${category}$`, "i") };
             }
+        }
+
+        // Add search filter
+        if (search) {
+            query.$or = [
+                { name: { $regex: search, $options: "i" } },
+                { description: { $regex: search, $options: "i" } },
+                { category: { $regex: search, $options: "i" } },
+            ];
         }
 
         // Add price filters

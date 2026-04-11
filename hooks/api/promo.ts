@@ -14,12 +14,15 @@ export const useValidatePromo = () => {
   return useMutation<
     ValidatePromoResponse,
     AxiosError<{ success: false; message: string }>,
-    { code: string; subtotal: number }
+    { code: string; subtotal: number; productIds?: string[]; categoryIds?: string[]; userId?: string | null }
   >({
-    mutationFn: async ({ code, subtotal }) => {
+    mutationFn: async ({ code, subtotal, productIds, categoryIds, userId }) => {
       const response = await axios.post("/api/promos/validate", {
         code,
         subtotal,
+        productIds,
+        categoryIds,
+        userId,
       });
       return response.data.data;
     },

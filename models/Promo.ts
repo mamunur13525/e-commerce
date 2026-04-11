@@ -1,5 +1,20 @@
 import mongoose, { models } from "mongoose";
 
+const usedBySchema = new mongoose.Schema({
+  userId: {
+    type: String,
+    required: true,
+  },
+  usedAt: {
+    type: Date,
+    default: Date.now,
+  },
+  orderId: {
+    type: String,
+    required: true,
+  },
+});
+
 const promoSchema = new mongoose.Schema(
   {
     code: {
@@ -59,11 +74,20 @@ const promoSchema = new mongoose.Schema(
       type: [String],
       default: [], // Empty array means applicable to all categories
     },
+    usedBy: [usedBySchema],
+    createdBy: {
+      type: String,
+      required: true,
+    },
+    updatedBy: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 const Promo = models.Promo || mongoose.model("Promo", promoSchema);

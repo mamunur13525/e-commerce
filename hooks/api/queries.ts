@@ -114,16 +114,18 @@ export const useInfiniteProducts = ({
   limit = 12,
   minPrice,
   maxPrice,
-  rating
+  rating,
+  search
 }: {
   category?: string;
   limit?: number;
   minPrice?: number;
   maxPrice?: number;
   rating?: number;
+  search?: string;
 } = {}) => {
   return useInfiniteQuery({
-    queryKey: ["infinite_products", category, limit, minPrice, maxPrice, rating],
+    queryKey: ["infinite_products", category, limit, minPrice, maxPrice, rating, search],
     queryFn: async ({ pageParam = 1 }) => {
       const params = new URLSearchParams();
       params.append("limit", limit.toString());
@@ -139,6 +141,9 @@ export const useInfiniteProducts = ({
       }
       if (rating !== undefined) {
         params.append("rating", rating.toString());
+      }
+      if (search) {
+        params.append("search", search);
       }
 
       const res = await fetch(`/api/products?${params.toString()}`);

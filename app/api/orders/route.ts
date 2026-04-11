@@ -3,6 +3,7 @@ import { verifyToken } from "@/lib/jwt";
 import Order from "@/models/Order";
 import Cart from "@/models/Cart";
 import Product from "@/models/Product";
+import Promo from "@/models/Promo";
 import connectDB from "@/lib/db";
 import Stripe from "stripe";
 
@@ -70,12 +71,28 @@ export async function POST(request: NextRequest) {
       taxes,
       totalPrice,
       paymentMethod,
-      paymentStatus: "pending",
+      paymentStatus: "unpaid",
       status: "pending",
       orderId: newOrderId,
     });
 
     await order.save();
+
+    if (promoDiscount > 0 && body.promoCode) {
+      await Promo.findOneAndUpdate(
+        { code: body.promoCode.toUpperCase() },
+        {
+          $inc: { usageCount: 1 },
+          $push: {
+            usedBy: {
+              userId: decoded.userId,
+              orderId: order.orderId,
+              usedAt: new Date(),
+            },
+          },
+        }
+      );
+    }
 
     if (paymentMethod === "COD") {
       // Step 2: Decrease stock for COD orders immediately
