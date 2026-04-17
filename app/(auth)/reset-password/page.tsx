@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { useResetPassword } from "@/hooks/api/queries";
+import { useResetPassword, useVerifyResetToken } from "@/hooks/api/queries";
 
 interface ResetPasswordFormData {
   password: string;
@@ -22,9 +22,11 @@ export default function ResetPasswordPage() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isTokenValid, setIsTokenValid] = useState(true);
-  const [isCheckingToken, setIsCheckingToken] = useState(true);
   const resetPasswordMutation = useResetPassword();
+
+  // Validate token on page load
+  const { data: tokenStatus, isLoading: isCheckingToken } = useVerifyResetToken(token);
+  const isTokenValid = token ? (tokenStatus?.valid ?? true) : false;
 
   const {
     register,
@@ -39,17 +41,6 @@ export default function ResetPasswordPage() {
   });
 
   const password = watch("password");
-
-  useEffect(() => {
-    if (!token) {
-      setIsTokenValid(false);
-      setIsCheckingToken(false);
-      return;
-    }
-
-    // We can optionally verify token on frontend, but we'll let backend handle it
-    setIsCheckingToken(false);
-  }, [token]);
 
   const onSubmit = async (data: ResetPasswordFormData) => {
     if (!token) {
@@ -72,11 +63,9 @@ export default function ResetPasswordPage() {
       setTimeout(() => {
         router.push("/login");
       }, 2000);
-    } catch (error: any) {
-      toast.error(error.message || "An error occurred. Please try again.");
-      if (error.message.includes("expired") || error.message.includes("Invalid")) {
-        setIsTokenValid(false);
-      }
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "An error occurred. Please try again.";
+      toast.error(message);
     }
   };
 

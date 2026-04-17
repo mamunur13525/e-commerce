@@ -70,7 +70,7 @@ export function ProductSection({ title, isShowingCategoryFilter = false }: { tit
   }, [refetch]);
 
   return (
-    <section className="container mx-auto px-6 md:px-12 pb-24">
+    <section className="container mx-auto px-4 pb-24">
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-3xl font-bold text-[#003d29]">{title}</h2>
         <Link

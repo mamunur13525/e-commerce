@@ -48,12 +48,12 @@ export default function CheckoutPage() {
   const storeItems =
     cartItems.length > 0
       ? [
-          {
-            storeName: "Main Store",
-            deliveryTime: "15 minute",
-            items: cartItems,
-          },
-        ]
+        {
+          storeName: "Main Store",
+          deliveryTime: "15 minute",
+          items: cartItems,
+        },
+      ]
       : [];
 
   const subtotal = cartItems.reduce(
@@ -86,14 +86,9 @@ export default function CheckoutPage() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          orderItems: cartItems,
-          deliveryAddress: selectedAddress,
-          subtotal,
-          deliveryFee,
-          promoDiscount,
-          taxes,
-          totalPrice: total,
+          addressId: selectedAddress._id,
           paymentMethod: paymentMethod === "online" ? "STRIPE" : "COD",
+          ...(appliedPromo?.code && { promoCode: appliedPromo.code }),
         }),
       });
 
@@ -240,28 +235,12 @@ export default function CheckoutPage() {
           <Card className="border-none shadow-sm">
             <CardHeader>
               <CardTitle className="text-xl font-bold text-[#003d29]">
-                Review item by store
+                Review item
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {storeItems.map((store, index) => (
                 <div key={index} className="space-y-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-full bg-red-500 flex items-center justify-center text-white font-bold text-xs shrink-0">
-                        {store.storeName[0]}
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-[#003d29]">
-                          {store.storeName}
-                        </h4>
-                        <p className="text-xs text-gray-500">
-                          Delivery in {store.deliveryTime}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
                   {store.items.length > 0 && (
                     <div className="bg-gray-50 p-4 rounded-xl space-y-4">
                       {store.items.map((item) => (
@@ -271,7 +250,7 @@ export default function CheckoutPage() {
                         >
                           <div className="flex gap-4">
                             {item.product?.image?.url && (
-                              <div className="size-16 bg-white border rounded-lg shrink-0 flex items-center justify-center overflow-hidden">
+                              <Link href={`/products/${item.product._id}`} className="size-16 bg-white border rounded-lg shrink-0 flex items-center justify-center overflow-hidden">
                                 <Image
                                   src={item.product.image.url || ""}
                                   alt={item.product.name || "Product"}
@@ -279,7 +258,7 @@ export default function CheckoutPage() {
                                   height={64}
                                   className="w-full h-full object-cover"
                                 />
-                              </div>
+                              </Link>
                             )}
                             <div className="flex-1 flex items-center justify-between">
                               <div>
@@ -289,10 +268,10 @@ export default function CheckoutPage() {
                                       {item.product.discount}%
                                     </span>
                                   )}
-                                  <h5 className="font-bold text-[#003d29]">
+                                  <Link href={`/products/${item.product?._id}`} className="font-bold text-[#003d29] hover:text-red-700 cursor-pointer duration-200">
                                     {item.product?.name ||
                                       `Product ${item.productId}`}
-                                  </h5>
+                                  </Link>
                                 </div>
                                 <p className="text-sm text-gray-500">
                                   {item.quantity} x{" "}
@@ -305,46 +284,52 @@ export default function CheckoutPage() {
                                   ).toFixed(2)}
                                 </p>
                               </div>
-                              <div className="flex items-center gap-3 bg-white rounded-full border px-2 py-1">
-                                <button
-                                  onClick={() =>
-                                    handleUpdateQuantity(
-                                      item.productId,
-                                      item.quantity - 1,
-                                    )
-                                  }
-                                  disabled={updateCartMutation.isPending}
-                                  className="p-1 hover:bg-gray-100 rounded-full disabled:opacity-50"
-                                >
-                                  <Remove01Icon className="size-5 text-[#003d29]" />
-                                </button>
-                                <span className="font-semibold text-[#003d29]">
-                                  {item.quantity}
-                                </span>
-                                <button
-                                  onClick={() =>
-                                    handleUpdateQuantity(
-                                      item.productId,
-                                      item.quantity + 1,
-                                    )
-                                  }
-                                  disabled={updateCartMutation.isPending}
-                                  className="p-1 hover:bg-gray-100 rounded-full disabled:opacity-50"
-                                >
-                                  <Add01Icon className="size-5 text-[#003d29]" />
-                                </button>
+                              <div className="flex items-center flex-col gap-4 justify-end">
+                                <div className="flex items-center gap-3 bg-white rounded-full border px-2 py-1">
+                                  <button
+                                    onClick={() =>
+                                      handleUpdateQuantity(
+                                        item.productId,
+                                        item.quantity - 1,
+                                      )
+                                    }
+                                    disabled={updateCartMutation.isPending}
+                                    className="p-1 hover:bg-gray-100 rounded-full disabled:opacity-50"
+                                  >
+                                    <Remove01Icon className="size-5 text-[#003d29]" />
+                                  </button>
+                                  <span className="font-semibold text-[#003d29]">
+                                    {item.quantity}
+                                  </span>
+                                  <button
+                                    onClick={() =>
+                                      handleUpdateQuantity(
+                                        item.productId,
+                                        item.quantity + 1,
+                                      )
+                                    }
+                                    disabled={updateCartMutation.isPending}
+                                    className="p-1 hover:bg-gray-100 rounded-full disabled:opacity-50"
+                                  >
+                                    <Add01Icon className="size-5 text-[#003d29]" />
+                                  </button>
+
+                                </div>
+                                <div>
+                                  <button
+                                    onClick={() => handleRemoveItem(item.productId)}
+                                    disabled={removeFromCartMutation.isPending}
+                                    className="flex items-center gap-2 text-sm font-medium text-red-500 hover:text-red-700 transition-colors w-fit disabled:opacity-50"
+                                  >
+                                    <Remove01Icon className="size-4" />
+                                    Remove item
+                                  </button>
+                                </div>
+
                               </div>
                             </div>
                           </div>
                           <Separator />
-                          <button
-                            onClick={() => handleRemoveItem(item.productId)}
-                            disabled={removeFromCartMutation.isPending}
-                            className="flex items-center gap-2 text-sm font-medium text-red-500 hover:text-red-700 transition-colors w-fit disabled:opacity-50"
-                          >
-                            <Remove01Icon className="size-4" />
-                            Remove item
-                          </button>
                         </div>
                       ))}
                     </div>

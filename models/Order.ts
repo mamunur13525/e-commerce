@@ -1,5 +1,4 @@
 import mongoose, { models } from "mongoose";
-import { unique } from "next/dist/build/utils";
 
 const orderItemSchema = new mongoose.Schema({
   product: {
@@ -55,6 +54,29 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    promoCode: {
+      code: {
+        type: String,
+        required: false,
+        uppercase: true,
+        trim: true,
+      },
+      discountType: {
+        type: String,
+        enum: ["percentage", "fixed"],
+        required: false,
+      },
+      discountValue: {
+        type: Number,
+        required: false,
+        min: 0,
+      },
+      maxDiscount: {
+        type: Number,
+        required: false,
+        default: null,
+      },
+    },
     promoDiscount: {
       type: Number,
       default: 0,
@@ -87,14 +109,14 @@ const orderSchema = new mongoose.Schema(
     },
     vendor: {
       storeName: {
-        type: String,
-        require: true,
-      },
-      id: {
-        type: String,
-        require: true,
-        unique: true,
-      },
+      type: String,
+      required: true,
+    },
+    id: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     },
     status: {
       type: String,

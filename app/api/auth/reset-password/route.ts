@@ -3,6 +3,47 @@ import crypto from "crypto";
 import User from "@/models/User";
 import connectToDatabase from "@/lib/db";
 
+/**
+ * GET /api/auth/reset-password?token=xxx
+ * Validates the reset token without consuming it
+ */
+export async function GET(request: NextRequest) {
+  try {
+    const token = request.nextUrl.searchParams.get("token");
+
+    if (!token) {
+      return NextResponse.json(
+        { valid: false, message: "Token is required" },
+        { status: 400 }
+      );
+    }
+
+    await connectToDatabase();
+
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+    const user = await User.findOne({
+      passwordResetToken: tokenHash,
+      passwordResetTokenExpires: { $gt: new Date() },
+    }).select("_id");
+
+    if (!user) {
+      return NextResponse.json(
+        { valid: false, message: "Invalid or expired reset token" },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json({ valid: true }, { status: 200 });
+  } catch (error: unknown) {
+    console.error("Verify reset token error:", error);
+    return NextResponse.json(
+      { valid: false, message: "An error occurred" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { token, password } = await request.json();

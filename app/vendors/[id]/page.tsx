@@ -179,7 +179,7 @@ export default function VendorDetailPage() {
               </div>
               <div>
                 <p className="text-xs text-gray-500">Phone</p>
-                <p className="text-sm font-medium text-gray-900">{vendor.phone}</p>
+                <a href={`tel:${vendor.phone}`} className="text-sm font-medium text-gray-900 hover:text-red-700 cursor-pointer duration-200">{vendor.phone}</a>
               </div>
             </div>
           )}

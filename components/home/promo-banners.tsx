@@ -23,7 +23,7 @@ export function PromoBanners({ offers }: PromoBannersProps) {
                     return (
                         <div
                             key={item._id}
-                            className="relative flex flex-col overflow-hidden rounded-2xl transition-transform hover:scale-[1.02] "
+                            className="relative flex flex-col overflow-hidden rounded-2xl duration-300 transition-transform hover:scale-[1.02] "
                             style={{ backgroundColor: item.secondary_color }}
                         >
                             {/* Top Section */}
@@ -43,10 +43,8 @@ export function PromoBanners({ offers }: PromoBannersProps) {
 
                             {/* Bottom Section (Dark Wave/Curve) */}
                             <div className="mt-auto relative h-80 w-full rounded-t-4xl" style={{ backgroundColor: item.primary_color }}>
-                                {/* Curved Divider */}
                                 <div className="relative h-full w-full flex items-center justify-center p-4">
-                                    {/* Product Image Placeholder */}
-                                    <div className="relative size-52 hover:scale-110 transition-transform duration-300 grid place-items-center">
+                                    <div className="relative size-52 grid place-items-center">
                                         <Image src={item.product_image} width={200} height={200} alt={item.title} className="h-full w-fit" />
                                     </div>
                                 </div>

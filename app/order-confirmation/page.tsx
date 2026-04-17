@@ -37,7 +37,7 @@ const CompleteOrder = () => {
                 We have receive your order. You&apos;ll get a confirmation email
                 to{" "}
                 <span className="font-semibold text-[#003d29]">
-                  hello@musemind.agency
+                  [EMAIL_ADDRESS]
                 </span>
               </p>
             </div>

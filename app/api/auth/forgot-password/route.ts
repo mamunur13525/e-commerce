@@ -3,24 +3,15 @@ import crypto from "crypto";
 import User from "@/models/User";
 import connectToDatabase from "@/lib/db";
 import nodemailer from "nodemailer";
+import { Resend } from 'resend';
 
 // Configure email transporter
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.NEXT_PUBLIC_EMAIL_USER,
-    pass: process.env.NEXT_PUBLIC_EMAIL_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-console.log({
-    user: process.env.NEXT_PUBLIC_EMAIL_USER,
-    pass: process.env.NEXT_PUBLIC_EMAIL_PASS,
-  })
 export async function POST(request: NextRequest) {
   try {
     const { email } = await request.json();
-
+    console.log({ email })
     if (!email) {
       return NextResponse.json(
         { message: "Email is required" },
@@ -65,12 +56,13 @@ export async function POST(request: NextRequest) {
     await user.save();
 
     // Create reset URL
-    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${resetToken}`;
+    const resetUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL}/reset-password?token=${resetToken}`;
 
     // Send email
     try {
-      await transporter.sendMail({
-        from: process.env.EMAIL_USER,
+
+      const emailSuccess = await resend.emails.send({
+        from: 'onboarding@resend.dev',
         to: email,
         subject: "Password Reset Request",
         html: `
@@ -92,7 +84,14 @@ export async function POST(request: NextRequest) {
           </div>
         `,
       });
-       return NextResponse.json(
+      if (emailSuccess.error || !emailSuccess.data) {
+        return NextResponse.json(
+          { message: "Failed to send email. Please try again later." },
+          { status: 500 }
+        );
+      }
+      console.log({ emailSuccess })
+      return NextResponse.json(
         { message: "Link sent to the email." },
         { status: 200 }
       );
@@ -109,12 +108,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(
-      {
-        message: "If this email exists, a password reset link has been sent",
-      },
-      { status: 200 }
-    );
   } catch (error: any) {
     console.error("Forgot password error:", error);
     return NextResponse.json(

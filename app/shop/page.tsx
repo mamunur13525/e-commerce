@@ -96,7 +96,7 @@ function ShopPageContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div className="flex items-center justify-between gap-3 w-full">
@@ -145,10 +145,10 @@ function ShopPageContent() {
             <div className="w-full flex flex-col sm:flex-row items-start  justify-between gap-4 mb-6 p-4 bg-white rounded-xl border border-gray-100">
               {/* Active Filters - only show when there are active filters */}
               {category ||
-              search ||
-              minPrice > 0 ||
-              maxPrice < 1000 ||
-              rating ? (
+                search ||
+                minPrice > 0 ||
+                maxPrice < 1000 ||
+                rating ? (
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-sm text-gray-500 font-medium">
                     Filters:

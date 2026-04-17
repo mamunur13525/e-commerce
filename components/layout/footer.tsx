@@ -232,7 +232,7 @@ export function Footer() {
             </div>
 
             <div className="text-center md:text-right">
-              All Right reserved by Musemind | 2022
+              All Right reserved by Gromuse | 2026
             </div>
           </div>
         </div>

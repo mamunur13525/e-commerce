@@ -684,6 +684,38 @@ export interface ResetPasswordResponse {
   message: string;
 }
 
+export interface VerifyResetTokenResponse {
+  valid: boolean;
+  message?: string;
+}
+
+/**
+ * Verify if a reset password token is valid (on page load)
+ * @param token - The reset token from the URL
+ */
+export const useVerifyResetToken = (token: string | null): UseQueryResult<VerifyResetTokenResponse, Error> => {
+  return useQuery({
+    queryKey: ["verifyResetToken", token],
+    queryFn: async () => {
+      if (!token) {
+        return { valid: false, message: "No token provided" };
+      }
+
+      const res = await fetch(`/api/auth/reset-password?token=${encodeURIComponent(token)}`);
+      const data: VerifyResetTokenResponse = await res.json();
+
+      if (!res.ok) {
+        return { valid: false, message: data.message || "Invalid or expired token" };
+      }
+
+      return data;
+    },
+    enabled: !!token,
+    staleTime: 1000 * 60 * 5,
+    retry: false,
+  });
+};
+
 /**
  * Reset password with token
  */
@@ -708,3 +740,4 @@ export const useResetPassword = (): UseMutationResult<ResetPasswordResponse, Err
     },
   });
 };
+
