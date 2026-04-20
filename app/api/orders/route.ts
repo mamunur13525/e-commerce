@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
 
     // Only accept identifiers and choices from the client
     const body = await request.json();
-    const { addressId, paymentMethod, promoCode } = body;
+    const { addressId, paymentMethod, promoCode, itemIds, buyNowProductId, buyNowQuantity } = body;
 
     // Validate required fields
     if (!addressId || !paymentMethod) {
@@ -133,20 +133,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Step 2: Fetch user's active cart with populated product data
-    const cart = await Cart.findOne({
-      user: decoded.userId,
-      status: "active",
-    }).populate("items.product");
-
-    if (!cart || !cart.items || cart.items.length === 0) {
-      return NextResponse.json(
-        { success: false, message: "Your cart is empty" },
-        { status: 400 }
-      );
-    }
-
-    // Step 3: Validate stock and build order items from DB data
     const orderItems: {
       product: string;
       quantity: number;
@@ -154,52 +140,110 @@ export async function POST(request: NextRequest) {
       variant?: string;
     }[] = [];
 
-    for (const cartItem of cart.items) {
-      const product = cartItem.product;
+    const isDirectBuy = !!buyNowProductId;
 
-      // If populate didn't resolve, fetch manually
-      if (!product || !product.name) {
-        const fetchedProduct = await Product.findById(cartItem.product);
-        if (!fetchedProduct) {
-          return NextResponse.json(
-            { success: false, message: `Product not found in cart` },
-            { status: 404 }
-          );
+    if (isDirectBuy) {
+      const fetchedProduct = await Product.findById(buyNowProductId);
+      if (!fetchedProduct) {
+        return NextResponse.json(
+          { success: false, message: `Product not found` },
+          { status: 404 }
+        );
+      }
+      
+      const quantity = buyNowQuantity || 1;
+      if (fetchedProduct.quantity < quantity) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: `Insufficient stock for ${fetchedProduct.name}. Available: ${fetchedProduct.quantity}, Requested: ${quantity}`,
+          },
+          { status: 400 }
+        );
+      }
+
+      orderItems.push({
+        product: fetchedProduct._id.toString(),
+        quantity: quantity,
+        price: fetchedProduct.price,
+      });
+    } else {
+      // Step 2: Fetch user's active cart with populated product data
+      const cart = await Cart.findOne({
+        user: decoded.userId,
+        status: "active",
+      }).populate("items.product");
+
+      if (!cart || !cart.items || cart.items.length === 0) {
+        return NextResponse.json(
+          { success: false, message: "Your cart is empty" },
+          { status: 400 }
+        );
+      }
+
+      // Filter cart items to only the selected ones (if itemIds provided)
+      const filteredCartItems = itemIds && Array.isArray(itemIds) && itemIds.length > 0
+        ? cart.items.filter((cartItem: any) => {
+            const productId = cartItem.product?._id?.toString() || cartItem.product?.toString();
+            return itemIds.includes(productId);
+          })
+        : cart.items;
+
+      if (filteredCartItems.length === 0) {
+        return NextResponse.json(
+          { success: false, message: "No valid items selected for checkout" },
+          { status: 400 }
+        );
+      }
+
+      // Step 3: Validate stock and build order items from DB data
+      for (const cartItem of filteredCartItems) {
+        const product = cartItem.product;
+
+        // If populate didn't resolve, fetch manually
+        if (!product || !product.name) {
+          const fetchedProduct = await Product.findById(cartItem.product);
+          if (!fetchedProduct) {
+            return NextResponse.json(
+              { success: false, message: `Product not found in cart` },
+              { status: 404 }
+            );
+          }
+
+          if (fetchedProduct.quantity < cartItem.quantity) {
+            return NextResponse.json(
+              {
+                success: false,
+                message: `Insufficient stock for ${fetchedProduct.name}. Available: ${fetchedProduct.quantity}, Requested: ${cartItem.quantity}`,
+              },
+              { status: 400 }
+            );
+          }
+
+          orderItems.push({
+            product: fetchedProduct._id.toString(),
+            quantity: cartItem.quantity,
+            price: fetchedProduct.price,
+            ...(cartItem.variant && { variant: cartItem.variant }),
+          });
+        } else {
+          if (product.quantity < cartItem.quantity) {
+            return NextResponse.json(
+              {
+                success: false,
+                message: `Insufficient stock for ${product.name}. Available: ${product.quantity}, Requested: ${cartItem.quantity}`,
+              },
+              { status: 400 }
+            );
+          }
+
+          orderItems.push({
+            product: product._id.toString(),
+            quantity: cartItem.quantity,
+            price: product.price, // Price from DB, not from client
+            ...(cartItem.variant && { variant: cartItem.variant }),
+          });
         }
-
-        if (fetchedProduct.quantity < cartItem.quantity) {
-          return NextResponse.json(
-            {
-              success: false,
-              message: `Insufficient stock for ${fetchedProduct.name}. Available: ${fetchedProduct.quantity}, Requested: ${cartItem.quantity}`,
-            },
-            { status: 400 }
-          );
-        }
-
-        orderItems.push({
-          product: fetchedProduct._id.toString(),
-          quantity: cartItem.quantity,
-          price: fetchedProduct.price,
-          ...(cartItem.variant && { variant: cartItem.variant }),
-        });
-      } else {
-        if (product.quantity < cartItem.quantity) {
-          return NextResponse.json(
-            {
-              success: false,
-              message: `Insufficient stock for ${product.name}. Available: ${product.quantity}, Requested: ${cartItem.quantity}`,
-            },
-            { status: 400 }
-          );
-        }
-
-        orderItems.push({
-          product: product._id.toString(),
-          quantity: cartItem.quantity,
-          price: product.price, // Price from DB, not from client
-          ...(cartItem.variant && { variant: cartItem.variant }),
-        });
       }
     }
 
@@ -324,11 +368,19 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      // Clear user's active cart
-      await Cart.findOneAndUpdate(
-        { user: decoded.userId, status: "active" },
-        { $set: { items: [], totalPrice: 0, totalQuantity: 0 } }
-      );
+      if (!isDirectBuy) {
+        // Remove only the ordered items from the cart (not the entire cart)
+        const orderedProductIds = orderItems.map((item) => item.product);
+        await Cart.findOneAndUpdate(
+          { user: decoded.userId, status: "active" },
+          { $pull: { items: { product: { $in: orderedProductIds } } } }
+        );
+        // Recalculate cart totals
+        const updatedCart = await Cart.findOne({ user: decoded.userId, status: "active" });
+        if (updatedCart) {
+          await updatedCart.save();
+        }
+      }
 
       return NextResponse.json({
         success: true,
@@ -353,6 +405,7 @@ export async function POST(request: NextRequest) {
         metadata: {
           orderId: order._id.toString(),
           userId: decoded.userId.toString(),
+          isDirectBuy: isDirectBuy ? "true" : "false",
         },
         line_items: populatedOrderItems.map((item) => ({
           price_data: {

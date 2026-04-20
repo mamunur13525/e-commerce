@@ -54,11 +54,19 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Clear the user's active cart since this order is fully placed and paid for
-      await Cart.findOneAndUpdate(
-        { user: decoded.userId, status: "active" },
-        { $set: { items: [], totalPrice: 0, totalQuantity: 0 } }
-      );
+      // Clear only the ordered items from the user's active cart if not a direct buy
+      if (session.metadata.isDirectBuy !== "true") {
+        const orderedProductIds = order.items.map((item: { product: string }) => item.product);
+        await Cart.findOneAndUpdate(
+          { user: decoded.userId, status: "active" },
+          { $pull: { items: { product: { $in: orderedProductIds } } } }
+        );
+        // Recalculate cart totals
+        const updatedCart = await Cart.findOne({ user: decoded.userId, status: "active" });
+        if (updatedCart) {
+          await updatedCart.save();
+        }
+      }
 
       return NextResponse.json({
         success: true,

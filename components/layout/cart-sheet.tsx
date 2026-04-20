@@ -162,7 +162,7 @@ export function CartSheet() {
                                     View Cart
                                 </Link>
                                 <Link
-                                    href="/checkout"
+                                    href={`/checkout?items=${displayCartItems.map(i => i.productId).join(",")}`}
                                     onClick={() => handleClose(false)}
                                     className={cn(
                                         buttonVariants(),

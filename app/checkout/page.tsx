@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo, Suspense } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Edit02Icon, Add01Icon, Remove01Icon } from "hugeicons-react";
-import { useRouter } from "next/navigation";
+import { Edit02Icon, Add01Icon, Remove01Icon, Loading03Icon } from "hugeicons-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -13,19 +13,35 @@ import { CheckoutProgress } from "@/components/checkout/checkout-progress";
 import { AddressModal } from "@/components/checkout/address-modal";
 import { PromoCodeInput } from "@/components/checkout/promo-code-input";
 import { useAuthStore } from "@/store/auth-store";
-import { useGetCart, useUpdateCartItem, useRemoveFromCart } from "@/hooks";
+import { useGetCart, useUpdateCartItem, useRemoveFromCart, useProduct } from "@/hooks";
 import { useGetAddresses } from "@/hooks/api/addresses";
 import { toast } from "sonner";
 import AddressCard from "@/components/address/AddressCard";
 import AddAddressModalButton from "@/components/address/AddAddressModalButton";
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const { isAuthenticated, token } = useAuthStore();
-  const { data: cartItems = [], isLoading } = useGetCart(
+  const searchParams = useSearchParams();
+
+  // Parse selected item IDs from query params
+  const selectedItemIds = useMemo(() => {
+    const itemsParam = searchParams.get("items");
+    if (!itemsParam) return null;
+    return itemsParam.split(",").filter(Boolean);
+  }, [searchParams]);
+
+  // Handle direct buy ("buyNow")
+  const buyNowProductId = searchParams.get("buyNow");
+  const [buyNowQuantity, setBuyNowQuantity] = useState(1);
+
+  // Queries
+  const { data: cartItems = [], isLoading: isCartLoading } = useGetCart(
     isAuthenticated ? token : null,
   );
   const { data: addressesData, isLoading: isAddressesLoading } =
     useGetAddresses(isAuthenticated ? token : null);
+  const { data: productData, isLoading: isProductLoading } = useProduct(buyNowProductId || "");
+  
   const updateCartMutation = useUpdateCartItem(isAuthenticated ? token : null);
   const removeFromCartMutation = useRemoveFromCart(
     isAuthenticated ? token : null,
@@ -45,18 +61,33 @@ export default function CheckoutPage() {
 
   const selectedAddress = addressesData?.find((addr) => addr.isDefault);
 
+  const isDirectBuy = !!buyNowProductId;
+
+  // Filter cart items to only selected ones, or construct single item array if direct buy
+  const checkoutItems = useMemo(() => {
+    if (isDirectBuy && productData) {
+      return [{
+        productId: productData._id,
+        quantity: buyNowQuantity,
+        product: productData
+      }];
+    }
+    if (!selectedItemIds) return cartItems;
+    return cartItems.filter((item) => selectedItemIds.includes(item.productId));
+  }, [cartItems, selectedItemIds, isDirectBuy, productData, buyNowQuantity]);
+
   const storeItems =
-    cartItems.length > 0
+    checkoutItems.length > 0
       ? [
         {
           storeName: "Main Store",
           deliveryTime: "15 minute",
-          items: cartItems,
+          items: checkoutItems,
         },
       ]
       : [];
 
-  const subtotal = cartItems.reduce(
+  const subtotal = checkoutItems.reduce(
     (acc, item) => acc + (item.product?.price || 0) * item.quantity,
     0,
   );
@@ -71,8 +102,8 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (cartItems.length === 0) {
-      toast.error("Your cart is empty.");
+    if (checkoutItems.length === 0) {
+      toast.error("No items selected for checkout.");
       return;
     }
 
@@ -89,6 +120,8 @@ export default function CheckoutPage() {
           addressId: selectedAddress._id,
           paymentMethod: paymentMethod === "online" ? "STRIPE" : "COD",
           ...(appliedPromo?.code && { promoCode: appliedPromo.code }),
+          ...(isDirectBuy && { buyNowProductId, buyNowQuantity }),
+          ...(!isDirectBuy && selectedItemIds && { itemIds: selectedItemIds }),
         }),
       });
 
@@ -103,17 +136,20 @@ export default function CheckoutPage() {
       } else {
         router.push(`/checkout/success`);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Order confirmation error:", error);
-      toast.error(
-        error.message || "Failed to process order. Please try again.",
-      );
+      const message = error instanceof Error ? error.message : "Failed to process order. Please try again.";
+      toast.error(message);
     } finally {
       setIsConfirming(false);
     }
   };
 
   const handleRemoveItem = (productId: string) => {
+    if (isDirectBuy) {
+        toast.error("Cannot remove items from direct purchase. Cancel and go back.");
+        return;
+    }
     removeFromCartMutation.mutate(productId, {
       onSuccess: () => {
         toast.success("Item removed from cart");
@@ -128,6 +164,11 @@ export default function CheckoutPage() {
     if (newQuantity < 1) {
       handleRemoveItem(productId);
       return;
+    }
+
+    if (isDirectBuy) {
+        setBuyNowQuantity(newQuantity);
+        return;
     }
 
     updateCartMutation.mutate(
@@ -166,6 +207,8 @@ export default function CheckoutPage() {
     );
   }
 
+  const isLoading = (!isDirectBuy && isCartLoading) || (isDirectBuy && isProductLoading);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 p-4 md:p-8 flex items-center justify-center">
@@ -174,20 +217,20 @@ export default function CheckoutPage() {
     );
   }
 
-  if (cartItems.length === 0) {
+  if (checkoutItems.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 p-4 md:p-8 flex items-center justify-center">
         <Card className="border-none shadow-sm">
           <CardContent className="pt-6">
-            <p className="text-center text-gray-500 mb-4">Your cart is empty</p>
+            <p className="text-center text-gray-500 mb-4">No items selected for checkout</p>
             <Link
-              href="/shop"
+              href="/cart"
               className={cn(
                 buttonVariants(),
                 "w-full bg-[#003d29] hover:bg-[#002a1c] text-white",
               )}
             >
-              Continue Shopping
+              Go to Cart
             </Link>
           </CardContent>
         </Card>
@@ -222,7 +265,7 @@ export default function CheckoutPage() {
                   ) : (
                     <>
                       <p className="text-gray-500 text-sm mt-1 mb-2">
-                        No address selected. Click "Add Address" to choose one.
+                        No address selected. Click &quot;Add Address&quot; to choose one.
                       </p>
                       <AddAddressModalButton />
                     </>
@@ -293,7 +336,7 @@ export default function CheckoutPage() {
                                         item.quantity - 1,
                                       )
                                     }
-                                    disabled={updateCartMutation.isPending}
+                                    disabled={(!isDirectBuy && updateCartMutation.isPending) || item.quantity <= 1}
                                     className="p-1 hover:bg-gray-100 rounded-full disabled:opacity-50"
                                   >
                                     <Remove01Icon className="size-5 text-[#003d29]" />
@@ -308,13 +351,14 @@ export default function CheckoutPage() {
                                         item.quantity + 1,
                                       )
                                     }
-                                    disabled={updateCartMutation.isPending}
+                                    disabled={!isDirectBuy && updateCartMutation.isPending}
                                     className="p-1 hover:bg-gray-100 rounded-full disabled:opacity-50"
                                   >
                                     <Add01Icon className="size-5 text-[#003d29]" />
                                   </button>
 
                                 </div>
+                                {!isDirectBuy && (
                                 <div>
                                   <button
                                     onClick={() => handleRemoveItem(item.productId)}
@@ -325,6 +369,7 @@ export default function CheckoutPage() {
                                     Remove item
                                   </button>
                                 </div>
+                                )}
 
                               </div>
                             </div>
@@ -410,7 +455,7 @@ export default function CheckoutPage() {
                 appliedPromo={appliedPromo}
                 onApplyPromo={setAppliedPromo}
                 onRemovePromo={() => setAppliedPromo(null)}
-                productIds={cartItems.length > 0 ? cartItems.map((item) => item.productId || item.product?._id).filter((id): id is string => !!id) : undefined}
+                productIds={checkoutItems.length > 0 ? checkoutItems.map((item) => item.productId || item.product?._id).filter((id): id is string => !!id) : undefined}
                 userId={isAuthenticated ? token : undefined}
               />
 
@@ -483,5 +528,17 @@ export default function CheckoutPage() {
         isLoading={isAddressesLoading}
       />
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 p-4 md:p-8 flex items-center justify-center">
+        <Loading03Icon className="size-8 animate-spin text-[#003d29]" />
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   );
 }

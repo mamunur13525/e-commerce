@@ -78,23 +78,13 @@ export default function ProductPage() {
     }
   };
 
-  const handleBuyNow = async () => {
+  const handleBuyNow = () => {
     if (!isAuthenticated) {
       openAuthModal();
       return;
     }
 
-    try {
-      await addToCartMutation.mutateAsync({
-        productId,
-        quantity: 1,
-      });
-      router.push("/checkout");
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to add to cart",
-      );
-    }
+    router.push(`/checkout?buyNow=${productId}`);
   };
 
   const handleWishlistToggle = () => {
@@ -407,15 +397,9 @@ export default function ProductPage() {
               <Button
                 onClick={handleBuyNow}
                 className="flex-1 h-14 bg-[#003d29] hover:bg-[#003d29] text-white font-semibold rounded-full cursor-pointer"
-                disabled={(product.quantity || 0) === 0 || addToCartMutation.isPending}
+                disabled={(product.quantity || 0) === 0}
               >
-                {addToCartMutation.isPending ? (
-                  <Loading03Icon className="w-5 h-5 animate-spin" />
-                ) : (product.quantity || 0) === 0 ? (
-                  "Out of Stock"
-                ) : (
-                  "Buy now"
-                )}
+                {(product.quantity || 0) === 0 ? "Out of Stock" : "Buy now"}
               </Button>
             </div>
 
