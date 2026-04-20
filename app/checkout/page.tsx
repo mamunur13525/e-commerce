@@ -152,7 +152,7 @@ export default function CheckoutPage() {
               Please log in to checkout
             </p>
             <Link
-              href="/login"
+              href="/login?callbackUrl=%2Fcheckout"
               className={cn(
                 buttonVariants(),
                 "w-full bg-[#003d29] hover:bg-[#002a1c] text-white",

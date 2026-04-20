@@ -10,9 +10,10 @@ import { useGoogleLogin } from "@react-oauth/google";
 
 interface GoogleLoginProps {
     onClose: () => void;
+    callbackUrl?: string;
 }
 
-const GoogleLogin = ({ onClose }: GoogleLoginProps) => {
+const GoogleLogin = ({ onClose, callbackUrl = "/" }: GoogleLoginProps) => {
     const router = useRouter();
     const { setAuth } = useAuthStore();
     const googleLoginMutation = useGoogleLoginMutation();
@@ -44,7 +45,7 @@ const GoogleLogin = ({ onClose }: GoogleLoginProps) => {
                     setAuth(result.user, result.token);
                     toast.success("Successfully signed in with Google!");
                     onClose?.();
-                    router.push("/");
+                    router.push(callbackUrl);
                 }
             } catch (error: any) {
                 console.error("Google login error:", error);

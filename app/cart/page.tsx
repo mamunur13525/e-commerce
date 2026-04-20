@@ -64,7 +64,7 @@ export default function CartPage() {
                             <p className="text-gray-500 mb-6">You need to sign in to view your cart</p>
                         </div>
                         <Link
-                            href="/login"
+                            href="/login?callbackUrl=%2Fcart"
                             className={cn(
                                 buttonVariants(),
                                 "bg-[#003d29] hover:bg-[#002a1c] rounded-full"

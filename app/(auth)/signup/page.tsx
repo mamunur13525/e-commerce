@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,8 @@ import { toast } from "sonner";
 
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams?.get("callbackUrl") || "/";
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -51,7 +53,7 @@ export default function SignupPage() {
       if (response.success && response.token && response.user) {
         setAuth(response.user, response.token);
         toast.success("Account created successfully!");
-        router.push("/");
+        router.push(callbackUrl);
       }
     } catch (error: any) {
       toast.error(error.message || "Signup failed. Please try again.");
@@ -245,13 +247,13 @@ export default function SignupPage() {
               ? "Creating Account..."
               : "Create Account"}
           </Button>
-          <GoogleLogin onClose={() => {}} />
+          <GoogleLogin onClose={() => {}} callbackUrl={callbackUrl} />
         </div>
 
         <div className="mt-6 text-center text-sm">
           <span className="text-gray-500">Already Have An Account? </span>
           <Link
-            href="/login"
+            href={callbackUrl !== "/" ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/login"}
             className="font-semibold text-[#003d29] hover:underline"
           >
             Log In Now.

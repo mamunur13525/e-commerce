@@ -32,26 +32,24 @@ export function SearchBar() {
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
 
-  // Load popular searches and categories when dropdown opens for first time
+  // Prefetch popular searches and categories on mount so they're ready instantly
   useEffect(() => {
-    if (isOpen && !popularLoaded) {
+    if (!popularLoaded) {
       Promise.all([getPopularSearches(), getCategoryInfo()]).then(
         ([searches, cats]) => {
-          console.log({ searches, cats });
           setPopularSearches(searches);
           setCategories(cats);
           setPopularLoaded(true);
         },
       );
     }
-  }, [isOpen, popularLoaded]);
+  }, [popularLoaded]);
 
   const handleSearch = (term: string) => {
     if (!term.trim()) {
       setResults(null);
       return;
     }
-    console.log({ term });
 
     setIsLoading(true);
 
@@ -62,7 +60,6 @@ export function SearchBar() {
     debounceTimeout.current = setTimeout(() => {
       startTransition(async () => {
         const data = await searchSite(term);
-        console.log({ data });
         setResults(data);
         setIsLoading(false);
       });
@@ -136,7 +133,6 @@ export function SearchBar() {
   const showEmpty = !showLoading && !hasResults && query.length > 0;
   const showInitialView = isOpen && !query && !showLoading;
 
-  console.log({categories})
   return (
     <div
       ref={containerRef}
@@ -197,7 +193,7 @@ export function SearchBar() {
                     Categories
                   </h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {categories.filter((cat)=> cat.count>0)?.slice(0,6)?.map((category, index) => (
+                    {categories.filter((cat) => cat.count > 0)?.slice(0, 6)?.map((category, index) => (
                       <Link
                         key={index}
                         href={`/shop?category=${category.slug || category.name.toLowerCase().replace(/\s+/g, "-")}`}

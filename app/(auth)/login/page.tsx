@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,9 @@ export default function LoginPage({ onClose }: { onClose: () => void }) {
   const [rememberMe, setRememberMe] = useState(false);
   const { setAuth } = useAuthStore();
   const loginMutation = useLogin();
+  const pathname = usePathname();
+
+  const isModal = !!onClose;
 
   // Handle Google OAuth callback
   useEffect(() => {
@@ -38,8 +41,8 @@ export default function LoginPage({ onClose }: { onClose: () => void }) {
         const user = JSON.parse(decodeURIComponent(userParam));
         setAuth(user, token);
         toast.success("Login successful!");
-      
-        router.replace("/");
+
+        router.replace(pathname || "/");
       } catch (err) {
         toast.error("Failed to process login");
         router.replace("/login");
@@ -60,8 +63,12 @@ export default function LoginPage({ onClose }: { onClose: () => void }) {
       if (response.success && response.token && response.user) {
         setAuth(response.user, response.token);
         toast.success("Login successful!");
-        onClose?.();
-        router.push("/");
+        if (isModal) {
+          onClose();
+          router.refresh();
+        } else {
+          router.push(pathname);
+        }
       }
     } catch (error: any) {
       toast.error(error.message || "Login failed. Please try again.");
@@ -185,12 +192,12 @@ export default function LoginPage({ onClose }: { onClose: () => void }) {
           >
             {loginMutation.isPending ? "Logging in..." : "Log In"}
           </Button>
-          <GoogleLogin onClose={onClose}/>
+          <GoogleLogin onClose={onClose} callbackUrl={pathname} />
         </div>
         <div className="mt-6 text-center text-sm">
           <span className="text-gray-500">Don't Have An Account? </span>
           <Link
-            href="/signup"
+            href={pathname !== "/" ? `/signup?callbackUrl=${encodeURIComponent(pathname)}` : "/signup"}
             className="font-semibold text-[#003d29] hover:underline"
             onClick={onClose}
           >

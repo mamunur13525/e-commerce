@@ -100,7 +100,7 @@ export default function BecomeSellerPage() {
 
     if (!isAuthenticated || !user) {
       toast.error("Please login first to submit a seller request");
-      router.push("/login");
+      router.push("/login?callbackUrl=%2Fbecome-seller");
       return;
     }
 
@@ -208,7 +208,7 @@ export default function BecomeSellerPage() {
               <p className="text-sm text-amber-800">
                 You need to{" "}
                 <Link
-                  href="/login"
+                  href="/login?callbackUrl=%2Fbecome-seller"
                   className="font-semibold underline underline-offset-2"
                 >
                   sign in

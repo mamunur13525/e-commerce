@@ -73,7 +73,7 @@ export function CartSheet() {
                     <div className="flex-1 flex items-center justify-center p-6">
                         <div className="text-center">
                             <p className="text-gray-600 mb-4">Sign in to view your cart</p>
-                            <Link href="/login" onClick={() => setIsOpen(false)}>
+                            <Link href="/login?callbackUrl=%2Fcart" onClick={() => setIsOpen(false)}>
                                 <Button className="bg-[#003d29] hover:bg-[#002a1c]">
                                     Sign In
                                 </Button>

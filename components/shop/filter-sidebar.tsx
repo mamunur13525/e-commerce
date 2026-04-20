@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense, useEffect } from "react";
+import { useState, Suspense, useEffect, useRef, useCallback } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   Accordion,
@@ -36,13 +36,12 @@ function FilterSidebarContent() {
 
   // Fetch filters using TanStack Query
   const { data: filters, isLoading } = useFilters();
-  console.log({ filters });
   const [priceRange, setPriceRange] = useState([
     Number(searchParams.get("minPrice") || 0),
     Number(searchParams.get("maxPrice") || filters?.maxPrice || 500),
   ]);
   const [hoveredRating, setHoveredRating] = useState<number | null>(null);
-  console.log({ priceRange, hoveredRating });
+  const priceDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setPriceRange([
@@ -50,6 +49,14 @@ function FilterSidebarContent() {
       Number(searchParams.get("maxPrice") || filters?.maxPrice || 500),
     ]);
   }, [searchParams, filters]);
+
+  // Cleanup debounce timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (priceDebounceRef.current) clearTimeout(priceDebounceRef.current);
+    };
+  }, []);
+
   // Helper for category toggle
   const toggleCategory = (slug: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -70,24 +77,36 @@ function FilterSidebarContent() {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
-  // Handle price range changes
+  // Debounced URL update for price range
+  const commitPriceToUrl = useCallback(
+    (val: number[]) => {
+      if (priceDebounceRef.current) clearTimeout(priceDebounceRef.current);
+
+      priceDebounceRef.current = setTimeout(() => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (val[0] > 0) {
+          params.set("minPrice", val[0].toString());
+        } else {
+          params.delete("minPrice");
+        }
+
+        if (val[1] < (filters?.maxPrice || 1000)) {
+          params.set("maxPrice", val[1].toString());
+        } else {
+          params.delete("maxPrice");
+        }
+
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+      }, 800);
+    },
+    [searchParams, filters?.maxPrice, pathname, router],
+  );
+
+  // Handle price range changes — update state immediately, debounce URL
   const handlePriceChange = (value: number | readonly number[]) => {
     const val = value as number[];
     setPriceRange(val);
-    const params = new URLSearchParams(searchParams.toString());
-    if (val[0] > 0) {
-      params.set("minPrice", val[0].toString());
-    } else {
-      params.delete("minPrice");
-    }
-
-    if (val[1] < (filters?.maxPrice || 1000)) {
-      params.set("maxPrice", val[1].toString());
-    } else {
-      params.delete("maxPrice");
-    }
-
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    commitPriceToUrl(val);
   };
 
   // Check if category is active
@@ -127,7 +146,7 @@ function FilterSidebarContent() {
     }
     return 1000;
   };
-  
+
   return (
     <div className="w-full bg-white p-4 rounded-xl border border-gray-100 h-fit">
       {/* Header */}
@@ -188,7 +207,7 @@ function FilterSidebarContent() {
                 step={calculateStep()}
                 value={priceRange}
                 onValueChange={handlePriceChange}
-                className="[&_.block]:bg-[#003d29] [&_.block]:border-white [&_.block]:ring-4 [&_.block]:ring-[#aedf4d] [&_.h-2]:bg-gray-100 [&_.h-2]:h-1"
+                className="cursor-pointer  [&_.block]:bg-[#003d29] [&_.block]:border-white [&_.block]:ring-4 [&_.block]:ring-[#aedf4d] [&_.h-2]:bg-gray-100 [&_.h-2]:h-1"
               />
             </div>
             <div className="flex items-center gap-4 mt-2">

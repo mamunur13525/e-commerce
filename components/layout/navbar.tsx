@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,13 +41,13 @@ import { useState } from "react";
 
 export function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, logout, isAuthenticated } = useAuthStore();
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     toast.success("Logged out successfully");
-    router.push("/login");
   };
 
   const getInitials = () => {
@@ -246,7 +246,7 @@ export function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Link href="/login">
+            <Link href={`/login?callbackUrl=${encodeURIComponent(pathname)}`}>
               <Button
                 variant="ghost"
                 className="text-white hover:text-white cursor-pointer hover:bg-white/10 border border-white/20"
