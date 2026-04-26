@@ -5,6 +5,7 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { useValidatePromo } from "@/hooks/api/promo";
 import { toast } from "sonner";
+import { Loading03Icon } from "hugeicons-react";
 
 interface PromoCodeInputProps {
   subtotal: number;
@@ -102,9 +103,9 @@ export function PromoCodeInput({
       <Button
         onClick={handleApplyPromo}
         disabled={validatePromoMutation.isPending}
-        className="absolute right-1 top-1 rounded-full bg-[#003d29] hover:bg-[#002a1c] h-auto py-2 px-6"
+        className="absolute right-1 top-1 rounded-full bg-[#003d29] hover:bg-[#002a1c] h-9 w-24 py-2 text-sm cursor-pointer"
       >
-        {validatePromoMutation.isPending ? "..." : "Apply"}
+        {validatePromoMutation.isPending ? <Loading03Icon className="animate-spin" /> : "Apply"}
       </Button>
     </div>
   );

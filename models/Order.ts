@@ -70,12 +70,7 @@ const orderSchema = new mongoose.Schema(
         type: Number,
         required: false,
         min: 0,
-      },
-      maxDiscount: {
-        type: Number,
-        required: false,
-        default: null,
-      },
+      }
     },
     promoDiscount: {
       type: Number,
@@ -109,14 +104,14 @@ const orderSchema = new mongoose.Schema(
     },
     vendor: {
       storeName: {
-      type: String,
-      required: true,
-    },
-    id: {
-      type: String,
-      required: true,
-      unique: true,
-    },
+        type: String,
+        required: true,
+      },
+      id: {
+        type: String,
+        required: true,
+        unique: true,
+      },
     },
     status: {
       type: String,

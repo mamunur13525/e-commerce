@@ -44,6 +44,10 @@ async function validateAndCalculatePromo(
   // Check usage limit
   if (promo.maxUsageCount && promo.usageCount >= promo.maxUsageCount) return null;
 
+  // Check if user already used this promo code
+  const alreadyUsed = promo.usedBy?.some((usage: any) => usage.userId === userId);
+  if (alreadyUsed) return null;
+
   // Check minimum order amount
   if (subtotal < promo.minOrderAmount) return null;
 
@@ -65,7 +69,7 @@ async function validateAndCalculatePromo(
   let discount = 0;
   if (promo.discountType === "percentage") {
     discount = (subtotal * promo.discountValue) / 100;
-  } else {
+  } else if (promo.discountType === "fixed") {
     discount = promo.discountValue;
   }
 
@@ -142,6 +146,7 @@ export async function POST(request: NextRequest) {
 
     const isDirectBuy = !!buyNowProductId;
 
+
     if (isDirectBuy) {
       const fetchedProduct = await Product.findById(buyNowProductId);
       if (!fetchedProduct) {
@@ -150,7 +155,7 @@ export async function POST(request: NextRequest) {
           { status: 404 }
         );
       }
-      
+
       const quantity = buyNowQuantity || 1;
       if (fetchedProduct.quantity < quantity) {
         return NextResponse.json(
@@ -184,9 +189,9 @@ export async function POST(request: NextRequest) {
       // Filter cart items to only the selected ones (if itemIds provided)
       const filteredCartItems = itemIds && Array.isArray(itemIds) && itemIds.length > 0
         ? cart.items.filter((cartItem: any) => {
-            const productId = cartItem.product?._id?.toString() || cartItem.product?.toString();
-            return itemIds.includes(productId);
-          })
+          const productId = cartItem.product?._id?.toString() || cartItem.product?.toString();
+          return itemIds.includes(productId);
+        })
         : cart.items;
 
       if (filteredCartItems.length === 0) {
@@ -247,6 +252,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
+
     // Step 4: Compute subtotal from DB prices
     const subtotal = orderItems.reduce(
       (acc, item) => acc + item.price * item.quantity,
@@ -270,7 +276,7 @@ export async function POST(request: NextRequest) {
         decoded.userId,
         productIds
       );
-
+      console.log({ promoResult })
       if (promoResult) {
         promoDiscount = promoResult.discount;
         promoDetails = {
@@ -340,7 +346,7 @@ export async function POST(request: NextRequest) {
       orderId: newOrderId,
       vendor,
     });
-
+    console.log({ order })
     await order.save();
 
     // Step 10: Record promo usage
@@ -398,6 +404,54 @@ export async function POST(request: NextRequest) {
 
       const origin = request.headers.get("origin") || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
+      const stripeLineItems = populatedOrderItems.map((item) => ({
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: item.productName,
+          },
+          unit_amount: Math.round(item.price * 100), // Stripe expects amounts in cents
+        },
+        quantity: item.quantity,
+      }));
+
+      if (deliveryFee > 0) {
+        stripeLineItems.push({
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: "Delivery Fee",
+            },
+            unit_amount: Math.round(deliveryFee * 100),
+          },
+          quantity: 1,
+        });
+      }
+
+      if (taxes > 0) {
+        stripeLineItems.push({
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: "Tax",
+            },
+            unit_amount: Math.round(taxes * 100),
+          },
+          quantity: 1,
+        });
+      }
+
+      let stripeDiscounts = undefined;
+      if (promoDiscount > 0) {
+        const coupon = await stripe.coupons.create({
+          amount_off: Math.round(promoDiscount * 100),
+          currency: "usd",
+          duration: "once",
+          name: promoDetails?.code || "Discount",
+        });
+        stripeDiscounts = [{ coupon: coupon.id }];
+      }
+
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         mode: "payment",
@@ -407,16 +461,8 @@ export async function POST(request: NextRequest) {
           userId: decoded.userId.toString(),
           isDirectBuy: isDirectBuy ? "true" : "false",
         },
-        line_items: populatedOrderItems.map((item) => ({
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: item.productName,
-            },
-            unit_amount: Math.round(item.price * 100), // Stripe expects amounts in cents
-          },
-          quantity: item.quantity,
-        })),
+        line_items: stripeLineItems,
+        ...(stripeDiscounts && { discounts: stripeDiscounts }),
         success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${origin}/checkout?canceled=true`,
       });

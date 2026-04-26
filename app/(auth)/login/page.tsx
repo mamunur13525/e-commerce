@@ -42,7 +42,7 @@ export default function LoginPage({ onClose }: { onClose: () => void }) {
         setAuth(user, token);
         toast.success("Login successful!");
 
-        router.replace(pathname || "/");
+        router.replace("/");
       } catch (err) {
         toast.error("Failed to process login");
         router.replace("/login");

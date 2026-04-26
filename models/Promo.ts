@@ -5,14 +5,15 @@ const usedBySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  usedAt: {
-    type: Date,
-    default: Date.now,
-  },
   orderId: {
     type: String,
     required: true,
   },
+  usedAt: {
+    type: Date,
+    default: Date.now,
+  },
+
 });
 
 const promoSchema = new mongoose.Schema(
