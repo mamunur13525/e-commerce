@@ -5,6 +5,7 @@ import Cart from "@/models/Cart";
 import Product from "@/models/Product";
 import Promo from "@/models/Promo";
 import User from "@/models/User";
+import SubOrder from "@/models/SubOrder";
 import connectDB from "@/lib/db";
 import Stripe from "stripe";
 
@@ -142,6 +143,10 @@ export async function POST(request: NextRequest) {
       quantity: number;
       price: number;
       variant?: string;
+      name?: string;
+      discount?: number;
+      images?: any;
+      vendorId?: string;
     }[] = [];
 
     const isDirectBuy = !!buyNowProductId;
@@ -171,6 +176,10 @@ export async function POST(request: NextRequest) {
         product: fetchedProduct._id.toString(),
         quantity: quantity,
         price: fetchedProduct.price,
+        name: fetchedProduct.name,
+        discount: fetchedProduct.discount,
+        images: fetchedProduct.image,
+        vendorId: fetchedProduct.store?.id || "default",
       });
     } else {
       // Step 2: Fetch user's active cart with populated product data
@@ -230,6 +239,10 @@ export async function POST(request: NextRequest) {
             quantity: cartItem.quantity,
             price: fetchedProduct.price,
             ...(cartItem.variant && { variant: cartItem.variant }),
+            name: fetchedProduct.name,
+            discount: fetchedProduct.discount,
+            images: fetchedProduct.image,
+            vendorId: fetchedProduct.store?.id || "default",
           });
         } else {
           if (product.quantity < cartItem.quantity) {
@@ -247,6 +260,10 @@ export async function POST(request: NextRequest) {
             quantity: cartItem.quantity,
             price: product.price, // Price from DB, not from client
             ...(cartItem.variant && { variant: cartItem.variant }),
+            name: product.name,
+            discount: product.discount,
+            images: product.image,
+            vendorId: product.store?.id || "default",
           });
         }
       }
@@ -309,16 +326,57 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Step 8: Resolve vendor from the first product's store field
-    const firstProduct = await Product.findById(orderItems[0].product);
-    const vendor = firstProduct?.store
-      ? { storeName: firstProduct.store.name, id: firstProduct.store.id }
-      : { storeName: "Main Store", id: "default" };
+    // Step 8: Group products by vendor and create SubOrders
+    const subOrdersByVendor = new Map<string, any[]>();
+    for (const item of orderItems) {
+      const vid = item.vendorId || "default";
+      if (!subOrdersByVendor.has(vid)) {
+        subOrdersByVendor.set(vid, []);
+      }
+      subOrdersByVendor.get(vid)?.push({
+        id: item.product,
+        name: item.name,
+        quantity: item.quantity,
+        discount: item.discount || 0,
+        price: item.price,
+        images: item.images,
+        ...(item.variant && { variant: item.variant }),
+      });
+    }
 
-    // Step 9: Create the order with server-computed values
+    const subOrderIds: string[] = [];
+    for (const [vendorId, products] of Array.from(subOrdersByVendor.entries())) {
+      const subOrderProducts = products.map((p: any) => {
+        const discount = p.discount || 0;
+        const finalPrice = (p.price - (discount / 100) * p.price) * p.quantity;
+        return {
+          ...p,
+          finalPrice: parseFloat(finalPrice.toFixed(2))
+        };
+      });
+
+      const subtotal = subOrderProducts.reduce((acc: number, p: any) => acc + p.finalPrice, 0);
+      const taxes = parseFloat((subtotal * TAX_RATE).toFixed(2));
+      const total = parseFloat((subtotal + taxes).toFixed(2));
+
+      const subOrder = new SubOrder({
+        orderId: newOrderId,
+        userId: decoded.userId,
+        vendorId,
+        products: subOrderProducts,
+        status: "pending",
+        taxes,
+        subtotal,
+        total
+      });
+      await subOrder.save();
+      subOrderIds.push(subOrder._id.toString());
+    }
+
+    // Step 9: Create the main order with subOrderIds
     const order = new Order({
       user: decoded.userId,
-      items: orderItems,
+      subOrderIds,
       deliveryAddress: {
         full_name: deliveryAddress.full_name,
         street: deliveryAddress.street,
@@ -344,7 +402,6 @@ export async function POST(request: NextRequest) {
       paymentStatus: "unpaid",
       status: "pending",
       orderId: newOrderId,
-      vendor,
     });
     console.log({ order })
     await order.save();

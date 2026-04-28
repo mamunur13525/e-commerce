@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/jwt";
 import Order from "@/models/Order";
 import Product from "@/models/Product";
+import SubOrder from "@/models/SubOrder";
 import connectDB from "@/lib/db";
+import mongoose from "mongoose";
 
 export async function GET(
   request: NextRequest,
@@ -36,12 +38,7 @@ export async function GET(
       );
     }
 
-    const order = await Order.findOne({ _id: id, user: decoded.userId })
-      .populate({
-        path: "items.product",
-        model: Product,
-      })
-      .lean();
+    const order = await Order.findOne({ _id: id, user: decoded.userId }).lean();
 
     if (!order) {
       return NextResponse.json(
@@ -50,9 +47,27 @@ export async function GET(
       );
     }
 
+    const subOrderIds = order.subOrderIds || [];
+    const subOrders = await SubOrder.find({ _id: { $in: subOrderIds } }).lean();
+
+      const items = subOrders.flatMap((so: any) => so.products.map((p: any) => ({
+      product: {
+        _id: p.id,
+        name: p.name,
+        image: p.images,
+        price: p.price,
+        discount: p.discount,
+      },
+      quantity: p.quantity,
+      price: p.price,
+      ...(p.variant && { variant: p.variant }),
+    })));
+
+    const formattedOrder = { ...order, items };
+
     return NextResponse.json({
       success: true,
-      data: order,
+      data: formattedOrder,
     });
   } catch (error: any) {
     console.error("Error fetching order details:", error);

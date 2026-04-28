@@ -16,8 +16,8 @@ export async function GET(req: NextRequest) {
         if (status) {
             query.vendorStatus = status;
         } else {
-            // By default, only show active vendors
-            query.vendorStatus = "active";
+            // By default, only show approved vendors
+            query.vendorStatus = "approved";
         }
 
         const pageNumber = parseInt(page) || 1;

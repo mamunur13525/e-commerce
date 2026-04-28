@@ -30,7 +30,7 @@ export async function searchSite(query: string): Promise<SearchResult> {
     }).limit(10),
     Vendor.find({
       storeName: { $regex: lowerQuery, $options: "i" },
-      vendorStatus: "active",
+      vendorStatus: "approved",
     }).limit(5),
   ]);
 
@@ -88,7 +88,7 @@ export async function getPopularSearches(): Promise<PopularSearch[]> {
 export async function getCategories(): Promise<string[]> {
   await connectToDatabase();
   const categories = await Product.distinct("category");
-  console.log({categories})
+  console.log({ categories })
   return categories as string[];
 }
 
@@ -103,18 +103,18 @@ export type CategoryInfo = {
 
 export async function getCategoryInfo(): Promise<CategoryInfo[]> {
   await connectToDatabase();
-  
+
   const categoryCounts = await Product.aggregate([
     { $group: { _id: "$category", count: { $sum: 1 } } }
   ]);
-  
+
   const countMap: Record<string, number> = {};
   categoryCounts.forEach((c) => {
     if (c._id) countMap[c._id.toString().toLowerCase()] = c.count;
   });
-  
+
   const categories = await Category.find();
-  
+
   return categories.map((cat) => ({
     name: cat.name,
     slug: cat.slug || cat.name.toLowerCase().replace(/\s+/g, '-'),

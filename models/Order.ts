@@ -41,7 +41,10 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    items: [orderItemSchema],
+    subOrderIds: {
+      type: [String],
+      required: [true, 'Atleast one sub order id is needed to order.']
+    },
     deliveryAddress: {
       type: deliveryAddressSchema,
       required: true,
@@ -101,17 +104,6 @@ const orderSchema = new mongoose.Schema(
     orderId: {
       type: String,
       unique: true,
-    },
-    vendor: {
-      storeName: {
-        type: String,
-        required: true,
-      },
-      id: {
-        type: String,
-        required: true,
-        unique: true,
-      },
     },
     status: {
       type: String,

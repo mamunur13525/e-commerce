@@ -17,7 +17,7 @@ export interface Vendor {
     url?: string;
     display_url?: string;
   };
-  vendorStatus: "active" | "inactive" | "pending";
+  vendorStatus: "approved" | "rejected" | "pending";
   commissionRate: number;
   totalSales: number;
   totalOrders: number;

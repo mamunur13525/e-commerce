@@ -43,7 +43,7 @@ const vendorSchema = new mongoose.Schema({
     // Platform Settings
     vendorStatus: {
         type: String,
-        enum: ['active', 'inactive', 'pending'],
+        enum: ['approved', 'rejected', 'pending'],
         default: 'pending'
     },
     commissionRate: {

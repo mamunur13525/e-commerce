@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
                     success: false,
                     message: existingVendor.vendorStatus === "pending"
                         ? "You already have a pending seller request"
-                        : existingVendor.vendorStatus === "active"
+                        : existingVendor.vendorStatus === "approved"
                             ? "You are already a registered seller"
                             : "You have a previous seller request. Please contact support.",
                 },
