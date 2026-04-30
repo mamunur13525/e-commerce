@@ -4,6 +4,15 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { useForm, Controller } from "react-hook-form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { countries } from "@/lib/countries";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,45 +35,51 @@ import {
   ImageUploadIcon,
   Cancel01Icon,
 } from "hugeicons-react";
+import {
+  Field,
+  FieldLabel,
+  FieldError,
+  FieldGroup,
+} from "@/components/ui/field";
 import { useAuthStore } from "@/store/auth-store";
 import { toast } from "sonner";
 
 interface FormData {
   storeName: string;
-  description: string;
-  phone: string;
-  address: string;
-  city: string;
-  country: string;
-  website: string;
+  description?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  country?: string;
+  website?: string;
 }
-
-const initialFormData: FormData = {
-  storeName: "",
-  description: "",
-  phone: "",
-  address: "",
-  city: "",
-  country: "",
-  website: "",
-};
 
 export default function BecomeSellerPage() {
   const router = useRouter();
   const { user, isAuthenticated } = useAuthStore();
-  const [formData, setFormData] = useState<FormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [imageBase64, setImageBase64] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [uploadedLogo, setUploadedLogo] = useState<{ url: string; id: string; display_url: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<FormData>({
+    defaultValues: {
+      storeName: "",
+      description: "",
+      phone: "",
+      address: "",
+      city: "",
+      country: "",
+      website: "",
+    },
+  });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -80,57 +95,88 @@ export default function BecomeSellerPage() {
       return;
     }
 
+    setImageFile(file);
+    setUploadedLogo(null);
     const reader = new FileReader();
     reader.onloadend = () => {
-      const result = reader.result as string;
-      setImagePreview(result);
-      setImageBase64(result);
+      setImagePreview(reader.result as string);
     };
     reader.readAsDataURL(file);
   };
 
   const removeImage = () => {
     setImagePreview(null);
-    setImageBase64(null);
+    setImageFile(null);
+    setUploadedLogo(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const onSubmit = async (data: FormData) => {
     if (!isAuthenticated || !user) {
       toast.error("Please login first to submit a seller request");
       router.push("/login?callbackUrl=%2Fbecome-seller");
       return;
     }
 
-    if (!formData.storeName.trim()) {
-      toast.error("Store name is required");
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
+      let logo: { url: string; id: string; display_url: string } | undefined = uploadedLogo || undefined;
+
+      if (imageFile && !logo) {
+        // Convert file to base64
+        const base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(imageFile);
+        });
+
+        const uploadRes = await fetch("/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            base64,
+            fileName: `vendor-logo-${Date.now()}-${imageFile.name}`,
+            folder: "/vendors",
+          }),
+        });
+
+        const uploadData = await uploadRes.json();
+
+        if (!uploadRes.ok || !uploadData.url) {
+          toast.error(uploadData.message || "Failed to upload logo");
+          return;
+        }
+
+        logo = {
+          url: uploadData.url,
+          id: uploadData.id,
+          display_url: uploadData.display_url,
+        };
+        setUploadedLogo(logo);
+      }
+
+      // Step 2: Submit vendor request
       const res = await fetch("/api/vendors/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...formData,
+          ...data,
           userId: user._id,
-          logo: imageBase64 ? { url: imageBase64 } : undefined,
+          logo,
         }),
       });
 
-      const data = await res.json();
+      const result = await res.json();
 
       if (!res.ok) {
-        toast.error(data.message || "Failed to submit request");
+        toast.error(result.message || "Failed to submit request");
         return;
       }
 
       setIsSubmitted(true);
-      toast.success(data.message);
+      toast.success(result.message);
     } catch {
       toast.error("Something went wrong. Please try again.");
     } finally {
@@ -228,7 +274,7 @@ export default function BecomeSellerPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Store Logo */}
               <div className="space-y-2">
                 <Label>Store Logo</Label>
@@ -240,7 +286,8 @@ export default function BecomeSellerPage() {
                     tabIndex={0}
                     aria-label="Upload store logo"
                     onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") fileInputRef.current?.click();
+                      if (e.key === "Enter" || e.key === " ")
+                        fileInputRef.current?.click();
                     }}
                   >
                     {imagePreview ? (
@@ -292,111 +339,123 @@ export default function BecomeSellerPage() {
                 </div>
               </div>
 
-              {/* Store Name */}
-              <div className="space-y-2">
-                <Label htmlFor="storeName">
-                  Store Name <span className="text-red-500">*</span>
-                </Label>
-                <div className="relative">
-                  <Store04Icon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                  <Input
-                    id="storeName"
-                    name="storeName"
-                    value={formData.storeName}
-                    onChange={handleChange}
-                    placeholder="Enter your store name"
-                    className="pl-10"
-                    required
-                  />
-                </div>
-              </div>
+              <FieldGroup>
+                {/* Store Name */}
+                <Field>
+                  <FieldLabel htmlFor="storeName">
+                    Store Name <span className="text-red-500">*</span>
+                  </FieldLabel>
+                  <div className="relative">
+                    <Store04Icon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                    <Input
+                      id="storeName"
+                      {...register("storeName", {
+                        required: "Store name is required",
+                        validate: (value) =>
+                          !!value?.trim() || "Store name is required",
+                      })}
+                      placeholder="Enter your store name"
+                      className={`pl-10 ${errors.storeName
+                        ? "border-red-500 focus-visible:ring-red-500"
+                        : ""
+                        }`}
+                    />
+                  </div>
+                  <FieldError>{errors.storeName?.message}</FieldError>
+                </Field>
 
-              {/* Description */}
-              <div className="space-y-2">
-                <Label htmlFor="description">Store Description</Label>
-                <Textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  placeholder="Describe your store, what products you sell, and what makes your store unique..."
-                  rows={4}
-                />
-              </div>
+                {/* Description */}
+                <Field>
+                  <FieldLabel htmlFor="description">
+                    Store Description
+                  </FieldLabel>
+                  <Textarea
+                    id="description"
+                    {...register("description")}
+                    placeholder="Describe your store, what products you sell, and what makes your store unique..."
+                    rows={4}
+                  />
+                </Field>
 
-              {/* Phone */}
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <div className="relative">
-                  <CallIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                  <Input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="+1 (555) 000-0000"
-                    className="pl-10"
-                  />
-                </div>
-              </div>
+                {/* Phone */}
+                <Field>
+                  <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
+                  <div className="relative">
+                    <CallIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                    <Input
+                      id="phone"
+                      type="tel"
+                      {...register("phone")}
+                      placeholder="+1 (555) 000-0000"
+                      className="pl-10"
+                    />
+                  </div>
+                </Field>
 
-              {/* Address */}
-              <div className="space-y-2">
-                <Label htmlFor="address">Address</Label>
-                <div className="relative">
-                  <Location01Icon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                  <Input
-                    id="address"
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    placeholder="Street address"
-                    className="pl-10"
-                  />
-                </div>
-              </div>
+                {/* Address */}
+                <Field>
+                  <FieldLabel htmlFor="address">Address</FieldLabel>
+                  <div className="relative">
+                    <Location01Icon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                    <Input
+                      id="address"
+                      {...register("address")}
+                      placeholder="Street address"
+                      className="pl-10"
+                    />
+                  </div>
+                </Field>
 
-              {/* City & Country */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="city">City</Label>
-                  <Input
-                    id="city"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleChange}
-                    placeholder="City"
-                  />
+                {/* City & Country */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Field>
+                    <FieldLabel htmlFor="city">City</FieldLabel>
+                    <Input
+                      id="city"
+                      {...register("city")}
+                      placeholder="City"
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel htmlFor="country">Country</FieldLabel>
+                    <Controller
+                      control={control}
+                      name="country"
+                      render={({ field }) => (
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <SelectTrigger id="country" className="w-full">
+                            <SelectValue>
+                              {field.value || "Select a country"}
+                            </SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            {countries.map((country) => (
+                              <SelectItem key={country} value={country}>
+                                {country}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                  </Field>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="country">Country</Label>
-                  <Input
-                    id="country"
-                    name="country"
-                    value={formData.country}
-                    onChange={handleChange}
-                    placeholder="Country"
-                  />
-                </div>
-              </div>
 
-              {/* Website */}
-              <div className="space-y-2">
-                <Label htmlFor="website">Website (optional)</Label>
-                <div className="relative">
-                  <GlobalIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                  <Input
-                    id="website"
-                    name="website"
-                    type="url"
-                    value={formData.website}
-                    onChange={handleChange}
-                    placeholder="https://yourwebsite.com"
-                    className="pl-10"
-                  />
-                </div>
-              </div>
+                {/* Website */}
+                <Field>
+                  <FieldLabel htmlFor="website">Website (optional)</FieldLabel>
+                  <div className="relative">
+                    <GlobalIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                    <Input
+                      id="website"
+                      type="url"
+                      {...register("website")}
+                      placeholder="https://yourwebsite.com"
+                      className="pl-10"
+                    />
+                  </div>
+                </Field>
+              </FieldGroup>
 
               <Button
                 type="submit"

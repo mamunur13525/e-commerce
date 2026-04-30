@@ -1,5 +1,13 @@
 import mongoose, { models } from 'mongoose'
 
+
+
+const imageObjectSchema = new mongoose.Schema({
+    url: String,
+    id: String,
+    display_url: String,
+})
+
 const vendorSchema = new mongoose.Schema({
     // Custom Vendor ID (separate from MongoDB _id)
     vendorId: {
@@ -37,7 +45,7 @@ const vendorSchema = new mongoose.Schema({
         required: false,
     },
     logo: {
-        type: Object,  // Accept Object format for image data
+        type: imageObjectSchema,  // Accept Object format for image data
         required: false,
     },
     // Platform Settings
@@ -68,7 +76,6 @@ const vendorSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
-    // Relationship
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

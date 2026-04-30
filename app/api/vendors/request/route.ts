@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
 
         const body = await req.json();
         const { storeName, description, phone, address, city, country, website, logo, userId } = body;
-
+        console.log({ body })
         if (!storeName || !userId) {
             return NextResponse.json(
                 { success: false, message: "Store name and user ID are required" },
