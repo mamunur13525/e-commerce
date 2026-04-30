@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/db";
 import User from "@/models/User";
+import Otp from "@/models/Otp";
 import { generateToken } from "@/lib/jwt";
 
 export async function POST(request: Request) {
@@ -8,12 +9,12 @@ export async function POST(request: Request) {
     await connectToDatabase();
 
     const body = await request.json();
-    const { first_name, last_name, email, password } = body;
+    const { first_name, last_name, email, password, otp } = body;
 
     // Validation
-    if (!first_name || !last_name || !email || !password) {
+    if (!first_name || !last_name || !email || !password || !otp) {
       return NextResponse.json(
-        { success: false, message: "All fields are required" },
+        { success: false, message: "All fields including OTP are required" },
         { status: 400 }
       );
     }
@@ -21,6 +22,22 @@ export async function POST(request: Request) {
     if (password.length < 6) {
       return NextResponse.json(
         { success: false, message: "Password must be at least 6 characters" },
+        { status: 400 }
+      );
+    }
+
+    // Verify OTP
+    const otpRecord = await Otp.findOne({ email });
+    if (!otpRecord) {
+      return NextResponse.json(
+        { success: false, message: "No OTP found for this email or OTP expired" },
+        { status: 400 }
+      );
+    }
+
+    if (otpRecord.otp !== otp) {
+      return NextResponse.json(
+        { success: false, message: "Invalid OTP" },
         { status: 400 }
       );
     }
@@ -41,6 +58,9 @@ export async function POST(request: Request) {
       email,
       password,
     });
+
+    // Delete OTP record
+    await Otp.deleteOne({ email });
 
     // Generate token
     const token = generateToken({

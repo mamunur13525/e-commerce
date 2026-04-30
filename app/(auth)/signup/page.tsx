@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import GoogleLogin from "@/components/auth/GoogleLogin";
-import { useSignup } from "@/hooks/api/queries";
+import { useSignup, useSendOtp } from "@/hooks/api/queries";
 import { useAuthStore } from "@/store/auth-store";
 import { toast } from "sonner";
 
@@ -15,17 +15,20 @@ export default function SignupPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams?.get("callbackUrl") || "/";
+  const [step, setStep] = useState<"details" | "otp">("details");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [otp, setOtp] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const { setAuth } = useAuthStore();
   const signupMutation = useSignup();
+  const sendOtpMutation = useSendOtp();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
@@ -44,11 +47,31 @@ export default function SignupPage() {
     }
 
     try {
+      const res = await sendOtpMutation.mutateAsync({ email });
+      if (res.success) {
+        toast.success("OTP sent to your email!");
+        setStep("otp");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to send OTP.");
+    }
+  };
+
+  const handleVerifySignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!otp) {
+      toast.error("Please enter the OTP");
+      return;
+    }
+
+    try {
       const response = await signupMutation.mutateAsync({
         first_name: firstName,
         last_name: lastName,
         email,
         password,
+        otp,
       });
       if (response.success && response.token && response.user) {
         setAuth(response.user, response.token);
@@ -64,12 +87,15 @@ export default function SignupPage() {
     <div className="bg-white p-8 w-full max-w-[480px] border rounded-2xl">
       <div className="text-center mb-10">
         <h2 className="text-4xl font-bold text-gray-900 mb-2">
-          Create Account
+          {step === "details" ? "Create Account" : "Verify Email"}
         </h2>
-        <p className="text-gray-500">Join us to start shopping</p>
+        <p className="text-gray-500">
+          {step === "details" ? "Join us to start shopping" : `We've sent an OTP to ${email}`}
+        </p>
       </div>
 
-      <form className="space-y-6" onSubmit={handleSubmit}>
+      {step === "details" ? (
+        <form className="space-y-6" onSubmit={handleSendOtp}>
         <div className="space-y-2">
           <Label htmlFor="first-name" className="font-medium">
             First Name
@@ -240,12 +266,12 @@ export default function SignupPage() {
         <div className="grid gap-3">
           <Button
             type="submit"
-            disabled={signupMutation.isPending}
+            disabled={sendOtpMutation.isPending}
             className="w-full h-12 text-base font-semibold bg-[#003d29] hover:bg-[#002a1c] text-white shadow-md shadow-emerald-900/20 disabled:opacity-50"
           >
-            {signupMutation.isPending
-              ? "Creating Account..."
-              : "Create Account"}
+            {sendOtpMutation.isPending
+              ? "Sending OTP..."
+              : "Continue"}
           </Button>
           <GoogleLogin onClose={() => {}} callbackUrl={callbackUrl} />
         </div>
@@ -260,6 +286,45 @@ export default function SignupPage() {
           </Link>
         </div>
       </form>
+      ) : (
+        <form className="space-y-6" onSubmit={handleVerifySignup}>
+          <div className="space-y-2">
+            <Label htmlFor="otp" className="font-medium">
+              One-Time Password
+            </Label>
+            <Input
+              id="otp"
+              type="text"
+              placeholder="Enter 6-digit OTP"
+              className="h-12 bg-white border-gray-200 text-center text-xl tracking-widest"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              required
+              maxLength={6}
+            />
+          </div>
+
+          <div className="grid gap-3">
+            <Button
+              type="submit"
+              disabled={signupMutation.isPending}
+              className="w-full h-12 text-base font-semibold bg-[#003d29] hover:bg-[#002a1c] text-white shadow-md shadow-emerald-900/20 disabled:opacity-50"
+            >
+              {signupMutation.isPending
+                ? "Creating Account..."
+                : "Create Account"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setStep("details")}
+              className="w-full h-12 text-base font-medium"
+            >
+              Back
+            </Button>
+          </div>
+        </form>
+      )}
     </div>
   );
 }

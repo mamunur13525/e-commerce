@@ -41,7 +41,7 @@ export default function LoginPage({ onClose }: { onClose: () => void }) {
         const user = JSON.parse(decodeURIComponent(userParam));
         setAuth(user, token);
         toast.success("Login successful!");
-
+        console.log("suussece")
         router.replace("/");
       } catch (err) {
         toast.error("Failed to process login");
@@ -63,11 +63,12 @@ export default function LoginPage({ onClose }: { onClose: () => void }) {
       if (response.success && response.token && response.user) {
         setAuth(response.user, response.token);
         toast.success("Login successful!");
+        console.log({ pathname })
         if (isModal) {
           onClose();
           router.refresh();
         } else {
-          router.push(pathname);
+          router.push('/');
         }
       }
     } catch (error: any) {

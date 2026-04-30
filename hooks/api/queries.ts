@@ -270,6 +270,40 @@ export const useMetadata = (): UseQueryResult<Metadata> => {
 
 // ============ AUTH MUTATIONS ============
 
+export interface SendOtpData {
+  email: string;
+}
+
+export interface SendOtpResponse {
+  success: boolean;
+  message: string;
+}
+
+/**
+ * Send OTP for signup
+ */
+export const useSendOtp = (): UseMutationResult<SendOtpResponse, Error, SendOtpData> => {
+  return useMutation({
+    mutationFn: async (data: SendOtpData) => {
+      const res = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const response: SendOtpResponse = await res.json();
+
+      if (!res.ok || !response.success) {
+        throw new Error(response.message || "Failed to send OTP");
+      }
+
+      return response;
+    },
+  });
+};
+
 /**
  * Sign up a new user
  */
