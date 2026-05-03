@@ -136,3 +136,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Cart fly animation */
+.cart-fly-animation {
+  transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+  will-change: transform, opacity;
+}

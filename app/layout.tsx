@@ -5,9 +5,14 @@ import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { Toaster } from "@/components/ui/sonner";
 import { CartAnimationProvider } from "@/components/context/cart-animation-context";
-import { CartAnimationLayer } from "@/components/layout/cart-animation-layer";
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
+import { QueryClientProviderWrapper } from "@/providers/query-client-provider";
+import { GoogleOAuthProviderWrapper } from "@/providers/google-oauth-provider";
+import { AuthModal } from "@/components/auth/auth-modal";
+import { CartAnimationLayer } from "@/components/layout/cart-animation-layer";
+import NextTopLoader from "nextjs-toploader";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,16 +39,30 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#f9fafb]`}
       >
-        <CartAnimationProvider>
-          <CartAnimationLayer />
-          <Navbar />
-
-          {children}
-          <Footer />
-          <Toaster
-            duration={5000}
-          />
-        </CartAnimationProvider>
+        <GoogleOAuthProviderWrapper>
+          <QueryClientProviderWrapper>
+            <CartAnimationProvider>
+              <CartAnimationLayer />
+              <AuthModal />
+              <NextTopLoader color="lab(64.272% 57.1788 90.3583)" showSpinner={false} />
+              <Navbar />
+              {children}
+              <Footer />
+              <Toaster
+                duration={5000}
+                position="bottom-left"
+                toastOptions={{
+                  classNames: {
+                    toast: "p-0", // remove default padding
+                    content: "px-5", // apply your custom padding here
+                    title: "text-base font-bolg",
+                    description: "text-xs text-muted-foreground mt-1",
+                  },
+                }}
+              />
+            </CartAnimationProvider>
+          </QueryClientProviderWrapper>
+        </GoogleOAuthProviderWrapper>
       </body>
     </html>
   );

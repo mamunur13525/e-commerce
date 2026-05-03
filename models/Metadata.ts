@@ -110,10 +110,35 @@ const discountCardSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const categoriesSchema = new mongoose.Schema(
+  {
+    type: {
+      type: String,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    subtitle: {
+      type: String,
+      required: true,
+    },
+    color: {
+      type: String,
+      required: true,
+    },
+    icon: {
+      type: String,
+      required: true,
+    },
+  },
+  { _id: false }
+);
 const metadataSchema = new mongoose.Schema(
   {
     hero_slider: {
-      type: heroSliderSchema,
+      type: [heroSliderSchema],
       required: true,
     },
     offers: {
@@ -123,7 +148,7 @@ const metadataSchema = new mongoose.Schema(
     discout_cards: {
       type: [discountCardSchema],
       required: true,
-    },
+    }
   },
   {
     timestamps: true,

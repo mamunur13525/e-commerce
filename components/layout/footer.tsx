@@ -51,42 +51,42 @@ export function Footer() {
                 <Image
                   src="/assets/visa.svg"
                   alt="Visa"
-                  className="h-8 w-12 rounded border border-gray-200 p-1"
+                  className="h-10 w-12 p-1"
                   width={20}
                   height={20}
                 />
                 <Image
                   src="/assets/mastercard.svg"
                   alt="Mastercard"
-                  className="h-8 w-12 rounded border border-gray-200 p-1"
+                  className="h-10 w-12 p-1"
                   width={20}
                   height={20}
                 />
                 <Image
                   src="/assets/applepay.svg"
                   alt="Apple Pay"
-                  className="h-8 w-12 bg-black rounded p-1"
+                  className="h-10 w-12 bg-black rounded p-1"
                   width={20}
                   height={20}
                 />
                 <Image
                   src="/assets/klarna.svg"
                   alt="Klarna"
-                  className="h-8 w-20 rounded border border-gray-200 p-1"
+                  className="h-10 w-20 p-1"
                   width={20}
                   height={20}
                 />
                 <Image
                   src="/assets/tabby.svg"
                   alt="Tabby"
-                  className="h-8 w-20 rounded border border-gray-200 p-1"
+                  className="h-10 w-20 p-1"
                   width={20}
                   height={20}
                 />
                 <Image
                   src="/assets/tamara.svg"
                   alt="Tamara"
-                  className="h-8 w-20 rounded border border-gray-200 p-1"
+                  className="h-10 w-20 p-1"
                   width={20}
                   height={20}
                 />
@@ -232,7 +232,7 @@ export function Footer() {
             </div>
 
             <div className="text-center md:text-right">
-              All Right reserved by Musemind | 2022
+              All Right reserved by Gromuse | 2026
             </div>
           </div>
         </div>

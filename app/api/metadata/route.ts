@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/db";
 import Metadata from "@/models/Metadata";
+import Category from "@/models/Category";
 
 export async function GET() {
   try {
     await connectToDatabase();
-    const metadata = await Metadata.findOne();
+    const metadata = await Metadata.findOne().lean();
+    const categories = await Category.find().limit(4).lean();
 
     if (!metadata) {
       return NextResponse.json(
@@ -13,8 +15,8 @@ export async function GET() {
         { status: 404 }
       );
     }
-
-    return NextResponse.json(metadata);
+    const metadataWithCategories = { ...metadata, categories: categories || [] }
+    return NextResponse.json(metadataWithCategories);
   } catch (error) {
     console.error("Error fetching metadata:", error);
     return NextResponse.json(

@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { PlusSignIcon, Remove01Icon } from "hugeicons-react";
-import { useCartAnimation } from "@/components/context/cart-animation-context";
-
 import { StarIcon } from "hugeicons-react";
 import { getCurrencySymbol } from "@/lib/currency";
+import { AddToCartButton } from "@/components/product/add-to-cart-button";
+import { useAuthStore } from "@/store/auth-store";
+import { useGetWishlist, useAddToWishlist, useRemoveFromWishlist } from "@/hooks";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   title: string;
@@ -31,33 +31,38 @@ export function ProductCard({
   discount = 0,
   currency = "usd",
 }: ProductCardProps) {
-  const [cartQuantity, setCartQuantity] = useState(0);
-  const { startAnimation } = useCartAnimation();
   const imageRef = useRef<HTMLImageElement>(null);
 
-  const handleIncrement = () => {
-    if (cartQuantity === 0 && imageRef.current) {
-      const rect = imageRef.current.getBoundingClientRect();
-      startAnimation(imageSrc, rect);
-    }
-    setCartQuantity((p) => p + 1);
-  };
-  const handleDecrement = () => setCartQuantity((p) => Math.max(0, p - 1));
-
-  // Generate a mock slug from the title
-  const slug = title.toLowerCase().replace(/ /g, "-");
+  const { isAuthenticated, token } = useAuthStore();
+  const { data: wishlist = [] } = useGetWishlist(isAuthenticated ? token : null);
+  const addToWishlistMutation = useAddToWishlist(isAuthenticated ? token : null);
+  const removeFromWishlistMutation = useRemoveFromWishlist(isAuthenticated ? token : null);
 
   const discountedPrice = discount > 0 ? price - (price * discount) / 100 : price;
   const currencySymbol = getCurrencySymbol(currency || "'");
-  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  const isWishlisted = wishlist.some((item) => item._id === id);
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsWishlisted(!isWishlisted);
-    console.log(`${isWishlisted ? 'Removed from' : 'Added to'} wishlist:`, title);
-  };
+    if (!isAuthenticated) {
+      toast.error("Please login to manage your wishlist.");
+      return;
+    }
 
+    if (isWishlisted) {
+      removeFromWishlistMutation.mutate(id, {
+        onSuccess: () => {
+          toast.success(`${title} removed from wishlist`);
+        }
+      });
+    } else {
+      addToWishlistMutation.mutate(id, {
+        onSuccess: () => {
+          toast.success(`${title} added to wishlist`);
+        }
+      });
+    }
+  };
   return (
     <div className="bg-white shadow shadow-zinc-100 rounded-lg p-4 relative flex flex-col items-start text-left group transition-all hover:shadow-lg h-full">
       {/* Discount Badge */}
@@ -67,16 +72,19 @@ export function ProductCard({
         </div>
       )}
 
-      {/* Image */}
-      <Link href={`/products/${id}`} className="relative w-full aspect-square mb-3 group-hover:scale-105 transition-transform duration-300 block self-center">
-        <Image ref={imageRef} src={imageSrc} alt={title} fill className="object-contain" />
+      {/* Image and Wishlist Container */}
+      <div className="relative w-full aspect-square mb-3 group-hover:scale-105 transition-transform duration-300 self-center">
+        <Link href={`/products/${id}`} className="block w-full h-full rounded-lg overflow-hidden">
+          <Image ref={imageRef} src={imageSrc} alt={title} fill className="object-cover rounded-lg" />
+        </Link>
 
         {/* Wishlist Button */}
         <button
           onClick={handleWishlistToggle}
-          className={`absolute top-2 left-2 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 z-20 ${isWishlisted
-              ? 'bg-red-500 text-white shadow-lg scale-110'
-              : 'bg-white/90 backdrop-blur-sm text-gray-600 hover:bg-red-50 hover:text-red-500 opacity-0 group-hover:opacity-100'
+          disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
+          className={`cursor-pointer absolute top-2 left-2 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 z-20 ${isWishlisted
+            ? 'bg-red-500 text-white shadow-lg scale-110'
+            : 'bg-white/90 backdrop-blur-sm text-gray-600 hover:bg-red-50 hover:text-red-500 opacity-0 group-hover:opacity-100'
             }`}
           aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
         >
@@ -84,7 +92,7 @@ export function ProductCard({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
           </svg>
         </button>
-      </Link>
+      </div>
 
       {/* Content */}
       <Link href={`/products/${id}`} className="block w-full mb-1">
@@ -132,30 +140,13 @@ export function ProductCard({
 
       {/* Action Button */}
       <div className="w-full mt-auto">
-        {cartQuantity === 0 ? (
-          <Button
-            onClick={handleIncrement}
-            className="w-full h-10 bg-[#F2F4E9] hover:bg-[#d4e157] text-[#003d29] font-bold rounded-lg transition-all duration-300 shadow-sm hover:shadow-md"
-          >
-            Add to Cart
-          </Button>
-        ) : (
-          <div className="flex items-center justify-between bg-[#d4e157] rounded-lg p-1 shadow-inner w-full overflow-hidden h-10">
-            <button
-              onClick={handleDecrement}
-              className="px-3 h-full bg-white/30 hover:bg-white/50 text-[#003d29] transition-colors flex items-center justify-center"
-            >
-              <Remove01Icon className="size-4" />
-            </button>
-            <span className="font-bold text-sm text-[#003d29]">{cartQuantity}</span>
-            <button
-              onClick={handleIncrement}
-              className="px-3 h-full bg-white/30 hover:bg-white/50 text-[#003d29] transition-colors flex items-center justify-center"
-            >
-              <PlusSignIcon className="size-4" />
-            </button>
-          </div>
-        )}
+        <AddToCartButton
+          productId={id}
+          imageSrc={imageSrc}
+          variant="compact"
+          flyOriginRef={imageRef}
+          className="w-full h-10 bg-[#F2F4E9] hover:bg-[#d4e157] text-[#003d29] font-bold rounded-lg transition-all duration-300 shadow-sm hover:shadow-md"
+        />
       </div>
     </div>
   );
