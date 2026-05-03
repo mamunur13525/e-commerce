@@ -7,11 +7,7 @@ export function GoogleOAuthProviderWrapper({
 }: {
   children: React.ReactNode;
 }) {
-  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
-  if (!clientId) {
-    console.warn("NEXT_PUBLIC_GOOGLE_CLIENT_ID is not set");
-    return <>{children}</>;
-  }
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "missing_client_id";
 
   return (
     <GoogleOAuthProvider clientId={clientId}>{children}</GoogleOAuthProvider>
