@@ -25,6 +25,8 @@ import { useAuthStore } from "@/store/auth-store";
 import { useAuthModalStore } from "@/store/auth-modal-store";
 import { useCompareStore } from "@/store/compare-store";
 import { getCurrencySymbol } from "@/lib/currency";
+import { ProductReviews } from "@/components/product/product-reviews";
+import { ProductDiscussion } from "@/components/product/product-discussion";
 
 export default function ProductPage() {
   const params = useParams();
@@ -320,13 +322,6 @@ export default function ProductPage() {
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
                 {product.name}
               </h1>
-
-              {/* Description */}
-              <div className="">
-                <p className="text-gray-600 leading-relaxed">
-                  {product.description}
-                </p>
-              </div>
             </div>
 
             {/* Rating */}
@@ -354,7 +349,7 @@ export default function ProductPage() {
 
             {/* Price */}
             <div className="flex items-end gap-1">
-               <span className="font-black text-2xl text-gray-900 mb-1">
+              <span className="font-black text-2xl text-gray-900 mb-1">
                 {getCurrencySymbol(product.currency)}
               </span>
               <span className="font-black text-5xl text-gray-900">
@@ -363,7 +358,7 @@ export default function ProductPage() {
               <span className="font-black text-2xl text-gray-900 mb-1">
                 .{(displayPrice % 1).toFixed(2).split(".")[1]}
               </span>
-            
+
             </div>
 
             {/* Discount Info */}
@@ -561,7 +556,20 @@ export default function ProductPage() {
               </div>
             </div>
           </div>
+          {/* Description */}
+          <div className="">
+            <h4 className="font-semibold text-2xl text-gray-900">Product details of</h4>
+            <p className="text-gray-600 leading-relaxed">
+              {product.description}
+            </p>
+          </div>
         </div>
+
+        <div className="grid grid-cols-1 gap-4">
+          <ProductReviews productId={product._id} />
+          <ProductDiscussion productId={product._id} />
+        </div>
+
         <FeaturedStore />
 
         {/* Related Products */}

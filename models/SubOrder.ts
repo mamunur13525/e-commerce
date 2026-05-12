@@ -1,5 +1,4 @@
 import mongoose, { models } from "mongoose";
-import { type } from "os";
 
 const imageSchema = new mongoose.Schema({
     id: {

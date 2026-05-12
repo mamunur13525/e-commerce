@@ -20,6 +20,7 @@ import {
 } from "hugeicons-react";
 import { toast } from "sonner";
 import { use } from "react";
+import { ProductReviewModal } from "@/components/product/product-review-modal";
 
 export default function OrderDetailsPage({
   params,
@@ -324,6 +325,14 @@ export default function OrderDetailsPage({
                         ${(item.price * item.quantity).toFixed(2)}
                       </p>
                     </div>
+                    {order.status === "delivered" && (
+                      <div className="mt-2 flex justify-end">
+                        <ProductReviewModal 
+                          productId={item.product?._id || item.product} 
+                          productName={item.product?.name || "Product"}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

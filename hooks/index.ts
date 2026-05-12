@@ -5,3 +5,5 @@ export * from "./api/vendors";
 export * from "./use-debounce";
 export * from "./api/orders";
 export * from "./api/wishlist";
+export * from "./api/reviews";
+export * from "./api/comments";

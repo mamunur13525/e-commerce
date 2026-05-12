@@ -20,7 +20,7 @@ function HomeContent() {
   }
   if (!metadata) {
     return null;
-  } 
+  }
 
   const categories = Array.isArray(metadata.categories)
     ? metadata?.categories
