@@ -29,10 +29,10 @@ export function CartSheet() {
 
     // Mock cart items for non-authenticated users
     const displayCartItems = isAuthenticated ? cartItems : [];
-
+    console.log({ cartItems })
     // Compute subtotal based on actual product prices
     const subtotal = displayCartItems.reduce(
-        (acc, item) => acc + ((item.product?.price || 0) * item.quantity),
+        (acc, item) => acc + ((item.product?.final_price || 0) * item.quantity),
         0
     );
 
@@ -115,10 +115,10 @@ export function CartSheet() {
                                                 {item.product?.name || `Product ${item.productId}`}
                                             </Link>
                                             <p className="text-sm text-gray-500">
-                                                ${item.product?.price?.toFixed(2) || "0.00"} x {item.quantity}
+                                                ${item.product?.final_price?.toFixed(2) || "0.00"} x {item.quantity}
                                             </p>
                                             <p className="font-bold text-[#003d29]">
-                                                ${((item.product?.price || 0) * item.quantity).toFixed(2)}
+                                                ${((item.product?.final_price || 0) * item.quantity).toFixed(2)}
                                             </p>
                                         </div>
                                         <Button
@@ -144,36 +144,38 @@ export function CartSheet() {
                 )}
 
                 <div className="p-6 bg-gray-50 border-t space-y-4">
-                    {isAuthenticated && displayCartItems.length > 0 && (
-                        <>
-                            <div className="flex items-center justify-between text-lg font-bold text-[#003d29]">
-                                <span>Subtotal</span>
-                                <span>${subtotal.toFixed(2)}</span>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <Link
-                                    href="/cart"
-                                    onClick={() => handleClose(false)}
-                                    className={cn(
-                                        buttonVariants({ variant: "outline" }),
-                                        "w-full border-[#003d29] text-[#003d29] hover:bg-[#003d29] hover:text-white"
-                                    )}
-                                >
-                                    View Cart
-                                </Link>
-                                <Link
-                                    href={`/checkout?items=${displayCartItems.map(i => i.productId).join(",")}`}
-                                    onClick={() => handleClose(false)}
-                                    className={cn(
-                                        buttonVariants(),
-                                        "w-full bg-[#003d29] hover:bg-[#002a1c]"
-                                    )}
-                                >
-                                    Checkout
-                                </Link>
-                            </div>
-                        </>
-                    )}
+                    {
+                        isAuthenticated && displayCartItems.length > 0 &&
+                        <div className="flex items-center justify-between text-lg font-bold text-[#003d29]">
+                            <span>Subtotal</span>
+                            <span>${subtotal.toFixed(2)}</span>
+                        </div>
+                    }
+                    <div className="grid grid-cols-2 gap-4">
+                        <Link
+                            href="/cart"
+                            onClick={() => handleClose(false)}
+                            className={cn(
+                                buttonVariants({ variant: "outline" }),
+                                "w-full border-[#003d29] text-[#003d29] hover:bg-[#003d29] hover:text-white"
+                            )}
+                        >
+                            View Cart
+                        </Link>
+                        {
+                            isAuthenticated && displayCartItems.length > 0 &&
+                            <Link
+                                href={`/checkout?items=${displayCartItems.map(i => i.productId).join(",")}`}
+                                onClick={() => handleClose(false)}
+                                className={cn(
+                                    buttonVariants(),
+                                    "w-full bg-[#003d29] hover:bg-[#002a1c]"
+                                )}
+                            >
+                                Checkout
+                            </Link>
+                        }
+                    </div>
                 </div>
             </SheetContent>
         </Sheet>

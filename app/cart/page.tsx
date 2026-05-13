@@ -129,7 +129,7 @@ export default function CartPage() {
 
     const selectedSubtotal = cartItems
         .filter((item) => selectedIds.has(item.productId))
-        .reduce((acc, item) => acc + (item.product?.price || 0) * item.quantity, 0);
+        .reduce((acc, item) => acc + (item.product?.final_price || 0) * item.quantity, 0);
 
     return (
         <div className="min-h-screen bg-gray-50 p-4 md:p-8">
@@ -226,7 +226,7 @@ export default function CartPage() {
                                     <div className="md:col-span-2 text-center md:text-center flex justify-between md:block">
                                         <span className="md:hidden text-gray-500 font-medium">Price:</span>
                                         <span className="font-semibold text-gray-700">
-                                            ${(item.product?.price || 0).toFixed(2)}
+                                            ${(item.product?.final_price || 0).toFixed(2)}
                                         </span>
                                     </div>
 
@@ -255,7 +255,7 @@ export default function CartPage() {
                                     <div className="md:col-span-2 text-right md:text-center flex justify-between md:block">
                                         <span className="md:hidden text-gray-500 font-medium">Total:</span>
                                         <span className="font-bold text-[#003d29] text-lg">
-                                            ${((item.product?.price || 0) * item.quantity).toFixed(2)}
+                                            ${((item.product?.final_price || 0) * item.quantity).toFixed(2)}
                                         </span>
                                     </div>
                                 </div>

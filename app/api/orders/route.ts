@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
       orderItems.push({
         product: fetchedProduct._id.toString(),
         quantity: quantity,
-        price: fetchedProduct.price,
+        price: fetchedProduct.final_price,
         name: fetchedProduct.name,
         discount: fetchedProduct.discount,
         images: fetchedProduct.image,
@@ -237,7 +237,7 @@ export async function POST(request: NextRequest) {
           orderItems.push({
             product: fetchedProduct._id.toString(),
             quantity: cartItem.quantity,
-            price: fetchedProduct.price,
+            price: fetchedProduct.final_price,
             ...(cartItem.variant && { variant: cartItem.variant }),
             name: fetchedProduct.name,
             discount: fetchedProduct.discount,
@@ -258,7 +258,7 @@ export async function POST(request: NextRequest) {
           orderItems.push({
             product: product._id.toString(),
             quantity: cartItem.quantity,
-            price: product.price, // Price from DB, not from client
+            price: product.final_price, // final_price from DB (post-discount), not from client
             ...(cartItem.variant && { variant: cartItem.variant }),
             name: product.name,
             discount: product.discount,
@@ -347,8 +347,8 @@ export async function POST(request: NextRequest) {
     const subOrderIds: string[] = [];
     for (const [vendorId, products] of Array.from(subOrdersByVendor.entries())) {
       const subOrderProducts = products.map((p: any) => {
-        const discount = p.discount || 0;
-        const finalPrice = (p.price - (discount / 100) * p.price) * p.quantity;
+        // p.price is already final_price (post-discount unit price)
+        const finalPrice = p.price * p.quantity;
         return {
           ...p,
           finalPrice: parseFloat(finalPrice.toFixed(2))
@@ -467,7 +467,7 @@ export async function POST(request: NextRequest) {
           product_data: {
             name: item.productName,
           },
-          unit_amount: Math.round(item.price * 100), // Stripe expects amounts in cents
+          unit_amount: Math.round(item.price * 100), // item.price is final_price (post-discount), Stripe expects cents
         },
         quantity: item.quantity,
       }));

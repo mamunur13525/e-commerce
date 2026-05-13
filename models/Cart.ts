@@ -16,6 +16,14 @@ const cartItemSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  final_price: {
+    type: Number,
+    required: true
+  },
+  discount: {
+    type: Number,
+    required: false,
+  },
   // Optional field, useful for showing variations (size, color, etc.)
   variant: {
     type: String,
@@ -56,7 +64,7 @@ const cartSchema = new mongoose.Schema(
 cartSchema.pre("save", function (this: any) {
   if (this.items && Array.isArray(this.items)) {
     this.totalQuantity = this.items.reduce((total: number, item: any) => total + item.quantity, 0);
-    this.totalPrice = this.items.reduce((total: number, item: any) => total + (item.quantity * item.price), 0);
+    this.totalPrice = this.items.reduce((total: number, item: any) => total + (item.quantity * (item.final_price ?? item.price)), 0);
   }
 });
 

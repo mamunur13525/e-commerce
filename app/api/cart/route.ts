@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     if (!token) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     if (!decoded) {
       return NextResponse.json(
         { success: false, message: "Invalid token" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     const cart = await Cart.findOne({ user: decoded.userId, status: "active" })
       .populate({
         path: "items.product",
-        model: Product
+        model: Product,
       })
       .lean();
 
@@ -39,16 +39,18 @@ export async function GET(request: NextRequest) {
         data: [],
       });
     }
-
+    console.log({ cartItems: cart.items });
     // Format the response to match the existing frontend expectations if possible
     // The previous format was: [{ productId: "123", quantity: 1, product: { ... } }]
     const formattedCart = cart.items.map((item: any) => ({
       productId: item.product?._id || item.product,
       quantity: item.quantity,
       price: item.price,
-      product: item.product
+      final_price: item.final_price,
+      discount: item.discount,
+      product: item.product,
     }));
-
+    console.log({ formattedCart });
     return NextResponse.json({
       success: true,
       data: formattedCart,
@@ -57,7 +59,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching cart:", error);
     return NextResponse.json(
       { success: false, message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -70,7 +72,7 @@ export async function POST(request: NextRequest) {
     if (!token) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -78,61 +80,78 @@ export async function POST(request: NextRequest) {
     if (!decoded) {
       return NextResponse.json(
         { success: false, message: "Invalid token" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     const { productId, quantity = 1 } = await request.json();
-console.log({productId, quantity})
+    console.log({ productId, quantity });
     if (!productId) {
       return NextResponse.json(
         { success: false, message: "Product ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const product = await Product.findById(productId);
     if (!product) {
-       return NextResponse.json(
+      return NextResponse.json(
         { success: false, message: "Product not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     let cart = await Cart.findOne({ user: decoded.userId, status: "active" });
-
+    console.log({ product });
     if (!cart) {
       // Create new cart
       cart = new Cart({
         user: decoded.userId,
-        items: [{ product: productId, quantity, price: product.price }],
+        items: [
+          {
+            product: productId,
+            quantity,
+            price: product.price,
+            final_price: product.final_price,
+            discount: product.discount || 0,
+          },
+        ],
       });
     } else {
       // Check if product already in cart
       const existingItemIndex = cart.items.findIndex(
-        (item: any) => item.product.toString() === productId
+        (item: any) => item.product.toString() === productId,
       );
 
       if (existingItemIndex > -1) {
         cart.items[existingItemIndex].quantity += quantity;
       } else {
-        cart.items.push({ product: productId, quantity, price: product.price });
+        console.log("hit here", product.final_price, product.discount);
+        cart.items.push({
+          product: productId,
+          quantity,
+          price: product.price,
+          final_price: product.final_price,
+          discount: product.discount || 0,
+        });
       }
     }
-
+    console.log({ cartItems: cart.items });
     await cart.save();
-    
+
     // Populate to return the updated format
     await cart.populate({
-        path: "items.product",
-        model: Product
+      path: "items.product",
+      model: Product,
     });
 
     const formattedCart = cart.items.map((item: any) => ({
       productId: item.product?._id || item.product,
       quantity: item.quantity,
       price: item.price,
-      product: item.product
+      final_price: item.final_price,
+      discount: item.discount,
+      product: item.product,
     }));
 
     return NextResponse.json({
@@ -144,7 +163,7 @@ console.log({productId, quantity})
     console.error("Error adding to cart:", error);
     return NextResponse.json(
       { success: false, message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -157,7 +176,7 @@ export async function PUT(request: NextRequest) {
     if (!token) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -165,7 +184,7 @@ export async function PUT(request: NextRequest) {
     if (!decoded) {
       return NextResponse.json(
         { success: false, message: "Invalid token" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -174,7 +193,7 @@ export async function PUT(request: NextRequest) {
     if (!productId || quantity === undefined) {
       return NextResponse.json(
         { success: false, message: "Product ID and quantity are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -183,18 +202,18 @@ export async function PUT(request: NextRequest) {
     if (!cart) {
       return NextResponse.json(
         { success: false, message: "Cart not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     if (quantity <= 0) {
       // Remove item
       cart.items = cart.items.filter(
-        (item: any) => item.product.toString() !== productId
+        (item: any) => item.product.toString() !== productId,
       );
     } else {
       const existingItemIndex = cart.items.findIndex(
-        (item: any) => item.product.toString() === productId
+        (item: any) => item.product.toString() === productId,
       );
 
       if (existingItemIndex > -1) {
@@ -203,23 +222,31 @@ export async function PUT(request: NextRequest) {
         // Technically this shouldn't happen on PUT to existing item, but to be safe:
         const product = await Product.findById(productId);
         if (product) {
-            cart.items.push({ product: productId, quantity, price: product.price });
+          cart.items.push({
+            product: productId,
+            quantity,
+            price: product.price,
+            final_price: product.final_price,
+            discount: product.discount || 0,
+          });
         }
       }
     }
 
     await cart.save();
-    
+
     await cart.populate({
-        path: "items.product",
-        model: Product
+      path: "items.product",
+      model: Product,
     });
 
     const formattedCart = cart.items.map((item: any) => ({
       productId: item.product?._id || item.product,
       quantity: item.quantity,
       price: item.price,
-      product: item.product
+      final_price: item.final_price,
+      discount: item.discount,
+      product: item.product,
     }));
 
     return NextResponse.json({
@@ -231,7 +258,7 @@ export async function PUT(request: NextRequest) {
     console.error("Error updating cart:", error);
     return NextResponse.json(
       { success: false, message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -244,7 +271,7 @@ export async function DELETE(request: NextRequest) {
     if (!token) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -252,7 +279,7 @@ export async function DELETE(request: NextRequest) {
     if (!decoded) {
       return NextResponse.json(
         { success: false, message: "Invalid token" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -278,7 +305,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Error clearing cart:", error);
     return NextResponse.json(
       { success: false, message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

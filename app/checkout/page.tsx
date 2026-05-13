@@ -41,7 +41,7 @@ function CheckoutContent() {
   const { data: addressesData, isLoading: isAddressesLoading } =
     useGetAddresses(isAuthenticated ? token : null);
   const { data: productData, isLoading: isProductLoading } = useProduct(buyNowProductId || "");
-  
+
   const updateCartMutation = useUpdateCartItem(isAuthenticated ? token : null);
   const removeFromCartMutation = useRemoveFromCart(
     isAuthenticated ? token : null,
@@ -88,7 +88,7 @@ function CheckoutContent() {
       : [];
 
   const subtotal = checkoutItems.reduce(
-    (acc, item) => acc + (item.product?.price || 0) * item.quantity,
+    (acc, item) => acc + (item.product?.final_price || 0) * item.quantity,
     0,
   );
   const deliveryFee = 16.0;
@@ -147,8 +147,8 @@ function CheckoutContent() {
 
   const handleRemoveItem = (productId: string) => {
     if (isDirectBuy) {
-        toast.error("Cannot remove items from direct purchase. Cancel and go back.");
-        return;
+      toast.error("Cannot remove items from direct purchase. Cancel and go back.");
+      return;
     }
     removeFromCartMutation.mutate(productId, {
       onSuccess: () => {
@@ -167,8 +167,8 @@ function CheckoutContent() {
     }
 
     if (isDirectBuy) {
-        setBuyNowQuantity(newQuantity);
-        return;
+      setBuyNowQuantity(newQuantity);
+      return;
     }
 
     updateCartMutation.mutate(
@@ -323,7 +323,7 @@ function CheckoutContent() {
                                 <p className="text-lg font-bold text-[#003d29] mt-1">
                                   $
                                   {(
-                                    (item.product?.price || 0) * item.quantity
+                                    (item.product?.final_price || 0) * item.quantity
                                   ).toFixed(2)}
                                 </p>
                               </div>
@@ -359,16 +359,16 @@ function CheckoutContent() {
 
                                 </div>
                                 {!isDirectBuy && (
-                                <div>
-                                  <button
-                                    onClick={() => handleRemoveItem(item.productId)}
-                                    disabled={removeFromCartMutation.isPending}
-                                    className="flex items-center gap-2 text-sm font-medium text-red-500 hover:text-red-700 transition-colors w-fit disabled:opacity-50"
-                                  >
-                                    <Remove01Icon className="size-4" />
-                                    Remove item
-                                  </button>
-                                </div>
+                                  <div>
+                                    <button
+                                      onClick={() => handleRemoveItem(item.productId)}
+                                      disabled={removeFromCartMutation.isPending}
+                                      className="flex items-center gap-2 text-sm font-medium text-red-500 hover:text-red-700 transition-colors w-fit disabled:opacity-50"
+                                    >
+                                      <Remove01Icon className="size-4" />
+                                      Remove item
+                                    </button>
+                                  </div>
                                 )}
 
                               </div>

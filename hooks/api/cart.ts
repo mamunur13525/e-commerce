@@ -5,6 +5,7 @@ export interface ProductDetails {
   name: string;
   price: number;
   quantity: number;
+  final_price: number;
   image: {
     url?: string;
     display_url?: string;
