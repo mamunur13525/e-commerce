@@ -26,6 +26,7 @@
     "date-fns": "^4.1.0",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^12.38.0",
     "hugeicons-react": "^0.3.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.0.1",

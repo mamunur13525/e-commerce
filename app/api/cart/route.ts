@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
         data: [],
       });
     }
-    console.log({ cartItems: cart.items });
+
     // Format the response to match the existing frontend expectations if possible
     // The previous format was: [{ productId: "123", quantity: 1, product: { ... } }]
     const formattedCart = cart.items.map((item: any) => ({
@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
         });
       }
     }
-    console.log({ cartItems: cart.items });
+
     await cart.save();
 
     // Populate to return the updated format

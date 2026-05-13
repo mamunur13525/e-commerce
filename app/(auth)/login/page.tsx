@@ -21,6 +21,7 @@ export default function LoginPage({ onClose }: { onClose: () => void }) {
   const { setAuth } = useAuthStore();
   const loginMutation = useLogin();
   const pathname = usePathname();
+  const callbackUrl = searchParams?.get("callbackUrl") || "/";
 
   const isModal = !!onClose;
 
@@ -41,8 +42,8 @@ export default function LoginPage({ onClose }: { onClose: () => void }) {
         const user = JSON.parse(decodeURIComponent(userParam));
         setAuth(user, token);
         toast.success("Login successful!");
-        console.log("suussece")
-        router.replace("/");
+        console.log("suussece");
+        router.replace(callbackUrl);
       } catch (err) {
         toast.error("Failed to process login");
         router.replace("/login");
@@ -63,12 +64,12 @@ export default function LoginPage({ onClose }: { onClose: () => void }) {
       if (response.success && response.token && response.user) {
         setAuth(response.user, response.token);
         toast.success("Login successful!");
-        console.log({ pathname })
+        console.log({ pathname });
         if (isModal) {
           onClose();
           router.refresh();
         } else {
-          router.push('/');
+          router.push(callbackUrl);
         }
       }
     } catch (error: any) {
@@ -193,12 +194,16 @@ export default function LoginPage({ onClose }: { onClose: () => void }) {
           >
             {loginMutation.isPending ? "Logging in..." : "Log In"}
           </Button>
-          <GoogleLogin onClose={onClose} callbackUrl={pathname} />
+          <GoogleLogin onClose={onClose} callbackUrl={callbackUrl} />
         </div>
         <div className="mt-6 text-center text-sm">
           <span className="text-gray-500">Don't Have An Account? </span>
           <Link
-            href={pathname !== "/" ? `/signup?callbackUrl=${encodeURIComponent(pathname)}` : "/signup"}
+            href={
+              pathname !== "/"
+                ? `/signup?callbackUrl=${encodeURIComponent(pathname)}`
+                : "/signup"
+            }
             className="font-semibold text-[#003d29] hover:underline"
             onClick={onClose}
           >

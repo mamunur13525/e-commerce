@@ -13,6 +13,37 @@ import { ProductCard } from "@/components/product/product-card";
 import { ProductCardSkeleton } from "@/components/skeleton";
 import { useInfiniteProducts } from "@/hooks";
 import ShoppingPageSkeleton from "@/components/skeleton/shoping-page";
+import { motion, AnimatePresence, Variants } from "framer-motion";
+
+// Animation Variants
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: "easeOut"
+    }
+  },
+  exit: { 
+    opacity: 0, 
+    scale: 0.95,
+    transition: {
+      duration: 0.2
+    }
+  },
+};
 
 export default function ShopPage() {
   return (
@@ -270,24 +301,37 @@ function ShopPageContent() {
                   No products found matching your filters.
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {displayedProducts.map((product) => (
-                    <ProductCard
-                      key={product._id}
-                      id={product._id}
-                      title={product.name}
-                      price={product.price}
-                      imageSrc={
-                        product.image.url ||
-                        product.image.display_url ||
-                        "/placeholder-product.jpg"
-                      }
-                      rating={product.rating}
-                      quantity={product.quantity}
-                      discount={product.discount}
-                      currency={product.currency}
-                    />
-                  ))}
+                <motion.div
+                  key={searchParams.toString()}
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                >
+                  <AnimatePresence mode="popLayout">
+                    {displayedProducts.map((product) => (
+                      <motion.div
+                        key={product._id}
+                        variants={itemVariants}
+                        layout
+                      >
+                        <ProductCard
+                          id={product._id}
+                          title={product.name}
+                          price={product.price}
+                          imageSrc={
+                            product.image.url ||
+                            product.image.display_url ||
+                            "/placeholder-product.jpg"
+                          }
+                          rating={product.rating}
+                          quantity={product.quantity}
+                          discount={product.discount}
+                          currency={product.currency}
+                        />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
 
                   {/* Skeletons for initial loading state */}
                   {isLoading && (
@@ -306,7 +350,7 @@ function ShopPageContent() {
                       ))}
                     </>
                   )}
-                </div>
+                </motion.div>
               )}
 
               {/* Infinite Scroll Trigger */}

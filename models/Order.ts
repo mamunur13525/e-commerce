@@ -43,7 +43,7 @@ const orderSchema = new mongoose.Schema(
     },
     subOrderIds: {
       type: [String],
-      required: [true, 'Atleast one sub order id is needed to order.']
+      required: [true, "Atleast one sub order id is needed to order."],
     },
     deliveryAddress: {
       type: deliveryAddressSchema,
@@ -73,7 +73,7 @@ const orderSchema = new mongoose.Schema(
         type: Number,
         required: false,
         min: 0,
-      }
+      },
     },
     promoDiscount: {
       type: Number,
@@ -109,6 +109,10 @@ const orderSchema = new mongoose.Schema(
       type: String,
       enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
       default: "pending",
+    },
+    cancelNote: {
+      type: String,
+      required: false,
     },
   },
   {

@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
+import { motion } from "framer-motion";
 import {
   ArrowLeft01Icon,
   PackageIcon,
@@ -82,6 +83,9 @@ export default function OrderDetailsPage({
     toast.success("Order ID copied to clipboard");
   };
 
+  const handleContactSupport = () => {
+    toast.warning("This Feature Coming soon!");
+  };
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4 mb-2">
@@ -116,18 +120,42 @@ export default function OrderDetailsPage({
       <Card className="border-none shadow-sm overflow-hidden mb-6">
         <CardContent className="p-6 sm:p-8">
           {order.status === "cancelled" ? (
-            <div className="flex flex-col items-center justify-center py-4">
-              <div className="size-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                <Cancel01Icon className="size-8 text-red-600" />
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 py-2">
+              <div className="size-16 bg-red-50 rounded-2xl flex items-center justify-center shrink-0 border border-red-100">
+                <Cancel01Icon className="size-8 text-red-500" />
               </div>
-              <h3 className="text-xl font-bold text-red-700">
-                Order Cancelled
-              </h3>
-              <p className="text-gray-500 max-w-sm text-center mt-2">
-                This order was cancelled on{" "}
-                {format(new Date(order.updatedAt), "MMM d, yyyy")}. If you have
-                any questions, please contact support.
-              </p>
+              <div className="flex-1 text-center md:text-left">
+                <h3 className="text-xl font-bold text-gray-900 mb-1">
+                  Order Cancelled
+                </h3>
+                <p className="text-sm text-gray-500 mb-4">
+                  This order was cancelled on{" "}
+                  {format(new Date(order.updatedAt), "MMMM d, yyyy")}.
+                </p>
+
+                {order.cancelNote && (
+                  <div className="bg-red-50/30 border border-red-100/50 rounded-2xl p-4 inline-block w-full max-w-2xl relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-red-400/50"></div>
+                    <p className="text-[10px] font-bold text-red-600 uppercase tracking-widest mb-1.5 opacity-70">
+                      Reason for cancellation
+                    </p>
+                    <p className="text-gray-700 font-medium italic leading-relaxed">
+                      "{order.cancelNote}"
+                    </p>
+                  </div>
+                )}
+
+                <div className="mt-6 flex flex-wrap justify-center md:justify-start gap-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="bg-[#003d29] hover:bg-[#002d1f] hover:text-white cursor-pointer text-white rounded-full px-6 h-10"
+                    onClick={handleContactSupport}
+                  >
+                    Contact Support
+                  </Button>
+                </div>
+              </div>
             </div>
           ) : (
             <div className="relative">
@@ -162,7 +190,12 @@ export default function OrderDetailsPage({
                   },
                   { key: "delivered", label: "Delivered", icon: Tick02Icon },
                 ].map((step, idx) => {
-                  const statusOrder = ["pending", "processing", "shipped", "delivered"];
+                  const statusOrder = [
+                    "pending",
+                    "processing",
+                    "shipped",
+                    "delivered",
+                  ];
                   const currentIndex = statusOrder.indexOf(order.status);
                   const stepIndex = statusOrder.indexOf(step.key);
                   const isCompleted = stepIndex <= currentIndex;
@@ -246,7 +279,12 @@ export default function OrderDetailsPage({
                     desc: "Order received successfully",
                   },
                 ].map((step) => {
-                  const statusOrder = ["pending", "processing", "shipped", "delivered"];
+                  const statusOrder = [
+                    "pending",
+                    "processing",
+                    "shipped",
+                    "delivered",
+                  ];
                   const stepIndex = statusOrder.indexOf(step.key);
                   const isCompleted =
                     stepIndex <= statusOrder.indexOf(order.status);
@@ -327,8 +365,8 @@ export default function OrderDetailsPage({
                     </div>
                     {order.status === "delivered" && (
                       <div className="mt-2 flex justify-end">
-                        <ProductReviewModal 
-                          productId={item.product?._id || item.product} 
+                        <ProductReviewModal
+                          productId={item.product?._id || item.product}
                           productName={item.product?.name || "Product"}
                         />
                       </div>
@@ -372,8 +410,8 @@ export default function OrderDetailsPage({
                       order.paymentStatus === "paid"
                         ? "border-green-500 text-green-600 bg-green-50"
                         : order.paymentStatus === "refunded"
-                        ? "border-amber-500 text-amber-600 bg-amber-50"
-                        : "text-yellow-600 border-yellow-500 bg-yellow-50"
+                          ? "border-amber-500 text-amber-600 bg-amber-50"
+                          : "text-yellow-600 border-yellow-500 bg-yellow-50"
                     }
                   >
                     {order.paymentStatus.toUpperCase()}

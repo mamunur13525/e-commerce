@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import User from "@/models/User";
 import connectToDatabase from "@/lib/db";
-import nodemailer from "nodemailer";
-import { Resend } from 'resend';
+import { Resend } from "resend";
 
 // Configure email transporter
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -14,7 +13,7 @@ export async function POST(request: NextRequest) {
     if (!email) {
       return NextResponse.json(
         { message: "Email is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -23,7 +22,7 @@ export async function POST(request: NextRequest) {
     if (!emailRegex.test(email)) {
       return NextResponse.json(
         { message: "Invalid email format" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -37,7 +36,7 @@ export async function POST(request: NextRequest) {
         {
           message: "If this email exists, a password reset link has been sent",
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -59,9 +58,8 @@ export async function POST(request: NextRequest) {
 
     // Send email
     try {
-
       const emailSuccess = await resend.emails.send({
-        from: 'onboarding@resend.dev',
+        from: "onboarding@resend.dev",
         to: email,
         subject: "Password Reset Request",
         html: `
@@ -86,13 +84,13 @@ export async function POST(request: NextRequest) {
       if (emailSuccess.error || !emailSuccess.data) {
         return NextResponse.json(
           { message: "Failed to send email. Please try again later." },
-          { status: 500 }
+          { status: 500 },
         );
       }
-      console.log({ emailSuccess })
+      console.log({ emailSuccess });
       return NextResponse.json(
         { message: "Link sent to the email." },
-        { status: 200 }
+        { status: 200 },
       );
     } catch (emailError) {
       console.error("Email sending error:", emailError);
@@ -103,15 +101,14 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json(
         { message: "Failed to send email. Please try again later." },
-        { status: 500 }
+        { status: 500 },
       );
     }
-
   } catch (error: any) {
     console.error("Forgot password error:", error);
     return NextResponse.json(
       { message: error.message || "An error occurred" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

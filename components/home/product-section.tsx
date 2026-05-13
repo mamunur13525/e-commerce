@@ -2,12 +2,43 @@
 
 import { useState, useCallback, useMemo } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { ArrowRight01Icon } from "hugeicons-react";
 import { ProductCard } from "@/components/product/product-card";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { ProductCardSkeleton } from "@/components/skeleton";
 import { useProducts } from "@/hooks";
+// Animation Variants
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: "easeOut"
+    }
+  },
+  exit: { 
+    opacity: 0, 
+    scale: 0.95,
+    transition: {
+      duration: 0.2
+    }
+  },
+};
+
 
 // Categories Data
 const CATEGORIES = [
@@ -107,33 +138,52 @@ export function ProductSection({ title, isShowingCategoryFilter = false }: { tit
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {products.length > 0 ? (
-              products.map((product) => (
-                <ProductCard
-                  key={product._id}
-                  title={product.name}
-                  price={product.price}
-                  imageSrc={product.image.url}
-                  rating={product.rating}
-                  discount={product.discount}
-                  quantity={product.quantity}
-                  currency={product.currency}
-                  id={product._id}
-                />
-              ))
-            ) : (
-              <div className="col-span-full text-center py-16">
-                <div className="text-gray-400 text-6xl mb-4">🔍</div>
-                <h3 className="text-xl font-bold text-gray-800 mb-2">No products found</h3>
-                <p className="text-gray-600">
-                  {activeCategory !== "All"
-                    ? `No products available in "${activeCategory}" category.`
-                    : "No products available at the moment."}
-                </p>
-              </div>
-            )}
-          </div>
+          <motion.div
+            key={activeCategory}
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
+          >
+            <AnimatePresence mode="popLayout">
+              {products.length > 0 ? (
+                products.map((product) => (
+                  <motion.div
+                    key={product._id}
+                    variants={itemVariants}
+                    layout
+                  >
+                    <ProductCard
+                      title={product.name}
+                      price={product.price}
+                      imageSrc={product.image.url}
+                      rating={product.rating}
+                      discount={product.discount}
+                      quantity={product.quantity}
+                      currency={product.currency}
+                      id={product._id}
+                    />
+                  </motion.div>
+                ))
+              ) : (
+                <motion.div
+                  key="no-products"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="col-span-full text-center py-16"
+                >
+                  <div className="text-gray-400 text-6xl mb-4">🔍</div>
+                  <h3 className="text-xl font-bold text-gray-800 mb-2">No products found</h3>
+                  <p className="text-gray-600">
+                    {activeCategory !== "All"
+                      ? `No products available in "${activeCategory}" category.`
+                      : "No products available at the moment."}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         )}
       </div>
     </section>
