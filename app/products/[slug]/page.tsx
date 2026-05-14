@@ -556,14 +556,17 @@ export default function ProductPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4">
           {/* Description */}
-          <div className="">
-            <h4 className="font-semibold text-2xl text-gray-900">Product details of</h4>
+          <div className="mb-5 w-full">
+            <h4 className="font-semibold text-2xl text-gray-900 border-b py-2 mb-2 w-full">Product details</h4>
             <p className="text-gray-600 leading-relaxed">
               {product.description}
             </p>
-          </div>
-        </div>
+          </div></div>
+
 
         <div className="grid grid-cols-1 gap-4">
           <ProductReviews productId={product._id} />

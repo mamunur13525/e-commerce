@@ -37,6 +37,7 @@ function HomeContent() {
       <ProductSection title="You might need" />
       <PromoBanners offers={metadata.offers} />
       <ProductSection
+        categories={categories}
         title="Weekly best selling items"
         isShowingCategoryFilter={true}
       />

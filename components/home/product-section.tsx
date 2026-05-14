@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { ProductCardSkeleton } from "@/components/skeleton";
 import { useProducts } from "@/hooks";
+import { Category } from "@/lib/types/metadata";
 // Animation Variants
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -22,16 +23,16 @@ const containerVariants: Variants = {
 
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: {
       duration: 0.4,
       ease: "easeOut"
     }
   },
-  exit: { 
-    opacity: 0, 
+  exit: {
+    opacity: 0,
     scale: 0.95,
     transition: {
       duration: 0.2
@@ -39,54 +40,41 @@ const itemVariants: Variants = {
   },
 };
 
-
-// Categories Data
-const CATEGORIES = [
-  "All",
-  "Frozen food",
-  "Vegetables",
-  "Snacks",
-  "Chicken",
-  "Meat & Ball",
-  "Dairy & Milk",
-  "Chocolate",
-  "Fruits",
-  "Beverages"
-];
-
 interface SortByCategoryProductsProps {
   activeCategory: string;
   onCategoryChange: (category: string) => void;
+  categories: Category[]
 }
 
-function SortByCategoryProducts({ activeCategory, onCategoryChange }: SortByCategoryProductsProps) {
+
+function SortByCategoryProducts({ categories, activeCategory, onCategoryChange }: SortByCategoryProductsProps) {
   return (
     <div className="flex items-center gap-3 overflow-x-auto py-3 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0 mb-5">
-      {CATEGORIES.map((category) => (
+      {categories.map((category) => (
         <Button
-          key={category}
-          onClick={() => onCategoryChange(category)}
+          key={category.slug}
+          onClick={() => onCategoryChange(category.slug)}
           className={cn(
             "cursor-pointer px-6 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border duration-200",
-            activeCategory === category
+            activeCategory === category.slug
               ? "hover:bg-[#003d29] bg-[#003d29] text-white   border-[#003d29]"
               : "shadow shadow-zinc-300/10 bg-white text-gray-600 hover:bg-gray-50  border-gray-100/50"
           )}
         >
-          {category}
+          {category.name}
         </Button>
       ))}
     </div>
   );
 }
 
-export function ProductSection({ title, isShowingCategoryFilter = false }: { title: string; isShowingCategoryFilter?: boolean }) {
+export function ProductSection({ categories, title, isShowingCategoryFilter = false }: { categories?: Category[]; title: string; isShowingCategoryFilter?: boolean }) {
   const [activeCategory, setActiveCategory] = useState("All");
 
   // Fetch products using TanStack Query
   const { data: allProducts = [], isLoading, error, refetch } = useProducts({
-      category: activeCategory === "All" ? undefined : activeCategory,
-      limit: 10
+    category: activeCategory === "All" ? undefined : activeCategory,
+    limit: 10
   });
 
   // Memoize filtered products to avoid unnecessary recalculations
@@ -114,7 +102,7 @@ export function ProductSection({ title, isShowingCategoryFilter = false }: { tit
       <div>
         {
           isShowingCategoryFilter &&
-          <SortByCategoryProducts activeCategory={activeCategory} onCategoryChange={handleCategoryChange} />
+          <SortByCategoryProducts categories={categories || []} activeCategory={activeCategory} onCategoryChange={handleCategoryChange} />
         }
 
         {isLoading ? (

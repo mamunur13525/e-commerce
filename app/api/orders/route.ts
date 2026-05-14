@@ -8,6 +8,7 @@ import User from "@/models/User";
 import SubOrder from "@/models/SubOrder";
 import connectDB from "@/lib/db";
 import Stripe from "stripe";
+import { sendOrderConfirmationEmail } from "@/lib/mail";
 
 // Initialize Stripe with secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
@@ -445,6 +446,35 @@ export async function POST(request: NextRequest) {
         }
       }
 
+      // Send order confirmation email (fire-and-forget — does not block response)
+      const appUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+      sendOrderConfirmationEmail(user.email, {
+        orderId: newOrderId,
+        orderDetailsUrl: `${appUrl}/account/orders/${order._id}`,
+        customerName: user.name || deliveryAddress.full_name,
+        items: orderItems.map((item) => ({
+          name: item.name || "Product",
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        subtotal,
+        deliveryFee,
+        promoDiscount,
+        taxes,
+        totalPrice,
+        paymentMethod,
+        deliveryAddress: {
+          full_name: deliveryAddress.full_name,
+          street: deliveryAddress.street,
+          city: deliveryAddress.city,
+          state: deliveryAddress.state,
+          zip: deliveryAddress.zip,
+          country: deliveryAddress.country,
+        },
+      }).catch((err) =>
+        console.error("Failed to send order confirmation email:", err)
+      );
+
       return NextResponse.json({
         success: true,
         message: "Order placed successfully",
@@ -459,7 +489,7 @@ export async function POST(request: NextRequest) {
         })
       );
 
-      const origin = request.headers.get("origin") || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const origin = request.headers.get("origin") || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
 
       const stripeLineItems = populatedOrderItems.map((item) => ({
         price_data: {

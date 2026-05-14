@@ -134,7 +134,6 @@ function FilterSidebarContent() {
   }
 
   const calculateStep = () => {
-    console.log("holala");
     if (priceRange) {
       const max = priceRange[1];
       if (max < 100) {

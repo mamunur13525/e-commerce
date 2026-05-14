@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   ShoppingBasket01Icon,
@@ -5,6 +7,8 @@ import {
   GiftIcon,
 } from "hugeicons-react";
 import Image from "next/image";
+import { Button } from "../ui/button";
+import { toast } from "sonner";
 
 export function Footer() {
   return (
@@ -200,19 +204,19 @@ export function Footer() {
           <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 text-sm text-gray-700 md:flex-row">
             <div className="flex gap-6">
               <Link
-                href="#"
+                href="/become-seller"
                 className="flex items-center gap-2 hover:text-[#003d29]"
               >
                 <ShoppingBasket01Icon className="text-pink-400 size-4" />
                 Become Seller
               </Link>
-              <Link
-                href="#"
-                className="flex items-center gap-2 hover:text-[#003d29]"
+              <button
+                onClick={() => toast.warning("Coming soon")}
+                className="flex items-center gap-2 hover:text-[#003d29] bg-transparent hover:bg-transparent hover:border-none text-inherit cursor-pointer"
               >
                 <GiftIcon className="text-pink-400 size-4" />
                 Gift Cards
-              </Link>
+              </button>
               <Link
                 href="#"
                 className="flex items-center gap-2 hover:text-[#003d29]"
@@ -223,10 +227,10 @@ export function Footer() {
             </div>
 
             <div className="flex gap-6">
-              <Link href="#" className="hover:text-[#003d29]">
+              <Link href="/terms" className="hover:text-[#003d29]">
                 Terms of Use
               </Link>
-              <Link href="#" className="hover:text-[#003d29]">
+              <Link href="/privacy" className="hover:text-[#003d29]">
                 Privacy Policy
               </Link>
             </div>
