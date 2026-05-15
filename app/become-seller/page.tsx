@@ -438,8 +438,8 @@ export default function BecomeSellerPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-[#003d29] hover:bg-[#002a1c] cursor-pointer text-base py-5"
                 disabled={isSubmitting || !isAuthenticated}
+                className="w-full h-12 text-base font-semibold bg-[#003d29] hover:bg-[#002a1c] text-white shadow-md shadow-emerald-900/20 disabled:opacity-50"
               >
                 {isSubmitting ? "Submitting..." : "Submit Seller Request"}
               </Button>

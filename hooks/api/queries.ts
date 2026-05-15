@@ -775,3 +775,43 @@ export const useResetPassword = (): UseMutationResult<ResetPasswordResponse, Err
   });
 };
 
+// ============ CONTACT MUTATIONS ============
+
+export interface ContactUsData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
+export interface ContactUsResponse {
+  success?: boolean;
+  message: string;
+}
+
+/**
+ * Submit contact form
+ */
+export const useContactUs = (): UseMutationResult<ContactUsResponse, Error, ContactUsData> => {
+  return useMutation({
+    mutationFn: async (data: ContactUsData) => {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const response: ContactUsResponse = await res.json();
+
+      if (!res.ok) {
+        throw new Error(response.message || "Failed to submit contact form");
+      }
+
+      return response;
+    },
+  });
+};
+

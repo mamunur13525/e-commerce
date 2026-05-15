@@ -187,14 +187,13 @@ export const sendOrderConfirmationEmail = async (
                 <td style="padding: 6px 0; color: #555;">Delivery Fee</td>
                 <td style="padding: 6px 0; text-align: right;">$${deliveryFee.toFixed(2)}</td>
               </tr>
-              ${
-                promoDiscount > 0
-                  ? `<tr>
+              ${promoDiscount > 0
+          ? `<tr>
                   <td style="padding: 6px 0; color: #16a34a;">Promo Discount</td>
                   <td style="padding: 6px 0; text-align: right; color: #16a34a;">-$${promoDiscount.toFixed(2)}</td>
                 </tr>`
-                  : ""
-              }
+          : ""
+        }
               <tr>
                 <td style="padding: 6px 0; color: #555;">Taxes</td>
                 <td style="padding: 6px 0; text-align: right;">$${taxes.toFixed(2)}</td>
@@ -233,6 +232,41 @@ export const sendOrderConfirmationEmail = async (
 
           <div style="background-color: ${BRAND_COLOR}; padding: 16px; border-radius: 0 0 8px 8px; text-align: center;">
             <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 0;">© Garden Shop. All rights reserved.</p>
+          </div>
+        </div>
+      `,
+    });
+
+    if (error) return { success: false, error };
+    return { success: true, data: resendData };
+  } catch (error) {
+    return { success: false, error };
+  }
+};
+
+// ─── Contact Us Email ─────────────────────────────────────────────────────────
+
+export interface ContactUsData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
+export const sendContactEmail = async (data: ContactUsData) => {
+  try {
+    const { data: resendData, error } = await resend.emails.send({
+      from: FROM_ADDRESS,
+      to: data.email,
+      subject: `Contact Form Inquiry: ${data.subject}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+          <h2 style="color: ${BRAND_COLOR};">New Contact Form Submission</h2>
+          <p><strong>From:</strong> ${data.firstName} ${data.lastName} (${data.email})</p>
+          <p><strong>Subject:</strong> ${data.subject}</p>
+          <div style="background-color: #f9f9f9; padding: 16px; border-radius: 8px; margin-top: 16px;">
+            <p style="margin: 0; white-space: pre-wrap;">${data.message}</p>
           </div>
         </div>
       `,

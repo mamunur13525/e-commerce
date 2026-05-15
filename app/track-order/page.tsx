@@ -92,10 +92,11 @@ export default function TrackOrderPage() {
               <Button
                 type="submit"
                 disabled={trackOrderMutation.isPending}
-                className="w-full bg-[#003d29] hover:bg-[#002a1c] text-white"
+                className="w-full h-12 text-base font-semibold bg-[#003d29] hover:bg-[#002a1c] text-white shadow-md shadow-emerald-900/20 disabled:opacity-50"
               >
                 {trackOrderMutation.isPending ? "Tracking..." : "Track Status"}
               </Button>
+
             </form>
           </CardContent>
         </Card>
@@ -222,11 +223,10 @@ export default function TrackOrderPage() {
                           className="flex flex-col items-center relative z-10 w-1/4"
                         >
                           <div
-                            className={`size-12 rounded-full flex items-center justify-center transition-colors duration-300 ${
-                              isCompleted
-                                ? "bg-[#beef63] text-[#003d29]"
-                                : "bg-white border-2 border-gray-100 text-gray-300"
-                            }`}
+                            className={`size-12 rounded-full flex items-center justify-center transition-colors duration-300 ${isCompleted
+                              ? "bg-[#beef63] text-[#003d29]"
+                              : "bg-white border-2 border-gray-100 text-gray-300"
+                              }`}
                           >
                             <step.icon
                               className={`size-6 ${isActive ? "animate-pulse" : ""}`}
@@ -310,11 +310,10 @@ export default function TrackOrderPage() {
                           className="flex items-start gap-4 relative z-10"
                         >
                           <div
-                            className={`size-8 rounded-full flex items-center justify-center ${
-                              isCompleted
-                                ? "bg-[#beef63] text-[#003d29]"
-                                : "bg-white border-2 border-gray-100 text-gray-300"
-                            }`}
+                            className={`size-8 rounded-full flex items-center justify-center ${isCompleted
+                              ? "bg-[#beef63] text-[#003d29]"
+                              : "bg-white border-2 border-gray-100 text-gray-300"
+                              }`}
                           >
                             <step.icon className="size-4" />
                           </div>

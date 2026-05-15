@@ -1,3 +1,8 @@
+"use client";
+
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { useContactUs, ContactUsData } from "@/hooks/api/queries";
 import {
   Card,
   CardContent,
@@ -11,6 +16,24 @@ import { Label } from "@/components/ui/label";
 import { Mail01Icon, CallIcon, Location01Icon } from "hugeicons-react";
 
 export default function ContactPage() {
+  const contactMutation = useContactUs();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ContactUsData>();
+
+  const onSubmit = async (data: ContactUsData) => {
+    try {
+      await contactMutation.mutateAsync(data);
+      toast.success("Message sent successfully! We'll get back to you soon.");
+      reset();
+    } catch (error: any) {
+      toast.error(error.message || "Failed to send message. Please try again.");
+    }
+  };
+
   return (
     <main className="container mx-auto max-w-6xl px-4 py-12">
       <div className="space-y-4 text-center mb-12">
@@ -78,30 +101,63 @@ export default function ContactPage() {
               <CardTitle>Send us a Message</CardTitle>
             </CardHeader>
             <CardContent>
-              <form className="space-y-6">
+              <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <FloatingInput id="first-name" label="First Name" />
+                    <FloatingInput 
+                      id="first-name" 
+                      label="First Name" 
+                      {...register("firstName", { required: "First name is required" })}
+                    />
+                    {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName.message}</p>}
                   </div>
                   <div className="space-y-2">
-                    <FloatingInput id="last-name" label="Last Name" />
+                    <FloatingInput 
+                      id="last-name" 
+                      label="Last Name" 
+                      {...register("lastName", { required: "Last name is required" })}
+                    />
+                    {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName.message}</p>}
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <FloatingInput id="email" type="email" label="Email Address" />
+                  <FloatingInput 
+                    id="email" 
+                    type="email" 
+                    label="Email Address" 
+                    {...register("email", { 
+                      required: "Email is required",
+                      pattern: {
+                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                        message: "Invalid email address",
+                      }
+                    })}
+                  />
+                  {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
                 </div>
                 <div className="space-y-2">
-                  <FloatingInput id="subject" label="Subject" />
+                  <FloatingInput 
+                    id="subject" 
+                    label="Subject" 
+                    {...register("subject", { required: "Subject is required" })}
+                  />
+                  {errors.subject && <p className="text-red-500 text-sm">{errors.subject.message}</p>}
                 </div>
                 <div className="space-y-2">
                   <FloatingTextarea
                     id="message"
                     label="Message"
                     className="min-h-[150px]"
+                    {...register("message", { required: "Message is required" })}
                   />
+                  {errors.message && <p className="text-red-500 text-sm">{errors.message.message}</p>}
                 </div>
-                <Button className="w-full bg-[#003d29] hover:bg-[#002a1c] text-white">
-                  Send Message
+                <Button
+                  type="submit"
+                  disabled={contactMutation.isPending}
+                  className="w-full h-12 text-base font-semibold bg-[#003d29] hover:bg-[#002a1c] text-white shadow-md shadow-emerald-900/20 disabled:opacity-50"
+                >
+                  {contactMutation.isPending ? "Sending..." : "Send Message"}
                 </Button>
               </form>
             </CardContent>
