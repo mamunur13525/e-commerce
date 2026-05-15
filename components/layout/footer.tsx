@@ -182,7 +182,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/track-order"
                   className="text-sm text-gray-700 hover:text-amber-500 transition-colors"
                 >
                   Track orders
@@ -190,7 +190,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/contact"
                   className="text-sm text-gray-700 hover:text-amber-500 transition-colors"
                 >
                   Contact us

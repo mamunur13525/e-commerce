@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FloatingInput } from "@/components/ui/floating-input";
 import GoogleLogin from "@/components/auth/GoogleLogin";
 import { useLogin } from "@/hooks/api/queries";
 import { useAuthStore } from "@/store/auth-store";
@@ -88,14 +87,11 @@ export default function LoginPage({ onClose }: { onClose: () => void }) {
 
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="space-y-2">
-          <Label htmlFor="email" className="font-medium">
-            Email
-          </Label>
-          <Input
+          <FloatingInput
             id="email"
             type="email"
-            placeholder="sellostore@company.com"
-            className="h-12 bg-white border-gray-200"
+            label="Email"
+            className="bg-white border-gray-200"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -103,15 +99,12 @@ export default function LoginPage({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password" className="font-medium">
-            Password
-          </Label>
           <div className="relative">
-            <Input
+            <FloatingInput
               id="password"
               type={showPassword ? "text" : "password"}
-              placeholder="••••••••"
-              className="h-12 bg-white border-gray-200 pr-10"
+              label="Password"
+              className="bg-white border-gray-200 pr-10"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

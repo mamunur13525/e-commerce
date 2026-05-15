@@ -14,9 +14,9 @@ import {
 } from "@/components/ui/select";
 import { countries } from "@/lib/countries";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { FloatingInput } from "@/components/ui/floating-input";
+import { FloatingTextarea } from "@/components/ui/floating-textarea";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Card,
   CardContent,
@@ -342,78 +342,61 @@ export default function BecomeSellerPage() {
               <FieldGroup>
                 {/* Store Name */}
                 <Field>
-                  <FieldLabel htmlFor="storeName">
-                    Store Name <span className="text-red-500">*</span>
-                  </FieldLabel>
-                  <div className="relative">
-                    <Store04Icon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                    <Input
-                      id="storeName"
-                      {...register("storeName", {
-                        required: "Store name is required",
-                        validate: (value) =>
-                          !!value?.trim() || "Store name is required",
-                      })}
-                      placeholder="Enter your store name"
-                      className={`pl-10 ${errors.storeName
-                        ? "border-red-500 focus-visible:ring-red-500"
-                        : ""
-                        }`}
-                    />
-                  </div>
+                  <FloatingInput
+                    id="storeName"
+                    label="Store Name *"
+                    startIcon={<Store04Icon className="size-5" />}
+                    {...register("storeName", {
+                      required: "Store name is required",
+                      validate: (value) =>
+                        !!value?.trim() || "Store name is required",
+                    })}
+                    className={`${errors.storeName
+                      ? "border-red-500 focus-visible:ring-red-500"
+                      : ""
+                      }`}
+                  />
                   <FieldError>{errors.storeName?.message}</FieldError>
                 </Field>
 
                 {/* Description */}
                 <Field>
-                  <FieldLabel htmlFor="description">
-                    Store Description
-                  </FieldLabel>
-                  <Textarea
+                  <FloatingTextarea
                     id="description"
+                    label="Store Description"
                     {...register("description")}
-                    placeholder="Describe your store, what products you sell, and what makes your store unique..."
                     rows={4}
                   />
                 </Field>
 
                 {/* Phone */}
                 <Field>
-                  <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
-                  <div className="relative">
-                    <CallIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                    <Input
-                      id="phone"
-                      type="tel"
-                      {...register("phone")}
-                      placeholder="+1 (555) 000-0000"
-                      className="pl-10"
-                    />
-                  </div>
+                  <FloatingInput
+                    id="phone"
+                    type="tel"
+                    label="Phone Number"
+                    startIcon={<CallIcon className="size-5" />}
+                    {...register("phone")}
+                  />
                 </Field>
 
                 {/* Address */}
                 <Field>
-                  <FieldLabel htmlFor="address">Address</FieldLabel>
-                  <div className="relative">
-                    <Location01Icon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                    <Input
-                      id="address"
-                      {...register("address")}
-                      placeholder="Street address"
-                      className="pl-10"
-                    />
-                  </div>
+                  <FloatingInput
+                    id="address"
+                    label="Address"
+                    startIcon={<Location01Icon className="size-5" />}
+                    {...register("address")}
+                  />
                 </Field>
 
                 {/* City & Country */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Field>
-                    <FieldLabel htmlFor="city">City</FieldLabel>
-                    <Input
+                    <FloatingInput
                       id="city"
+                      label="City"
                       {...register("city")}
-                      placeholder="City"
                     />
                   </Field>
                   <Field>
@@ -443,17 +426,13 @@ export default function BecomeSellerPage() {
 
                 {/* Website */}
                 <Field>
-                  <FieldLabel htmlFor="website">Website (optional)</FieldLabel>
-                  <div className="relative">
-                    <GlobalIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                    <Input
-                      id="website"
-                      type="url"
-                      {...register("website")}
-                      placeholder="https://yourwebsite.com"
-                      className="pl-10"
-                    />
-                  </div>
+                  <FloatingInput
+                    id="website"
+                    type="url"
+                    label="Website (optional)"
+                    startIcon={<GlobalIcon className="size-5" />}
+                    {...register("website")}
+                  />
                 </Field>
               </FieldGroup>
 

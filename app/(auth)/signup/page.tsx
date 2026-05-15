@@ -4,8 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FloatingInput } from "@/components/ui/floating-input";
 import GoogleLogin from "@/components/auth/GoogleLogin";
 import { useSignup, useSendOtp } from "@/hooks/api/queries";
 import { useAuthStore } from "@/store/auth-store";
@@ -100,14 +99,11 @@ export default function SignupPage() {
       {step === "details" ? (
         <form className="space-y-6" onSubmit={handleSendOtp}>
           <div className="space-y-2">
-            <Label htmlFor="first-name" className="font-medium">
-              First Name
-            </Label>
-            <Input
+            <FloatingInput
               id="first-name"
               type="text"
-              placeholder="John"
-              className="h-12 bg-white border-gray-200"
+              label="First Name"
+              className="bg-white border-gray-200"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               required
@@ -115,14 +111,11 @@ export default function SignupPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="last-name" className="font-medium">
-              Last Name
-            </Label>
-            <Input
+            <FloatingInput
               id="last-name"
               type="text"
-              placeholder="Doe"
-              className="h-12 bg-white border-gray-200"
+              label="Last Name"
+              className="bg-white border-gray-200"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               required
@@ -130,14 +123,11 @@ export default function SignupPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email" className="font-medium">
-              Email
-            </Label>
-            <Input
+            <FloatingInput
               id="email"
               type="email"
-              placeholder="john@example.com"
-              className="h-12 bg-white border-gray-200"
+              label="Email"
+              className="bg-white border-gray-200"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -145,15 +135,12 @@ export default function SignupPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password" className="font-medium">
-              Password
-            </Label>
             <div className="relative">
-              <Input
+              <FloatingInput
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
-                className="h-12 bg-white border-gray-200 pr-10"
+                label="Password"
+                className="bg-white border-gray-200 pr-10"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -206,15 +193,12 @@ export default function SignupPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirm-password" className="font-medium">
-              Confirm Password
-            </Label>
             <div className="relative">
-              <Input
+              <FloatingInput
                 id="confirm-password"
                 type={showConfirmPassword ? "text" : "password"}
-                placeholder="••••••••"
-                className="h-12 bg-white border-gray-200 pr-10"
+                label="Confirm Password"
+                className="bg-white border-gray-200 pr-10"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
@@ -294,14 +278,11 @@ export default function SignupPage() {
       ) : (
         <form className="space-y-6" onSubmit={handleVerifySignup}>
           <div className="space-y-2">
-            <Label htmlFor="otp" className="font-medium">
-              One-Time Password
-            </Label>
-            <Input
+            <FloatingInput
               id="otp"
               type="text"
-              placeholder="Enter 6-digit OTP"
-              className="h-12 bg-white border-gray-200 text-center text-xl tracking-widest"
+              label="One-Time Password"
+              className="bg-white border-gray-200 tracking-widest text-center"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
               required

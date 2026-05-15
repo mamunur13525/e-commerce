@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
 export function useGetOrders(token: string | null, status?: string) {
@@ -29,5 +29,17 @@ export function useGetOrderDetails(orderId: string, token: string | null) {
       return data.data;
     },
     enabled: !!token && !!orderId,
+  });
+}
+
+export function useTrackOrder() {
+  return useMutation({
+    mutationFn: async ({ orderId, email }: { orderId: string; email: string }) => {
+      const { data } = await axios.post("/api/track-order", {
+        orderId,
+        email,
+      });
+      return data.data;
+    },
   });
 }
