@@ -50,6 +50,17 @@ interface SortByCategoryProductsProps {
 function SortByCategoryProducts({ categories, activeCategory, onCategoryChange }: SortByCategoryProductsProps) {
   return (
     <div className="flex items-center gap-3 overflow-x-auto py-3 scrollbar-hide -mx-6 px-6 md:mx-0 md:px-0 mb-5">
+      <Button
+        onClick={() => onCategoryChange("")}
+        className={cn(
+          "cursor-pointer px-6 py-2.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all border duration-200",
+          activeCategory === ''
+            ? "hover:bg-[#003d29] bg-[#003d29] text-white   border-[#003d29]"
+            : "shadow shadow-zinc-300/10 bg-white text-gray-600 hover:bg-gray-50  border-gray-100/50"
+        )}
+      >
+        All
+      </Button>
       {categories.map((category) => (
         <Button
           key={category.slug}

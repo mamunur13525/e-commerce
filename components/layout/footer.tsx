@@ -7,14 +7,13 @@ import {
   GiftIcon,
 } from "hugeicons-react";
 import Image from "next/image";
-import { Button } from "../ui/button";
 import { toast } from "sonner";
 
 export function Footer() {
   return (
     <footer className="bg-[#fdf9ed]  text-gray-900 border-t border-gray-100">
       <div className="container mx-auto px-4 ">
-        <div className="py-16 grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-5">
+        <div className="py-16 flex items-start flex-wrap justify-between">
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <Link href="/" className="mb-6 flex items-center gap-2">
@@ -45,8 +44,7 @@ export function Footer() {
               <span className="text-2xl font-bold text-[#003d29]">Gromuse</span>
             </Link>
             <p className="mb-8 max-w-sm text-sm leading-relaxed text-gray-700">
-              Amet minim mollit non deserunt ullamco est sit aliqua dolor do
-              amet sint. Velit officia consequat duis enim velit mollit.
+              A fast, secure, and easy-to-use online marketplace connecting buyers and sellers for everything you need.
             </p>
 
             <div className="space-y-4">
@@ -98,105 +96,75 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Links Columns */}
-          <div>
-            <h4 className="mb-6 font-semibold">Department</h4>
-            <ul className="space-y-4 text-sm text-gray-700">
-              {[
-                "Fashion",
-                "Education Product",
-                "Frozen Food",
-                "Beverages",
-                "Organic Grocery",
-                "Office Supplies",
-                "Beauty Products",
-              ].map((item) => (
-                <li key={item}>
-                  <Link
-                    href="#"
-                    className="hover:text-amber-500 transition-colors"
-                  >
-                    {item}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <div className="flex items-start gap-10">
 
-          <div>
-            <h4 className="mb-6 font-semibold">About us</h4>
-            <ul className="space-y-4 text-sm text-gray-700">
-              {[
-                "About shopcart",
-                "Careers",
-                "News & Blog",
-                "Help",
-                "Press Center",
-              ].map((item) => (
-                <li key={item}>
-                  <Link
-                    href="#"
-                    className="hover:text-amber-500 transition-colors"
-                  >
-                    {item}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+            <div className="ml-auto">
+              <h4 className="mb-6 font-semibold">About us</h4>
+              <ul className="space-y-4 text-sm text-gray-700">
+                {[
+                  "About",
+                  "Help"
+                ].map((item) => (
+                  <li key={item}>
+                    <Link
+                      href="#"
+                      className="hover:text-amber-500 transition-colors"
+                    >
+                      {item}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          <div>
-            <h4 className="mb-6 font-semibold">Services</h4>
-            <ul className="space-y-4 text-sm text-gray-700">
-              {[
-                "Gift Card",
-                "Mobile App",
-                "Shipping & Delivery",
-                "Order Pickup",
-              ].map((item) => (
-                <li key={item}>
+            <div>
+              <h4 className="mb-6 font-semibold">Services</h4>
+              <ul className="space-y-4 text-sm text-gray-700">
+                {[
+                  "Gift Card",
+                  "Mobile App",
+                ].map((item) => (
+                  <li key={item}>
+                    <Link
+                      href="#"
+                      className="hover:text-amber-500 transition-colors"
+                    >
+                      {item}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+
+            </div>
+            <div>
+              <h4 className="mb-6 font-semibold">Help</h4>
+              <ul className="space-y-4 text-sm text-gray-700">
+                <li>
                   <Link
-                    href="#"
-                    className="hover:text-amber-500 transition-colors"
+                    href="/return-refund"
+                    className="text-sm text-gray-700 hover:text-amber-500 transition-colors"
                   >
-                    {item}
+                    Return & Refund
                   </Link>
                 </li>
-              ))}
-              <li className="pt-4 font-bold text-gray-900 block">Help</li>
-              <li>
-                <Link
-                  href="#"
-                  className="text-sm text-gray-700 hover:text-amber-500 transition-colors"
-                >
-                  Shopcart Help
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="#"
-                  className="text-sm text-gray-700 hover:text-amber-500 transition-colors"
-                >
-                  Returns
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/track-order"
-                  className="text-sm text-gray-700 hover:text-amber-500 transition-colors"
-                >
-                  Track orders
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className="text-sm text-gray-700 hover:text-amber-500 transition-colors"
-                >
-                  Contact us
-                </Link>
-              </li>
-            </ul>
+                <li>
+                  <Link
+                    href="/track-order"
+                    className="text-sm text-gray-700 hover:text-amber-500 transition-colors"
+                  >
+                    Track orders
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/contact"
+                    className="text-sm text-gray-700 hover:text-amber-500 transition-colors"
+                  >
+                    Contact us
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
         {/* Bottom Bar */}

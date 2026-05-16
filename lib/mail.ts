@@ -1,15 +1,21 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
-const FROM_ADDRESS = "onboarding@resend.dev";
+const FROM_ADDRESS = `Garden Shop <${process.env.SMTP_USER}>`;
 const BRAND_COLOR = "#003d29";
 
 // ─── OTP Email ────────────────────────────────────────────────────────────────
 
 export const sendOtpEmail = async (email: string, otp: string) => {
   try {
-    const { data, error } = await resend.emails.send({
+    const info = await transporter.sendMail({
       from: FROM_ADDRESS,
       to: email,
       subject: "Your OTP for Garden Shop Registration",
@@ -26,9 +32,9 @@ export const sendOtpEmail = async (email: string, otp: string) => {
       `,
     });
 
-    if (error) return { success: false, error };
-    return { success: true, data };
+    return { success: true, data: info };
   } catch (error) {
+    console.error("Error sending OTP email:", error);
     return { success: false, error };
   }
 };
@@ -40,7 +46,7 @@ export const sendPasswordResetEmail = async (
   resetUrl: string
 ) => {
   try {
-    const { data, error } = await resend.emails.send({
+    const info = await transporter.sendMail({
       from: FROM_ADDRESS,
       to: email,
       subject: "Password Reset Request",
@@ -64,9 +70,9 @@ export const sendPasswordResetEmail = async (
       `,
     });
 
-    if (error) return { success: false, error };
-    return { success: true, data };
+    return { success: true, data: info };
   } catch (error) {
+    console.error("Error sending password reset email:", error);
     return { success: false, error };
   }
 };
@@ -140,7 +146,7 @@ export const sendOrderConfirmationEmail = async (
     .join(", ");
 
   try {
-    const { data: resendData, error } = await resend.emails.send({
+    const info = await transporter.sendMail({
       from: FROM_ADDRESS,
       to: email,
       subject: `Order Confirmed – ${orderId}`,
@@ -237,9 +243,9 @@ export const sendOrderConfirmationEmail = async (
       `,
     });
 
-    if (error) return { success: false, error };
-    return { success: true, data: resendData };
+    return { success: true, data: info };
   } catch (error) {
+    console.error("Error sending order confirmation email:", error);
     return { success: false, error };
   }
 };
@@ -256,7 +262,7 @@ export interface ContactUsData {
 
 export const sendContactEmail = async (data: ContactUsData) => {
   try {
-    const { data: resendData, error } = await resend.emails.send({
+    const info = await transporter.sendMail({
       from: FROM_ADDRESS,
       to: data.email,
       subject: `Contact Form Inquiry: ${data.subject}`,
@@ -272,9 +278,9 @@ export const sendContactEmail = async (data: ContactUsData) => {
       `,
     });
 
-    if (error) return { success: false, error };
-    return { success: true, data: resendData };
+    return { success: true, data: info };
   } catch (error) {
+    console.error("Error sending contact email:", error);
     return { success: false, error };
   }
 };

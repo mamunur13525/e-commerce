@@ -112,7 +112,7 @@ function HeroSlide({
           {title.split(" ").slice(3).join(" ")}
         </h1>
         <p className="text-lg md:text-xl max-w-lg text-gray-200">{subtitle}</p>
-        <Link href={ctaLink || "#"}>
+        <Link href={ctaLink || "/shop"}>
           <Button
             style={{
               backgroundColor: btnBgColor,
