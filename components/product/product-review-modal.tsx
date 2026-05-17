@@ -47,11 +47,11 @@ export function ProductReviewModal({ productId, productName }: ProductReviewModa
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger render={
         <Button variant="outline" size="sm" className="rounded-full text-xs h-8">
           Review Product
         </Button>
-      </DialogTrigger>
+      } />
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Review {productName}</DialogTitle>
