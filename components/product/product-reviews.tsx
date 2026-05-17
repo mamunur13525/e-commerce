@@ -33,14 +33,18 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
   const displayedReviews = reviewsData?.data || [];
   const pagination = reviewsData?.pagination;
 
-  const handleFilterChange = (value: string) => {
-    setFilterRating(value);
-    setPage(1);
+  const handleFilterChange = (value: string | null) => {
+    if (value !== null) {
+      setFilterRating(value);
+      setPage(1);
+    }
   };
 
-  const handleSortChange = (value: string) => {
-    setSortOption(value);
-    setPage(1);
+  const handleSortChange = (value: string | null) => {
+    if (value !== null) {
+      setSortOption(value);
+      setPage(1);
+    }
   };
 
   const stats = useMemo(() => {
