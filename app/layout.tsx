@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
-import { Footer } from "@/components/layout/footer";
-import { Navbar } from "@/components/layout/navbar";
+import { ConditionalLayout } from "@/components/layout/conditional-layout";
 import { Toaster } from "@/components/ui/sonner";
 import { CartAnimationProvider } from "@/components/context/cart-animation-context";
 
@@ -48,9 +47,9 @@ export default function RootLayout({
                 color="lab(64.272% 57.1788 90.3583)"
                 showSpinner={false}
               />
-              <Navbar />
-              {children}
-              <Footer />
+              <ConditionalLayout>
+                {children}
+              </ConditionalLayout>
               <Toaster
                 duration={5000}
                 position="bottom-left"

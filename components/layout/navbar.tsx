@@ -29,6 +29,7 @@ import {
   Home01Icon,
   VegetarianFoodIcon,
   FavouriteIcon,
+  DashboardSquare01Icon,
 } from "hugeicons-react";
 import { SearchBar } from "@/components/layout/search-bar";
 import { CartSheet } from "@/components/layout/cart-sheet";
@@ -206,6 +207,17 @@ export function Navbar() {
                       <span>Orders</span>
                     </DropdownMenuItem>
                   </Link>
+                  {(user as any)?.role === "admin" && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <Link href="/admin">
+                        <DropdownMenuItem className="cursor-pointer">
+                          <DashboardSquare01Icon className="mr-2 size-4" />
+                          <span>Admin Dashboard</span>
+                        </DropdownMenuItem>
+                      </Link>
+                    </>
+                  )}
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
