@@ -25,54 +25,6 @@ export function Footer() {
             <p className="mb-8 max-w-sm text-sm leading-relaxed text-gray-700">
               A fast, secure, and easy-to-use online marketplace connecting buyers and sellers for everything you need.
             </p>
-
-            <div className="space-y-4">
-              <h4 className="font-semibold">Accepted Payments</h4>
-              <div className="flex flex-wrap gap-2 items-center">
-                <Image
-                  src="/assets/visa.svg"
-                  alt="Visa"
-                  className="h-10 w-12 p-1"
-                  width={20}
-                  height={20}
-                />
-                <Image
-                  src="/assets/mastercard.svg"
-                  alt="Mastercard"
-                  className="h-10 w-12 p-1"
-                  width={20}
-                  height={20}
-                />
-                <Image
-                  src="/assets/applepay.svg"
-                  alt="Apple Pay"
-                  className="h-10 w-12 bg-black rounded p-1"
-                  width={20}
-                  height={20}
-                />
-                <Image
-                  src="/assets/klarna.svg"
-                  alt="Klarna"
-                  className="h-10 w-20 p-1"
-                  width={20}
-                  height={20}
-                />
-                <Image
-                  src="/assets/tabby.svg"
-                  alt="Tabby"
-                  className="h-10 w-20 p-1"
-                  width={20}
-                  height={20}
-                />
-                <Image
-                  src="/assets/tamara.svg"
-                  alt="Tamara"
-                  className="h-10 w-20 p-1"
-                  width={20}
-                  height={20}
-                />
-              </div>
-            </div>
           </div>
 
           <div className="flex items-start gap-10">

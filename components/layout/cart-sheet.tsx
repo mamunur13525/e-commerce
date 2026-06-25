@@ -59,17 +59,18 @@ export function CartSheet() {
 
   return (
     <Sheet open={isOpen} onOpenChange={handleClose}>
-      <SheetTrigger className="relative p-2 bg-white rounded-full hover:bg-gray-100 transition-colors cursor-pointer outline-none">
+      <SheetTrigger className="relative p-2  transition-colors cursor-pointer outline-none">
         <div
           ref={registerCartIcon}
-          className="relative flex items-center justify-center"
+          className="relative flex items-center justify-center gap-2 group"
         >
-          <ShoppingBasket01Icon className="size-6 text-[#003d29]" />
+          <ShoppingBasket01Icon className="size-6 text-white/90 group-hover:text-white duration-200" />
           {isAuthenticated && displayCartItems.length > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold size-4 flex items-center justify-center rounded-full border-2 border-white">
+            <span className="absolute -top-1 left-4 bg-red-500 text-white text-[10px] font-bold size-4 flex items-center justify-center rounded-full border-2 border-white">
               {displayCartItems.length}
             </span>
           )}
+          <span className="text-white/90 group-hover:text-white duration-200">Cart</span>
         </div>
       </SheetTrigger>
       <SheetContent className="flex flex-col w-full sm:max-w-md p-0 gap-0 ">

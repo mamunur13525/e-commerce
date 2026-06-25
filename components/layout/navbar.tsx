@@ -21,7 +21,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  FlashIcon,
   Menu01Icon,
   ShoppingBasket01Icon,
   UserIcon,
@@ -29,7 +28,6 @@ import {
   Logout01Icon,
   Home01Icon,
   VegetarianFoodIcon,
-  HeartAddIcon,
   FavouriteIcon,
 } from "hugeicons-react";
 import { SearchBar } from "@/components/layout/search-bar";
@@ -72,7 +70,6 @@ export function Navbar() {
   return (
     <header className="bg-[#003d29] backdrop-blur-2xl text-white  sticky top-0 z-50">
       <div className="container mx-auto py-4 flex items-center justify-between gap-4">
-
         {/* Left: Menu & Logo */}
         <div className="flex items-center gap-4">
           {/* Sidebar Trigger */}
@@ -153,14 +150,12 @@ export function Navbar() {
 
                 {/* Separator */}
                 <div className="border-t border-gray-200 my-2" />
-
-
               </div>
             </SheetContent>
           </Sheet>
 
           <Link href="/" className="relative ">
-            <Image className="size-16 w-full" src={logo} alt='logo' />
+            <Image className="size-16 w-full" src={logo} alt="logo" />
           </Link>
         </div>
 
@@ -169,14 +164,10 @@ export function Navbar() {
 
         {/* Right: Actions */}
         <div className="flex items-center gap-6">
-          {/* Delivery Info */}
-          <div className="items-center gap-2 hidden lg:flex text-amber-400 font-medium text-sm">
-            <FlashIcon className="size-5 fill-current" />
-            <span>
-              Order now and get it within{" "}
-              <span className="text-[#d4e157]">15 mint!</span>
-            </span>
-          </div>
+          <Link href="/wishlist" className="group relative flex items-center justify-center gap-2 cursor-pointer">
+            <FavouriteIcon className="size-6 text-white/90 group-hover:text-white duration-200" />
+            <span className="text-white/90 group-hover:text-white duration-200">Wishlist</span>
+          </Link>
 
           <CartSheet />
 
@@ -214,12 +205,6 @@ export function Navbar() {
                       <span>Orders</span>
                     </DropdownMenuItem>
                   </Link>
-                  <Link href="/wishlist">
-                    <DropdownMenuItem className="cursor-pointer">
-                      <HeartAddIcon className="mr-2 size-4" />
-                      <span>Wishlist</span>
-                    </DropdownMenuItem>
-                  </Link>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
@@ -245,7 +230,6 @@ export function Navbar() {
           )}
         </div>
       </div>
-
     </header>
   );
 }
