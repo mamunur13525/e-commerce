@@ -32,7 +32,7 @@ export default function TermsPage() {
                     <CardContent className="space-y-3 text-muted-foreground">
                         <p>
                             Our platform allows customers to browse and purchase high-quality
-                            garden products directly from our e-commerce store.
+                            pocket products directly from our e-commerce store.
                         </p>
 
                         <p>

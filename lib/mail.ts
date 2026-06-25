@@ -8,7 +8,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const FROM_ADDRESS = `Garden Shop <${process.env.SMTP_USER}>`;
+const FROM_ADDRESS = `Pocket Shop <${process.env.SMTP_USER}>`;
 const BRAND_COLOR = "#003d29";
 
 // ─── OTP Email ────────────────────────────────────────────────────────────────
@@ -18,10 +18,10 @@ export const sendOtpEmail = async (email: string, otp: string) => {
     const info = await transporter.sendMail({
       from: FROM_ADDRESS,
       to: email,
-      subject: "Your OTP for Garden Shop Registration",
+      subject: "Your OTP for Pocket Shop Registration",
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 8px;">
-          <h2 style="color: ${BRAND_COLOR};">Welcome to Garden Shop!</h2>
+          <h2 style="color: ${BRAND_COLOR};">Welcome to Pocket Shop!</h2>
           <p>Your One-Time Password (OTP) for account registration is:</p>
           <div style="background-color: #f4f4f5; padding: 16px; text-align: center; border-radius: 8px; margin: 24px 0;">
             <h1 style="color: ${BRAND_COLOR}; font-size: 32px; letter-spacing: 5px; margin: 0;">${otp}</h1>
@@ -237,7 +237,7 @@ export const sendOrderConfirmationEmail = async (
           </div>
 
           <div style="background-color: ${BRAND_COLOR}; padding: 16px; border-radius: 0 0 8px 8px; text-align: center;">
-            <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 0;">© Garden Shop. All rights reserved.</p>
+            <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 0;">© Pocket Shop. All rights reserved.</p>
           </div>
         </div>
       `,

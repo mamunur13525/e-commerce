@@ -7,7 +7,7 @@ export default function NotFound() {
         <div className="flex flex-col items-center justify-center min-h-[80vh] bg-white text-center px-4">
             <div className="relative w-64 h-64 md:w-80 md:h-80 mb-8">
                 <Image
-                    src="/404-character.png"
+                    src="/assets/404-character.png"
                     alt="404 Character"
                     fill
                     className="object-contain"

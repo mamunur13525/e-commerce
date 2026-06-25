@@ -81,10 +81,10 @@ export default function ProductPage() {
   };
 
   const handleBuyNow = () => {
-    if (!isAuthenticated) {
-      openAuthModal();
-      return;
-    }
+    // if (!isAuthenticated) {
+    //   openAuthModal();
+    //   return;
+    // }
 
     router.push(`/checkout?buyNow=${productId}`);
   };

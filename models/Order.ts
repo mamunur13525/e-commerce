@@ -39,7 +39,12 @@ const orderSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
+    },
+    guestInfo: {
+      name: { type: String, required: false },
+      email: { type: String, required: false },
+      phone: { type: String, required: false },
     },
     items: {
       type: [orderItemSchema],

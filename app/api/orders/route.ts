@@ -19,7 +19,7 @@ const TAX_RATE = 0.1; // 10%
 async function validateAndCalculatePromo(
   promoCode: string,
   subtotal: number,
-  userId: string,
+  userId: string | null,
   productIds: string[]
 ): Promise<{
   discount: number;
@@ -41,17 +41,22 @@ async function validateAndCalculatePromo(
   // Check usage limit
   if (promo.maxUsageCount && promo.usageCount >= promo.maxUsageCount) return null;
 
-  // Check if user already used this promo code
-  const alreadyUsed = promo.usedBy?.some((usage: any) => usage.userId === userId);
-  if (alreadyUsed) return null;
+  // Check if user already used this promo code (only for authenticated users)
+  if (userId) {
+    const alreadyUsed = promo.usedBy?.some((usage: any) => usage.userId === userId);
+    if (alreadyUsed) return null;
+  }
 
   // Check minimum order amount
   if (subtotal < promo.minOrderAmount) return null;
 
-  // Check first order restriction
+  // Check first order restriction (only for authenticated users)
   if (promo.applicableToFirstOrder) {
-    const existingOrders = await Order.countDocuments({ user: userId });
-    if (existingOrders > 0) return null;
+    if (userId) {
+      const existingOrders = await Order.countDocuments({ user: userId });
+      if (existingOrders > 0) return null;
+    }
+    // For guest users, we can't check first order, so we allow it
   }
 
   // Check product-specific restriction
@@ -87,25 +92,25 @@ export async function POST(request: NextRequest) {
   try {
     await connectDB();
 
-    // Verify authentication
+    // Verify authentication (optional - guest users can also order)
     const token = request.headers.get("authorization")?.split(" ")[1];
-    if (!token) {
-      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
-    }
+    let userId: string | null = null;
 
-    const decoded = verifyToken(token);
-    if (!decoded) {
-      return NextResponse.json({ success: false, message: "Invalid token" }, { status: 401 });
+    if (token) {
+      const decoded = verifyToken(token);
+      if (decoded) {
+        userId = decoded.userId;
+      }
     }
 
     // Only accept identifiers and choices from the client
     const body = await request.json();
-    const { addressId, paymentMethod, promoCode, itemIds, buyNowProductId, buyNowQuantity } = body;
+    const { addressId, paymentMethod, promoCode, itemIds, buyNowProductId, buyNowQuantity, guestInfo, guestAddress } = body;
 
     // Validate required fields
-    if (!addressId || !paymentMethod) {
+    if (!paymentMethod) {
       return NextResponse.json(
-        { success: false, message: "Missing required fields: addressId, paymentMethod" },
+        { success: false, message: "Missing required field: paymentMethod" },
         { status: 400 }
       );
     }
@@ -117,21 +122,75 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Step 1: Fetch user and resolve delivery address from DB
-    const user = await User.findById(decoded.userId);
-    if (!user) {
-      return NextResponse.json(
-        { success: false, message: "User not found" },
-        { status: 404 }
-      );
+    // Validate guest info if not authenticated
+    if (!userId) {
+      if (!guestInfo || !guestInfo.name || !guestInfo.email || !guestInfo.phone) {
+        return NextResponse.json(
+          { success: false, message: "Guest name, email, and phone are required" },
+          { status: 400 }
+        );
+      }
+      if (!guestAddress || !guestAddress.full_name || !guestAddress.street || !guestAddress.city || !guestAddress.state || !guestAddress.zip) {
+        return NextResponse.json(
+          { success: false, message: "Delivery address fields are required for guest checkout" },
+          { status: 400 }
+        );
+      }
     }
 
-    const deliveryAddress = user.addresses.id(addressId);
-    if (!deliveryAddress) {
-      return NextResponse.json(
-        { success: false, message: "Delivery address not found" },
-        { status: 404 }
-      );
+    // Step 1: Resolve delivery address
+    let deliveryAddressData: {
+      full_name: string;
+      street: string;
+      city: string;
+      state: string;
+      zip: string;
+      country: string;
+    };
+
+    if (userId) {
+      // Authenticated user: fetch address from DB
+      if (!addressId) {
+        return NextResponse.json(
+          { success: false, message: "Missing required field: addressId" },
+          { status: 400 }
+        );
+      }
+
+      const user = await User.findById(userId);
+      if (!user) {
+        return NextResponse.json(
+          { success: false, message: "User not found" },
+          { status: 404 }
+        );
+      }
+
+      const deliveryAddress = user.addresses.id(addressId);
+      if (!deliveryAddress) {
+        return NextResponse.json(
+          { success: false, message: "Delivery address not found" },
+          { status: 404 }
+        );
+      }
+
+      deliveryAddressData = {
+        full_name: deliveryAddress.full_name,
+        street: deliveryAddress.street,
+        city: deliveryAddress.city,
+        state: deliveryAddress.state,
+        zip: deliveryAddress.zip,
+        country: deliveryAddress.country,
+      };
+    } else {
+      // Guest user: use address from request body
+      deliveryAddressData = {
+        full_name: guestAddress.full_name,
+        street: guestAddress.street,
+        city: guestAddress.city,
+        state: guestAddress.state,
+        zip: guestAddress.zip,
+        country: guestAddress.country || "Bangladesh",
+      };
     }
 
     const orderItems: {
@@ -145,7 +204,6 @@ export async function POST(request: NextRequest) {
     }[] = [];
 
     const isDirectBuy = !!buyNowProductId;
-
 
     if (isDirectBuy) {
       const fetchedProduct = await Product.findById(buyNowProductId);
@@ -176,9 +234,17 @@ export async function POST(request: NextRequest) {
         images: fetchedProduct.image,
       });
     } else {
+      // Authenticated user: fetch cart from DB
+      if (!userId) {
+        return NextResponse.json(
+          { success: false, message: "Please log in to order from your cart. For guest checkout, use direct purchase." },
+          { status: 400 }
+        );
+      }
+
       // Step 2: Fetch user's active cart with populated product data
       const cart = await Cart.findOne({
-        user: decoded.userId,
+        user: userId,
         status: "active",
       }).populate("items.product");
 
@@ -261,7 +327,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-
     // Step 4: Compute subtotal from DB prices
     const subtotal = orderItems.reduce(
       (acc, item) => acc + item.price * item.quantity,
@@ -282,7 +347,7 @@ export async function POST(request: NextRequest) {
       const promoResult = await validateAndCalculatePromo(
         promoCode,
         subtotal,
-        decoded.userId,
+        userId,
         productIds
       );
       console.log({ promoResult })
@@ -319,22 +384,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Step 8: Create the main order with items directly
-    const order = new Order({
-      user: decoded.userId,
+    const orderData: Record<string, unknown> = {
+      ...(userId ? { user: userId } : {}),
+      ...(guestInfo ? {
+        guestInfo: {
+          name: guestInfo.name,
+          email: guestInfo.email,
+          phone: guestInfo.phone,
+        }
+      } : {}),
       items: orderItems.map((item) => ({
         product: item.product,
         quantity: item.quantity,
         price: item.price,
         ...(item.variant && { variant: item.variant }),
       })),
-      deliveryAddress: {
-        full_name: deliveryAddress.full_name,
-        street: deliveryAddress.street,
-        city: deliveryAddress.city,
-        state: deliveryAddress.state,
-        zip: deliveryAddress.zip,
-        country: deliveryAddress.country,
-      },
+      deliveryAddress: deliveryAddressData,
       subtotal,
       deliveryFee,
       ...(promoDetails && {
@@ -352,19 +417,21 @@ export async function POST(request: NextRequest) {
       paymentStatus: "unpaid",
       status: "pending",
       orderId: newOrderId,
-    });
+    };
+
+    const order = new Order(orderData);
     console.log({ order })
     await order.save();
 
-    // Step 10: Record promo usage
-    if (promoDiscount > 0 && promoDetails) {
+    // Step 10: Record promo usage (only for authenticated users)
+    if (promoDiscount > 0 && promoDetails && userId) {
       await Promo.findOneAndUpdate(
         { code: promoDetails.code },
         {
           $inc: { usageCount: 1 },
           $push: {
             usedBy: {
-              userId: decoded.userId,
+              userId: userId,
               orderId: order.orderId,
               usedAt: new Date(),
             },
@@ -381,48 +448,48 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      if (!isDirectBuy) {
-        // Remove only the ordered items from the cart (not the entire cart)
+      // Remove ordered items from cart only for authenticated users
+      if (userId && !isDirectBuy) {
         const orderedProductIds = orderItems.map((item) => item.product);
         await Cart.findOneAndUpdate(
-          { user: decoded.userId, status: "active" },
+          { user: userId, status: "active" },
           { $pull: { items: { product: { $in: orderedProductIds } } } }
         );
         // Recalculate cart totals
-        const updatedCart = await Cart.findOne({ user: decoded.userId, status: "active" });
+        const updatedCart = await Cart.findOne({ user: userId, status: "active" });
         if (updatedCart) {
           await updatedCart.save();
         }
       }
 
-      // Send order confirmation email (fire-and-forget — does not block response)
-      const appUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
-      sendOrderConfirmationEmail(user.email, {
-        orderId: newOrderId,
-        orderDetailsUrl: `${appUrl}/account/orders/${order._id}`,
-        customerName: user.name || deliveryAddress.full_name,
-        items: orderItems.map((item) => ({
-          name: item.name || "Product",
-          quantity: item.quantity,
-          price: item.price,
-        })),
-        subtotal,
-        deliveryFee,
-        promoDiscount,
-        taxes,
-        totalPrice,
-        paymentMethod,
-        deliveryAddress: {
-          full_name: deliveryAddress.full_name,
-          street: deliveryAddress.street,
-          city: deliveryAddress.city,
-          state: deliveryAddress.state,
-          zip: deliveryAddress.zip,
-          country: deliveryAddress.country,
-        },
-      }).catch((err) =>
-        console.error("Failed to send order confirmation email:", err)
-      );
+      // Send order confirmation email if we have an email address
+      const customerEmail = userId
+        ? (await User.findById(userId))?.email
+        : guestInfo?.email;
+
+      if (customerEmail) {
+        const appUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+        const userInfo = userId ? await User.findById(userId) : null;
+        sendOrderConfirmationEmail(customerEmail, {
+          orderId: newOrderId,
+          orderDetailsUrl: `${appUrl}/account/orders/${order._id}`,
+          customerName: userInfo?.name || deliveryAddressData.full_name,
+          items: orderItems.map((item) => ({
+            name: item.name || "Product",
+            quantity: item.quantity,
+            price: item.price,
+          })),
+          subtotal,
+          deliveryFee,
+          promoDiscount,
+          taxes,
+          totalPrice,
+          paymentMethod,
+          deliveryAddress: deliveryAddressData,
+        }).catch((err) =>
+          console.error("Failed to send order confirmation email:", err)
+        );
+      }
 
       return NextResponse.json({
         success: true,

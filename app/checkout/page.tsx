@@ -18,6 +18,8 @@ import { useGetAddresses } from "@/hooks/api/addresses";
 import { toast } from "sonner";
 import AddressCard from "@/components/address/AddressCard";
 import AddAddressModalButton from "@/components/address/AddAddressModalButton";
+import { FloatingInput } from "@/components/ui/floating-input";
+import { UserIcon, Mail01Icon, TelephoneIcon } from "hugeicons-react";
 
 function CheckoutContent() {
   const { isAuthenticated, token } = useAuthStore();
@@ -33,6 +35,21 @@ function CheckoutContent() {
   // Handle direct buy ("buyNow")
   const buyNowProductId = searchParams.get("buyNow");
   const [buyNowQuantity, setBuyNowQuantity] = useState(1);
+
+  // Guest info form state
+  const [guestInfo, setGuestInfo] = useState({
+    name: "",
+    email: "",
+    phone: "",
+  });
+  const [guestAddress, setGuestAddress] = useState({
+    full_name: "",
+    street: "",
+    city: "",
+    state: "",
+    zip: "",
+    country: "Bangladesh",
+  });
 
   // Queries
   const { data: cartItems = [], isLoading: isCartLoading } = useGetCart(
@@ -97,32 +114,65 @@ function CheckoutContent() {
   const total = subtotal + deliveryFee - promoDiscount + taxes;
 
   const handleConfirmOrder = async () => {
-    if (!selectedAddress) {
-      toast.error("Please select a delivery address.");
-      return;
-    }
-
     if (checkoutItems.length === 0) {
       toast.error("No items selected for checkout.");
       return;
     }
 
+    if (isAuthenticated) {
+      if (!selectedAddress) {
+        toast.error("Please select a delivery address.");
+        return;
+      }
+    } else {
+      // Validate guest info
+      if (!guestInfo.name.trim()) {
+        toast.error("Please enter your name.");
+        return;
+      }
+      if (!guestInfo.email.trim()) {
+        toast.error("Please enter your email.");
+        return;
+      }
+      if (!guestInfo.phone.trim()) {
+        toast.error("Please enter your phone number.");
+        return;
+      }
+      // Validate guest address
+      if (!guestAddress.full_name.trim() || !guestAddress.street.trim() || !guestAddress.city.trim() || !guestAddress.state.trim() || !guestAddress.zip.trim()) {
+        toast.error("Please fill in all delivery address fields.");
+        return;
+      }
+    }
+
     setIsConfirming(true);
 
     try {
+      const body: Record<string, unknown> = {
+        paymentMethod: "COD",
+        ...(appliedPromo?.code && { promoCode: appliedPromo.code }),
+        ...(isDirectBuy && { buyNowProductId, buyNowQuantity }),
+        ...(!isDirectBuy && selectedItemIds && { itemIds: selectedItemIds }),
+      };
+
+      if (isAuthenticated) {
+        body.addressId = selectedAddress!._id;
+      } else {
+        body.guestInfo = guestInfo;
+        body.guestAddress = guestAddress;
+      }
+
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
       const response = await fetch("/api/orders", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          addressId: selectedAddress._id,
-          paymentMethod: "COD",
-          ...(appliedPromo?.code && { promoCode: appliedPromo.code }),
-          ...(isDirectBuy && { buyNowProductId, buyNowQuantity }),
-          ...(!isDirectBuy && selectedItemIds && { itemIds: selectedItemIds }),
-        }),
+        headers,
+        body: JSON.stringify(body),
       });
 
       const data = await response.json();
@@ -180,29 +230,6 @@ function CheckoutContent() {
     );
   };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50 p-4 md:p-8 flex items-center justify-center">
-        <Card className="border-none shadow-sm">
-          <CardContent className="pt-6">
-            <p className="text-center text-gray-500 mb-4">
-              Please log in to checkout
-            </p>
-            <Link
-              href="/login?callbackUrl=%2Fcheckout"
-              className={cn(
-                buttonVariants(),
-                "w-full bg-[#003d29] hover:bg-[#002a1c] text-white",
-              )}
-            >
-              Go to Login
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   const isLoading = (!isDirectBuy && isCartLoading) || (isDirectBuy && isProductLoading);
 
   if (isLoading) {
@@ -239,35 +266,130 @@ function CheckoutContent() {
       <CheckoutProgress currentStep={2} />
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
+          {/* Guest Info Form - only for non-authenticated users */}
+          {!isAuthenticated && (
+            <Card className="border-none shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-xl font-bold text-[#003d29]">
+                  Your Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <FloatingInput
+                  id="guest-name"
+                  label="Full Name"
+                  value={guestInfo.name}
+                  onChange={(e) => setGuestInfo({ ...guestInfo, name: e.target.value })}
+                  startIcon={<UserIcon className="size-5" />}
+                  required
+                />
+                <FloatingInput
+                  id="guest-email"
+                  label="Email Address"
+                  type="email"
+                  value={guestInfo.email}
+                  onChange={(e) => setGuestInfo({ ...guestInfo, email: e.target.value })}
+                  startIcon={<Mail01Icon className="size-5" />}
+                  required
+                />
+                <FloatingInput
+                  id="guest-phone"
+                  label="Phone Number"
+                  type="tel"
+                  value={guestInfo.phone}
+                  onChange={(e) => setGuestInfo({ ...guestInfo, phone: e.target.value })}
+                  startIcon={<TelephoneIcon className="size-5" />}
+                  required
+                />
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Delivery Address Section */}
           <Card className="border-none shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-xl font-bold text-[#003d29]">
                 Delivery information
               </CardTitle>
-              <button
-                onClick={() => setIsAddressModalOpen(true)}
-                className="flex items-center gap-1 text-[#d48c00] text-sm font-medium hover:underline cursor-pointer"
-              >
-                <Edit02Icon className="size-4" />
-                Change Address
-              </button>
+              {isAuthenticated && (
+                <button
+                  onClick={() => setIsAddressModalOpen(true)}
+                  className="flex items-center gap-1 text-[#d48c00] text-sm font-medium hover:underline cursor-pointer"
+                >
+                  <Edit02Icon className="size-4" />
+                  Change Address
+                </button>
+              )}
             </CardHeader>
             <CardContent>
-              <div>
-                <p className="font-semibold text-[#003d29] mb-2">Delivery to</p>
-                <div className="w-full">
-                  {selectedAddress ? (
-                    <AddressCard address={selectedAddress} deleteIcon={false} />
-                  ) : (
-                    <>
-                      <p className="text-gray-500 text-sm mt-1 mb-2">
-                        No address selected. Click &quot;Add Address&quot; to choose one.
-                      </p>
-                      <AddAddressModalButton />
-                    </>
-                  )}
+              {isAuthenticated ? (
+                <div>
+                  <p className="font-semibold text-[#003d29] mb-2">Delivery to</p>
+                  <div className="w-full">
+                    {selectedAddress ? (
+                      <AddressCard address={selectedAddress} deleteIcon={false} />
+                    ) : (
+                      <>
+                        <p className="text-gray-500 text-sm mt-1 mb-2">
+                          No address selected. Click "Add Address" to choose one.
+                        </p>
+                        <AddAddressModalButton />
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-4">
+                  <p className="font-semibold text-[#003d29] mb-2">Delivery Address</p>
+                  <FloatingInput
+                    id="delivery-full-name"
+                    label="Full Name"
+                    value={guestAddress.full_name}
+                    onChange={(e) => setGuestAddress({ ...guestAddress, full_name: e.target.value })}
+                    startIcon={<UserIcon className="size-5" />}
+                    required
+                  />
+                  <FloatingInput
+                    id="delivery-street"
+                    label="Street Address"
+                    value={guestAddress.street}
+                    onChange={(e) => setGuestAddress({ ...guestAddress, street: e.target.value })}
+                    startIcon={<Edit02Icon className="size-5" />}
+                    required
+                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <FloatingInput
+                      id="delivery-city"
+                      label="City"
+                      value={guestAddress.city}
+                      onChange={(e) => setGuestAddress({ ...guestAddress, city: e.target.value })}
+                      required
+                    />
+                    <FloatingInput
+                      id="delivery-state"
+                      label="State"
+                      value={guestAddress.state}
+                      onChange={(e) => setGuestAddress({ ...guestAddress, state: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FloatingInput
+                      id="delivery-zip"
+                      label="ZIP Code"
+                      value={guestAddress.zip}
+                      onChange={(e) => setGuestAddress({ ...guestAddress, zip: e.target.value })}
+                      required
+                    />
+                    <FloatingInput
+                      id="delivery-country"
+                      label="Country"
+                      value={guestAddress.country}
+                      onChange={(e) => setGuestAddress({ ...guestAddress, country: e.target.value })}
+                    />
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -466,12 +588,14 @@ function CheckoutContent() {
         </div>
       </div>
 
-      <AddressModal
-        open={isAddressModalOpen}
-        onOpenChange={setIsAddressModalOpen}
-        addresses={addressesData || []}
-        isLoading={isAddressesLoading}
-      />
+      {isAuthenticated && (
+        <AddressModal
+          open={isAddressModalOpen}
+          onOpenChange={setIsAddressModalOpen}
+          addresses={addressesData || []}
+          isLoading={isAddressesLoading}
+        />
+      )}
     </div>
   );
 }

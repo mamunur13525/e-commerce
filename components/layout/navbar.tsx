@@ -36,7 +36,8 @@ import { useAuthStore } from "@/store/auth-store";
 import { toast } from "sonner";
 import { useState } from "react";
 import Image from "next/image";
-import logo from "@/public/assets/logo.png";
+import logo from "@/public/assets/logo2.png";
+import { FavouriteFreeIcons } from "@hugeicons/core-free-icons";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -155,7 +156,7 @@ export function Navbar() {
           </Sheet>
 
           <Link href="/" className="relative ">
-            <Image className="size-16 w-full" src={logo} alt="logo" />
+            <Image className="size-12 w-full" src={logo} alt="logo" />
           </Link>
         </div>
 

@@ -6,7 +6,7 @@ import { PromoBanners } from "@/components/home/promo-banners";
 import { ProductSection } from "@/components/home/product-section";
 import { DiscountGrid } from "@/components/home/discount-grid";
 import { ServicesSection } from "@/components/home/services-section";
-import { DownloadAppBanner } from "@/components/home/download-app";
+import { ConnectWithUs } from "@/components/home/connect-with-us";
 import { useMetadata } from "@/hooks";
 import { LoadingScreen } from "@/components/loading";
 import { Suspense } from "react";
@@ -41,7 +41,7 @@ function HomeContent() {
         title="Weekly best selling items"
         isShowingCategoryFilter={true}
       />
-      <DownloadAppBanner />
+      <ConnectWithUs />
       <ProductSection title="You might need" />
       <DiscountGrid discountCards={metadata.discout_cards} />
       <ProductSection title="You might need" />
