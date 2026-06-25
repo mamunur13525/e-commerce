@@ -9,13 +9,13 @@ export default function TermsPage() {
     return (
         <main className="container mx-auto max-w-4xl px-4 py-12">
             <div className="space-y-4 text-center">
-                <h1 className="text-4xl font-bold tracking-tight">
+                <h1 className="text-4xl font-bold tracking-tight text-[#003d29]">
                     Terms & Conditions
                 </h1>
 
                 <p className="text-lg text-muted-foreground">
-                    These Terms & Conditions govern the use of our multi-vendor
-                    e-commerce platform by customers, vendors, and visitors.
+                    These Terms & Conditions govern the use of our e-commerce
+                    platform by customers and visitors.
                 </p>
 
                 <p className="text-sm text-muted-foreground">
@@ -31,9 +31,8 @@ export default function TermsPage() {
 
                     <CardContent className="space-y-3 text-muted-foreground">
                         <p>
-                            Our platform allows independent vendors to list, sell, and manage
-                            products while customers can browse and purchase products from
-                            multiple sellers in one marketplace.
+                            Our platform allows customers to browse and purchase high-quality
+                            garden products directly from our e-commerce store.
                         </p>
 
                         <p>
@@ -69,49 +68,17 @@ export default function TermsPage() {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle>Vendor Responsibilities</CardTitle>
-                    </CardHeader>
-
-                    <CardContent className="space-y-3 text-muted-foreground">
-                        <ul className="list-disc space-y-2 pl-5">
-                            <li>
-                                Vendors are responsible for the accuracy of product listings,
-                                pricing, descriptions, and inventory.
-                            </li>
-
-                            <li>
-                                Vendors must ensure that products comply with applicable laws
-                                and regulations.
-                            </li>
-
-                            <li>
-                                Vendors are responsible for shipping, fulfillment, customer
-                                support, and handling returns when applicable.
-                            </li>
-
-                            <li>
-                                Prohibited, illegal, counterfeit, or harmful products are not
-                                allowed on the platform.
-                            </li>
-                        </ul>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
                         <CardTitle>Orders & Payments</CardTitle>
                     </CardHeader>
 
                     <CardContent className="space-y-3 text-muted-foreground">
                         <p>
-                            All orders are subject to product availability and payment
-                            confirmation.
+                            All orders are subject to product availability and confirmation.
                         </p>
 
                         <p>
-                            Payments are processed securely through third-party payment
-                            providers. We do not store sensitive payment information directly
-                            on our servers.
+                            We offer Cash on Delivery (COD) as our payment method for secure, 
+                            in-person transactions upon receiving your package.
                         </p>
 
                         <p>
@@ -128,13 +95,13 @@ export default function TermsPage() {
 
                     <CardContent className="space-y-3 text-muted-foreground">
                         <p>
-                            Delivery times are estimates and may vary depending on the vendor,
-                            courier service, and location.
+                            Delivery times are estimates and may vary depending on the courier 
+                            service and delivery location.
                         </p>
 
                         <p>
-                            Vendors are responsible for ensuring timely shipment and providing
-                            accurate tracking information where available.
+                            We aim to ensure timely shipment and provide accurate tracking information 
+                            for all orders.
                         </p>
                     </CardContent>
                 </Card>
@@ -146,13 +113,8 @@ export default function TermsPage() {
 
                     <CardContent className="space-y-3 text-muted-foreground">
                         <p>
-                            Return and refund policies may vary between vendors. Customers
-                            should review individual vendor policies before purchasing.
-                        </p>
-
-                        <p>
-                            We reserve the right to mediate disputes between customers and
-                            vendors when necessary.
+                            Please review our standard Return and Refund Policy for details on 
+                            how to request returns, exchanges, or refunds for your purchases.
                         </p>
                     </CardContent>
                 </Card>
@@ -164,11 +126,11 @@ export default function TermsPage() {
 
                     <CardContent className="space-y-3 text-muted-foreground">
                         <ul className="list-disc space-y-2 pl-5">
-                            <li>Fraudulent transactions or chargebacks</li>
+                            <li>Fraudulent transactions or abuse of services</li>
                             <li>Posting misleading or false information</li>
                             <li>Attempting to disrupt platform operations</li>
                             <li>Violating intellectual property rights</li>
-                            <li>Selling restricted or illegal products</li>
+                            <li>Abusing promotional or discount codes</li>
                         </ul>
                     </CardContent>
                 </Card>
@@ -180,15 +142,9 @@ export default function TermsPage() {
 
                     <CardContent className="space-y-3 text-muted-foreground">
                         <p>
-                            Our platform acts as a marketplace connecting buyers and vendors.
-                            We are not directly responsible for vendor products, delivery
-                            delays, or disputes arising between buyers and sellers.
-                        </p>
-
-                        <p>
                             To the maximum extent permitted by law, we are not liable for any
                             indirect, incidental, or consequential damages resulting from the
-                            use of our services.
+                            use of our platform or services.
                         </p>
                     </CardContent>
                 </Card>

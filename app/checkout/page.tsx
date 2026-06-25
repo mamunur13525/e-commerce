@@ -48,7 +48,7 @@ function CheckoutContent() {
   );
 
   const [paymentMethod, setPaymentMethod] = useState<"online" | "cod">(
-    "online",
+    "cod",
   );
   const [appliedPromo, setAppliedPromo] = useState<{
     code: string;
@@ -118,7 +118,7 @@ function CheckoutContent() {
         },
         body: JSON.stringify({
           addressId: selectedAddress._id,
-          paymentMethod: paymentMethod === "online" ? "STRIPE" : "COD",
+          paymentMethod: "COD",
           ...(appliedPromo?.code && { promoCode: appliedPromo.code }),
           ...(isDirectBuy && { buyNowProductId, buyNowQuantity }),
           ...(!isDirectBuy && selectedItemIds && { itemIds: selectedItemIds }),
@@ -131,11 +131,7 @@ function CheckoutContent() {
         throw new Error(data.message || "Failed to confirm order");
       }
 
-      if (paymentMethod === "online" && data.url) {
-        window.location.href = data.url;
-      } else {
-        router.push(`/checkout/success`);
-      }
+      router.push(`/checkout/success`);
     } catch (error: unknown) {
       console.error("Order confirmation error:", error);
       const message = error instanceof Error ? error.message : "Failed to process order. Please try again.";
@@ -321,7 +317,7 @@ function CheckoutContent() {
                                   {item.product?.quantity || "1"}pc
                                 </p>
                                 <p className="text-lg font-bold text-[#003d29] mt-1">
-                                  $
+                                  ৳
                                   {(
                                     (item.product?.final_price || 0) * item.quantity
                                   ).toFixed(2)}
@@ -394,60 +390,14 @@ function CheckoutContent() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-3">
-                <label
-                  onClick={() => setPaymentMethod("online")}
-                  className="flex items-center gap-3 cursor-pointer group w-fit"
-                >
-                  <div
-                    className={cn(
-                      "size-5 rounded-full border flex items-center justify-center",
-                      paymentMethod === "online"
-                        ? "border-red-400"
-                        : "border-gray-300",
-                    )}
-                  >
-                    {paymentMethod === "online" && (
-                      <div className="size-2.5 bg-red-400 rounded-full" />
-                    )}
+                <div className="flex items-center gap-3 w-fit">
+                  <div className="size-5 rounded-full border flex items-center justify-center border-red-400">
+                    <div className="size-2.5 bg-red-400 rounded-full" />
                   </div>
-                  <span
-                    className={cn(
-                      "font-medium",
-                      paymentMethod === "online"
-                        ? "text-[#003d29]"
-                        : "text-gray-500",
-                    )}
-                  >
-                    Online Payment
-                  </span>
-                </label>
-                <label
-                  onClick={() => setPaymentMethod("cod")}
-                  className="flex items-center gap-3 cursor-pointer group w-fit"
-                >
-                  <div
-                    className={cn(
-                      "size-5 rounded-full border flex items-center justify-center",
-                      paymentMethod === "cod"
-                        ? "border-red-400"
-                        : "border-gray-300",
-                    )}
-                  >
-                    {paymentMethod === "cod" && (
-                      <div className="size-2.5 bg-red-400 rounded-full" />
-                    )}
-                  </div>
-                  <span
-                    className={cn(
-                      "font-medium",
-                      paymentMethod === "cod"
-                        ? "text-[#003d29]"
-                        : "text-gray-500",
-                    )}
-                  >
+                  <span className="font-semibold text-[#003d29]">
                     Cash on delivery
                   </span>
-                </label>
+                </div>
               </div>
 
               <PromoCodeInput
@@ -463,42 +413,39 @@ function CheckoutContent() {
                 <div className="flex justify-between text-sm text-gray-500 font-medium">
                   <span>Subtotal</span>
                   <span className="text-[#003d29] font-bold">
-                    $ {subtotal.toFixed(2)}
+                    ৳{subtotal.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm text-gray-500 font-medium">
                   <span>Delivery fee</span>
                   <span className="text-[#003d29] font-bold">
-                    $ {deliveryFee.toFixed(2)}
+                    ৳{deliveryFee.toFixed(2)}
                   </span>
                 </div>
                 {appliedPromo && (
                   <div className="flex justify-between text-sm text-gray-500 font-medium">
                     <span>Promo Discount</span>
                     <span className="text-green-600 font-bold">
-                      -$ {promoDiscount.toFixed(2)}
+                      -৳{promoDiscount.toFixed(2)}
                     </span>
                   </div>
                 )}
                 <div className="flex justify-between text-sm text-gray-500 font-medium">
                   <span>Taxes</span>
                   <span className="text-[#003d29] font-bold">
-                    $ {taxes.toFixed(2)}
+                    ৳{taxes.toFixed(2)}
                   </span>
                 </div>
               </div>
 
               <div className="flex justify-between text-lg font-bold text-[#003d29]">
                 <span>Total</span>
-                <span>$ {total.toFixed(2)}</span>
+                <span>৳{total.toFixed(2)}</span>
               </div>
 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                 <p className="text-sm text-blue-700">
-                  <span className="font-semibold">Payment Method:</span>{" "}
-                  {paymentMethod === "online"
-                    ? "Online Payment"
-                    : "Cash on Delivery"}
+                  <span className="font-semibold">Payment Method:</span> Cash on Delivery
                 </p>
               </div>
 
@@ -512,9 +459,7 @@ function CheckoutContent() {
               >
                 {isConfirming
                   ? "Processing..."
-                  : paymentMethod === "online"
-                    ? "Make order"
-                    : "Confirm order"}
+                  : "Confirm order"}
               </Button>
             </CardContent>
           </Card>

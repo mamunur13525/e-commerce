@@ -44,7 +44,10 @@ export default function RootLayout({
             <CartAnimationProvider>
               <CartAnimationLayer />
               <AuthModal />
-              <NextTopLoader color="lab(64.272% 57.1788 90.3583)" showSpinner={false} />
+              <NextTopLoader
+                color="lab(64.272% 57.1788 90.3583)"
+                showSpinner={false}
+              />
               <Navbar />
               {children}
               <Footer />

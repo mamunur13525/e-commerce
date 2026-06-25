@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          message: `Minimum order amount of $${promo.minOrderAmount} required`,
+          message: `Minimum order amount of ৳${promo.minOrderAmount} required`,
         },
         { status: 400 }
       );

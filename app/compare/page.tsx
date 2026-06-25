@@ -134,27 +134,7 @@ export default function ComparePage() {
         </span>
       ),
     },
-    {
-      label: "Store",
-      render: (product: (typeof items)[0]) => {
-        const storeName =
-          typeof product.store === "string"
-            ? product.store
-            : product.store?.name || "N/A";
-        const storeId =
-          typeof product.store === "object" ? product.store?.id : undefined;
-        return storeId ? (
-          <Link
-            href={`/vendors/${storeId}`}
-            className="text-sm text-[#003d29] hover:underline font-medium"
-          >
-            {storeName}
-          </Link>
-        ) : (
-          <span className="text-sm text-gray-700">{storeName}</span>
-        );
-      },
-    },
+
   ];
 
   return (

@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import {
-  ShoppingBasket01Icon,
   HelpCircleIcon,
   GiftIcon,
 } from "hugeicons-react";
 import Image from "next/image";
 import { toast } from "sonner";
+import logo from "@/public/assets/logo.png";
 
 export function Footer() {
   return (
@@ -18,30 +18,9 @@ export function Footer() {
           <div className="lg:col-span-2">
             <Link href="/" className="mb-6 flex items-center gap-2">
               {/* Logo */}
-              <div className="relative size-8">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-full h-full text-orange-500"
-                >
-                  <path
-                    d="M4 8h16l-2 12H6L4 8z"
-                    fill="currentColor"
-                    stroke="#003d29"
-                    strokeWidth="2"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M12 8V4m0 0l-3 3m3-3l3 3"
-                    stroke="#4ade80"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+              <div className="relative size-24">
+              <Image src={logo} alt={'logo'}/>
               </div>
-              <span className="text-2xl font-bold text-[#003d29]">Gromuse</span>
             </Link>
             <p className="mb-8 max-w-sm text-sm leading-relaxed text-gray-700">
               A fast, secure, and easy-to-use online marketplace connecting buyers and sellers for everything you need.
@@ -171,13 +150,6 @@ export function Footer() {
         <div className="border-t py-6">
           <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 text-sm text-gray-700 md:flex-row">
             <div className="flex gap-6">
-              <Link
-                href="/become-seller"
-                className="flex items-center gap-2 hover:text-[#003d29]"
-              >
-                <ShoppingBasket01Icon className="text-pink-400 size-4" />
-                Become Seller
-              </Link>
               <button
                 onClick={() => toast.warning("Coming soon")}
                 className="flex items-center gap-2 hover:text-[#003d29] bg-transparent hover:bg-transparent hover:border-none text-inherit cursor-pointer"

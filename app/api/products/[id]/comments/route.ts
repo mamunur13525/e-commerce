@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Comment from "@/models/Comment";
 import Product from "@/models/Product";
-import Vendor from "@/models/Vendor";
 import User from "@/models/User";
 import { verifyToken } from "@/lib/jwt";
 import mongoose from "mongoose";
@@ -121,16 +120,12 @@ export async function POST(
       );
     }
 
-    // Check if user is the vendor of this product
-    const vendor = await Vendor.findOne({ userId: decoded.userId });
-    const isVendor = vendor && vendor.vendorId === product.store.id;
-
     const comment = new Comment({
       product: productId,
       user: decoded.userId,
       text,
       parentId: parentId || null,
-      isVendor: !!isVendor,
+      isVendor: false,
     });
 
     await comment.save();

@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/jwt";
 import Order from "@/models/Order";
 import Product from "@/models/Product";
-import SubOrder from "@/models/SubOrder";
 import connectDB from "@/lib/db";
 import mongoose from "mongoose";
 
@@ -38,7 +37,9 @@ export async function GET(
       );
     }
 
-    const order = await Order.findOne({ _id: id, user: decoded.userId }).lean();
+    const order = await Order.findOne({ _id: id, user: decoded.userId })
+      .populate("items.product")
+      .lean();
 
     if (!order) {
       return NextResponse.json(
@@ -47,21 +48,18 @@ export async function GET(
       );
     }
 
-    const subOrderIds = order.subOrderIds || [];
-    const subOrders = await SubOrder.find({ _id: { $in: subOrderIds } }).lean();
-
-      const items = subOrders.flatMap((so: any) => so.products.map((p: any) => ({
+    const items = (order.items || []).map((item: any) => ({
       product: {
-        _id: p.id,
-        name: p.name,
-        image: p.images,
-        price: p.price,
-        discount: p.discount,
+        _id: item.product?._id || item.product,
+        name: item.product?.name || "Product",
+        image: item.product?.image || {},
+        price: item.product?.price || item.price,
+        discount: item.product?.discount || 0,
       },
-      quantity: p.quantity,
-      price: p.price,
-      ...(p.variant && { variant: p.variant }),
-    })));
+      quantity: item.quantity,
+      price: item.price,
+      ...(item.variant && { variant: item.variant }),
+    }));
 
     const formattedOrder = { ...order, items };
 

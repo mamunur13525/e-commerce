@@ -181,7 +181,7 @@ const OrderCard = ({
             </div>
             <div className="text-left sm:text-right">
               <p className="text-lg font-bold text-[#003d29]">
-                ${order.totalPrice.toFixed(2)}
+                ৳{order.totalPrice.toFixed(2)}
               </p>
               <p className="text-xs text-gray-500">
                 {order.items.length} item

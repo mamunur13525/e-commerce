@@ -21,10 +21,6 @@ const commentSchema = new mongoose.Schema(
       ref: "Comment",
       default: null,
     },
-    isVendor: {
-      type: Boolean,
-      default: false,
-    },
   },
   {
     timestamps: true,

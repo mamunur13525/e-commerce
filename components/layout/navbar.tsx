@@ -31,13 +31,14 @@ import {
   VegetarianFoodIcon,
   HeartAddIcon,
   FavouriteIcon,
-  Store04Icon,
 } from "hugeicons-react";
 import { SearchBar } from "@/components/layout/search-bar";
 import { CartSheet } from "@/components/layout/cart-sheet";
 import { useAuthStore } from "@/store/auth-store";
 import { toast } from "sonner";
 import { useState } from "react";
+import Image from "next/image";
+import logo from "@/public/assets/logo.png";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -69,7 +70,7 @@ export function Navbar() {
 
   const handleCloseSidebar = () => setSheetOpen(false);
   return (
-    <nav className="bg-[#003d29] backdrop-blur-2xl text-white  sticky top-0 z-50">
+    <header className="bg-[#003d29] backdrop-blur-2xl text-white  sticky top-0 z-50">
       <div className="container mx-auto py-4 flex items-center justify-between gap-4">
 
         {/* Left: Menu & Logo */}
@@ -85,7 +86,7 @@ export function Navbar() {
             >
               <SheetHeader>
                 <SheetTitle className="text-left px-4 text-xl font-bold text-[#003d29]">
-                  Gromuse
+                  Pocket Shop
                 </SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-4 px-4 mt-8">
@@ -153,45 +154,13 @@ export function Navbar() {
                 {/* Separator */}
                 <div className="border-t border-gray-200 my-2" />
 
-                {/* Become a Seller */}
-                <Link
-                  href="/become-seller"
-                  className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
-                  onClick={handleCloseSidebar}
-                >
-                  <Store04Icon className="size-6 text-[#003d29]" />
-                  Become a Seller
-                </Link>
+
               </div>
             </SheetContent>
           </Sheet>
 
-          <Link href="/" className="flex items-center gap-2">
-            {/* Logo */}
-            <div className="relative size-9">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-full h-full text-orange-500"
-              >
-                <path
-                  d="M4 8h16l-2 12H6L4 8z"
-                  fill="currentColor"
-                  stroke="white"
-                  strokeWidth="2"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M12 8V4m0 0l-3 3m3-3l3 3"
-                  stroke="#4ade80"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <span className="text-xl font-semibold tracking-tight">Gromuse</span>
+          <Link href="/" className="relative ">
+            <Image className="size-16 w-full" src={logo} alt='logo' />
           </Link>
         </div>
 
@@ -277,6 +246,6 @@ export function Navbar() {
         </div>
       </div>
 
-    </nav>
+    </header>
   );
 }

@@ -138,11 +138,11 @@ export function CartSheet() {
                         {item.product?.name || `Product ${item.productId}`}
                       </Link>
                       <p className="text-sm text-gray-500">
-                        ${item.product?.final_price?.toFixed(2) || "0.00"} x{" "}
+                        ৳{item.product?.final_price?.toFixed(2) || "0.00"} x{" "}
                         {item.quantity}
                       </p>
                       <p className="font-bold text-[#003d29]">
-                        $
+                        ৳
                         {(
                           (item.product?.final_price || 0) * item.quantity
                         ).toFixed(2)}
@@ -173,7 +173,7 @@ export function CartSheet() {
           {isAuthenticated && displayCartItems.length > 0 && (
             <div className="flex items-center justify-between text-lg font-bold text-[#003d29]">
               <span>Subtotal</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>৳{subtotal.toFixed(2)}</span>
             </div>
           )}
           <div className="grid grid-cols-2 gap-4">

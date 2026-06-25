@@ -41,9 +41,9 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    subOrderIds: {
-      type: [String],
-      required: [true, "Atleast one sub order id is needed to order."],
+    items: {
+      type: [orderItemSchema],
+      required: [true, "Atleast one order item is needed to order."],
     },
     deliveryAddress: {
       type: deliveryAddressSchema,
@@ -89,17 +89,13 @@ const orderSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      enum: ["COD", "STRIPE"],
+      enum: ["COD"],
       required: true,
     },
     paymentStatus: {
       type: String,
       enum: ["unpaid", "paid", "failed", "refunded"],
       default: "unpaid",
-    },
-    stripeSessionId: {
-      type: String,
-      required: false,
     },
     orderId: {
       type: String,

@@ -48,16 +48,6 @@ const productSchema = new mongoose.Schema({
     images: {
         type: Array,
         required: true
-    },
-    store: {
-        id: {
-            type: String,
-            required: true
-        },
-        name: { // Assuming the unkeyed object was meant to be a 'name' property for the store
-            type: String,
-            required: true
-        }
     }
 },
     {

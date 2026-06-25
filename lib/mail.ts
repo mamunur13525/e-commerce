@@ -130,7 +130,7 @@ export const sendOrderConfirmationEmail = async (
       <tr>
         <td style="padding: 10px 0; border-bottom: 1px solid #f0f0f0;">${item.name}</td>
         <td style="padding: 10px 0; border-bottom: 1px solid #f0f0f0; text-align: center;">${item.quantity}</td>
-        <td style="padding: 10px 0; border-bottom: 1px solid #f0f0f0; text-align: right;">$${(item.price * item.quantity).toFixed(2)}</td>
+        <td style="padding: 10px 0; border-bottom: 1px solid #f0f0f0; text-align: right;">৳${(item.price * item.quantity).toFixed(2)}</td>
       </tr>`
     )
     .join("");
@@ -183,30 +183,30 @@ export const sendOrderConfirmationEmail = async (
               </tbody>
             </table>
 
-            <!-- Price Breakdown -->
+             <!-- Price Breakdown -->
             <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
               <tr>
                 <td style="padding: 6px 0; color: #555;">Subtotal</td>
-                <td style="padding: 6px 0; text-align: right;">$${subtotal.toFixed(2)}</td>
+                <td style="padding: 6px 0; text-align: right;">৳${subtotal.toFixed(2)}</td>
               </tr>
               <tr>
                 <td style="padding: 6px 0; color: #555;">Delivery Fee</td>
-                <td style="padding: 6px 0; text-align: right;">$${deliveryFee.toFixed(2)}</td>
+                <td style="padding: 6px 0; text-align: right;">৳${deliveryFee.toFixed(2)}</td>
               </tr>
               ${promoDiscount > 0
           ? `<tr>
                   <td style="padding: 6px 0; color: #16a34a;">Promo Discount</td>
-                  <td style="padding: 6px 0; text-align: right; color: #16a34a;">-$${promoDiscount.toFixed(2)}</td>
+                  <td style="padding: 6px 0; text-align: right; color: #16a34a;">-৳${promoDiscount.toFixed(2)}</td>
                 </tr>`
           : ""
         }
               <tr>
                 <td style="padding: 6px 0; color: #555;">Taxes</td>
-                <td style="padding: 6px 0; text-align: right;">$${taxes.toFixed(2)}</td>
+                <td style="padding: 6px 0; text-align: right;">৳${taxes.toFixed(2)}</td>
               </tr>
               <tr style="border-top: 2px solid #e5e7eb;">
                 <td style="padding: 12px 0 0; font-weight: bold; font-size: 16px;">Total</td>
-                <td style="padding: 12px 0 0; text-align: right; font-weight: bold; font-size: 16px; color: ${BRAND_COLOR};">$${totalPrice.toFixed(2)}</td>
+                <td style="padding: 12px 0 0; text-align: right; font-weight: bold; font-size: 16px; color: ${BRAND_COLOR};">৳${totalPrice.toFixed(2)}</td>
               </tr>
             </table>
 
@@ -217,9 +217,9 @@ export const sendOrderConfirmationEmail = async (
                 <p style="margin: 0; font-size: 14px;">${deliveryAddress.full_name}</p>
                 <p style="margin: 4px 0 0; font-size: 13px; color: #555;">${addressLine}</p>
               </div>
-              <div style="flex: 1; background: white; border: 1px solid #e5e7eb; border-radius: 6px; padding: 16px;">
+               <div style="flex: 1; background: white; border: 1px solid #e5e7eb; border-radius: 6px; padding: 16px;">
                 <p style="margin: 0 0 4px; font-size: 13px; color: #6b7280;">Payment Method</p>
-                <p style="margin: 0; font-size: 14px; font-weight: bold;">${paymentMethod === "COD" ? "Cash on Delivery" : "Stripe"}</p>
+                <p style="margin: 0; font-size: 14px; font-weight: bold;">Cash on Delivery</p>
               </div>
             </div>
 

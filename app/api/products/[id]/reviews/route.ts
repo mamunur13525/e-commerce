@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Review from "@/models/Review";
-import SubOrder from "@/models/SubOrder";
+import Order from "@/models/Order";
 import Product from "@/models/Product";
 import User from "@/models/User";
 import { verifyToken } from "@/lib/jwt";
@@ -117,9 +117,9 @@ export async function POST(
     }
 
     // Verify if product is purchased and delivered
-    const deliveredOrder = await SubOrder.findOne({
-      userId: decoded.userId,
-      "products.id": productId,
+    const deliveredOrder = await Order.findOne({
+      user: decoded.userId,
+      "items.product": productId,
       status: "delivered",
     });
 

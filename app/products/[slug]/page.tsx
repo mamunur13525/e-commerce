@@ -7,7 +7,7 @@ import Link from "next/link";
 import { StarIcon, ArrowLeft01Icon, Loading03Icon } from "hugeicons-react";
 import { Button } from "@/components/ui/button";
 import { ProductSection } from "@/components/home/product-section";
-import { FeaturedStore } from "@/components/home/featured-store";
+
 import { useCartAnimation } from "@/components/context/cart-animation-context";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -169,12 +169,6 @@ export default function ProductPage() {
   const displayPrice = product.final_price ?? discountedPrice;
 
   const allImages = [product.image, ...(product.images || [])];
-  const storeName =
-    typeof product.store === "string"
-      ? product.store
-      : product.store?.name || "Unknown Store";
-  const storeId =
-    typeof product.store === "object" ? product.store?.id : undefined;
 
   return (
     <main className="min-h-screen bg-white">
@@ -305,17 +299,7 @@ export default function ProductPage() {
 
           {/* Product Info */}
           <div className="space-y-5">
-            {/* Store Name */}
-            {storeId ? (
-              <Link
-                href={`/vendors/${storeId}`}
-                className="text-sm text-[#003d29] hover:underline font-medium"
-              >
-                {storeName}
-              </Link>
-            ) : (
-              <p className="text-sm text-gray-500">{storeName}</p>
-            )}
+
 
             <div>
               {/* Product Title */}
@@ -481,17 +465,7 @@ export default function ProductPage() {
                   <span className="text-gray-600 ml-2">{product.weight}</span>
                 </div>
               )}
-              {storeId && (
-                <div className="text-sm">
-                  <span className="font-semibold text-gray-900">Store:</span>
-                  <Link
-                    href={`/vendors/${storeId}`}
-                    className="text-[#003d29] ml-2 hover:underline font-medium"
-                  >
-                    {storeName}
-                  </Link>
-                </div>
-              )}
+
             </div>
 
             {/* Delivery & Daily Deal Info */}
@@ -524,7 +498,7 @@ export default function ProductPage() {
                     <span className="font-normal text-gray-500">Apply To</span>
                   </h3>
                   <p className="text-sm text-gray-500 mt-1">
-                    All Order Over $100
+                    All Order Over ৳1000
                   </p>
                 </div>
               </div>
@@ -573,7 +547,7 @@ export default function ProductPage() {
           <ProductDiscussion productId={product._id} />
         </div>
 
-        <FeaturedStore />
+
 
         {/* Related Products */}
         <ProductSection title="You might also like" />

@@ -59,7 +59,7 @@ export function PromoCodeInput({
       });
 
       toast.success(
-        `Promo code applied! Discount: $${result.discount.toFixed(2)}`,
+        `Promo code applied! Discount: ৳${result.discount.toFixed(2)}`,
       );
       setPromoCode("");
     } catch (error) {

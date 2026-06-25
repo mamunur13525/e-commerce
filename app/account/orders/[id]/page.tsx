@@ -354,13 +354,13 @@ export default function OrderDetailsPage({
                     )}
                     <div className="flex items-center justify-between mt-1">
                       <p className="font-medium text-[#003d29]">
-                        ${item.price.toFixed(2)}{" "}
+                        ৳{item.price.toFixed(2)}{" "}
                         <span className="text-gray-400 text-sm font-normal ml-1">
                           x {item.quantity}
                         </span>
                       </p>
                       <p className="font-bold text-[#003d29]">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        ৳{(item.price * item.quantity).toFixed(2)}
                       </p>
                     </div>
                     {order.status === "delivered" && (
@@ -396,11 +396,7 @@ export default function OrderDetailsPage({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Payment Method</span>
-                  <span className="font-medium">
-                    {order.paymentMethod === "STRIPE"
-                      ? "Online Payment"
-                      : "Cash on Delivery"}
-                  </span>
+                  <span className="font-medium">Cash on Delivery</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Payment Status</span>
@@ -425,27 +421,27 @@ export default function OrderDetailsPage({
                 <div className="flex justify-between">
                   <span className="text-gray-500">Subtotal</span>
                   <span className="font-medium text-gray-900">
-                    ${order.subtotal.toFixed(2)}
+                    ৳{order.subtotal.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Delivery Fee</span>
                   <span className="font-medium text-gray-900">
-                    ${order.deliveryFee.toFixed(2)}
+                    ৳{order.deliveryFee.toFixed(2)}
                   </span>
                 </div>
                 {order.promoDiscount > 0 && (
                   <div className="flex justify-between">
                     <span className="text-gray-500">Discount</span>
                     <span className="font-medium text-green-600">
-                      -${order.promoDiscount.toFixed(2)}
+                      -৳{order.promoDiscount.toFixed(2)}
                     </span>
                   </div>
                 )}
                 <div className="flex justify-between">
                   <span className="text-gray-500">Taxes</span>
                   <span className="font-medium text-gray-900">
-                    ${order.taxes.toFixed(2)}
+                    ৳{order.taxes.toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -454,7 +450,7 @@ export default function OrderDetailsPage({
 
               <div className="flex justify-between items-center text-lg font-bold text-[#003d29]">
                 <span>Total</span>
-                <span>${order.totalPrice.toFixed(2)}</span>
+                <span>৳{order.totalPrice.toFixed(2)}</span>
               </div>
             </CardContent>
           </Card>

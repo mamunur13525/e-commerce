@@ -226,7 +226,7 @@ export default function CartPage() {
                                     <div className="md:col-span-2 text-center md:text-center flex justify-between md:block">
                                         <span className="md:hidden text-gray-500 font-medium">Price:</span>
                                         <span className="font-semibold text-gray-700">
-                                            ${(item.product?.final_price || 0).toFixed(2)}
+                                            ৳{(item.product?.final_price || 0).toFixed(2)}
                                         </span>
                                     </div>
 
@@ -255,7 +255,7 @@ export default function CartPage() {
                                     <div className="md:col-span-2 text-right md:text-center flex justify-between md:block">
                                         <span className="md:hidden text-gray-500 font-medium">Total:</span>
                                         <span className="font-bold text-[#003d29] text-lg">
-                                            ${((item.product?.final_price || 0) * item.quantity).toFixed(2)}
+                                            ৳{((item.product?.final_price || 0) * item.quantity).toFixed(2)}
                                         </span>
                                     </div>
                                 </div>
@@ -304,7 +304,7 @@ export default function CartPage() {
                                     <p className="text-sm text-gray-500 hidden sm:block">
                                         Subtotal:{" "}
                                         <span className="font-bold text-[#003d29]">
-                                            ${selectedSubtotal.toFixed(2)}
+                                            ৳{selectedSubtotal.toFixed(2)}
                                         </span>
                                     </p>
                                 </>

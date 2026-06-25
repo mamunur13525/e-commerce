@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     const response = await imagekit.files.upload({
       file: base64,
       fileName,
-      folder: folder ?? "/vendors",
+      folder: folder ?? "/products",
       useUniqueFileName: true,
     });
     return NextResponse.json(

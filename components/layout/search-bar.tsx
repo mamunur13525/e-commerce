@@ -287,28 +287,7 @@ export function SearchBar() {
                   </div>
                 )}
 
-                {/* Stores */}
-                {results.stores.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-bold text-[#003d29] mb-4">
-                      Stores
-                    </h3>
-                    <ul className="space-y-3">
-                      {results.stores.map((store, index) => (
-                        <Link
-                          key={index}
-                          href={`/vendors/${store.id}`}
-                          className="flex items-center text-gray-500 cursor-pointer hover:text-orange-500 transition-colors"
-                        >
-                          <span className="font-bold text-gray-900">
-                            {store.name.substring(0, 2)}
-                          </span>
-                          {store.name.substring(2)}
-                        </Link>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+
               </div>
 
               {/* Right Column: Products */}

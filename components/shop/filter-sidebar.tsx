@@ -212,7 +212,7 @@ function FilterSidebarContent() {
             <div className="flex items-center gap-4 mt-2">
               <div className="relative flex-1">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
-                  $
+                  ৳
                 </span>
                 <Input
                   type="number"
@@ -226,7 +226,7 @@ function FilterSidebarContent() {
               <span className="text-sm text-gray-500 font-medium">To</span>
               <div className="relative flex-1">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
-                  $
+                  ৳
                 </span>
                 <Input
                   type="number"
@@ -284,7 +284,7 @@ function FilterSidebarContent() {
           <DeliveryTruck01Icon className="size-6 text-[#003d29] shrink-0" />
           <div>
             <h4 className="font-bold text-[#003d29] text-sm">Free Shipping</h4>
-            <p className="text-xs text-gray-500">On all orders over $100</p>
+            <p className="text-xs text-gray-500">On all orders over ৳1000</p>
           </div>
         </div>
         <div className="flex items-start gap-4">

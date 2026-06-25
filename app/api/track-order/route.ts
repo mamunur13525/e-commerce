@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Order from "@/models/Order";
 import User from "@/models/User";
-import SubOrder from "@/models/SubOrder";
 import connectDB from "@/lib/db";
 
 export async function POST(request: NextRequest) {
@@ -21,7 +20,7 @@ export async function POST(request: NextRequest) {
     // Find the order by orderId
     const order = await Order.findOne({
       orderId: orderId.trim().toUpperCase(),
-    }).lean() as any;
+    }).populate("items.product").lean() as any;
 
     if (!order) {
       return NextResponse.json(
@@ -40,8 +39,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Fetch sub-orders for the items
-    const subOrders = await SubOrder.find({ orderId: order.orderId }).lean();
+    // Format items to look like a sub-order structure for backward-compatibility with UI
+    const subOrders = [
+      {
+        products: (order.items || []).map((item: any) => ({
+          id: item.product?._id?.toString() || item.product?.toString(),
+          name: item.product?.name || "Product",
+          quantity: item.quantity,
+          price: item.product?.price || item.price,
+          discount: item.product?.discount || 0,
+          finalPrice: item.price,
+          images: item.product?.image || {},
+          variant: item.variant,
+        })),
+      },
+    ];
 
     return NextResponse.json({
       success: true,

@@ -5,13 +5,8 @@ import Cart from "@/models/Cart";
 import Product from "@/models/Product";
 import Promo from "@/models/Promo";
 import User from "@/models/User";
-import SubOrder from "@/models/SubOrder";
 import connectDB from "@/lib/db";
-import Stripe from "stripe";
 import { sendOrderConfirmationEmail } from "@/lib/mail";
-
-// Initialize Stripe with secret key
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 // Server-side constants
 const DELIVERY_FEE = 16.0;
@@ -115,9 +110,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!["COD", "STRIPE"].includes(paymentMethod)) {
+    if (paymentMethod !== "COD") {
       return NextResponse.json(
-        { success: false, message: "Invalid payment method" },
+        { success: false, message: "Only Cash on Delivery payment is allowed" },
         { status: 400 }
       );
     }
@@ -147,7 +142,6 @@ export async function POST(request: NextRequest) {
       name?: string;
       discount?: number;
       images?: any;
-      vendorId?: string;
     }[] = [];
 
     const isDirectBuy = !!buyNowProductId;
@@ -180,7 +174,6 @@ export async function POST(request: NextRequest) {
         name: fetchedProduct.name,
         discount: fetchedProduct.discount,
         images: fetchedProduct.image,
-        vendorId: fetchedProduct.store?.id || "default",
       });
     } else {
       // Step 2: Fetch user's active cart with populated product data
@@ -243,7 +236,6 @@ export async function POST(request: NextRequest) {
             name: fetchedProduct.name,
             discount: fetchedProduct.discount,
             images: fetchedProduct.image,
-            vendorId: fetchedProduct.store?.id || "default",
           });
         } else {
           if (product.quantity < cartItem.quantity) {
@@ -264,7 +256,6 @@ export async function POST(request: NextRequest) {
             name: product.name,
             discount: product.discount,
             images: product.image,
-            vendorId: product.store?.id || "default",
           });
         }
       }
@@ -327,57 +318,15 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Step 8: Group products by vendor and create SubOrders
-    const subOrdersByVendor = new Map<string, any[]>();
-    for (const item of orderItems) {
-      const vid = item.vendorId || "default";
-      if (!subOrdersByVendor.has(vid)) {
-        subOrdersByVendor.set(vid, []);
-      }
-      subOrdersByVendor.get(vid)?.push({
-        id: item.product,
-        name: item.name,
-        quantity: item.quantity,
-        discount: item.discount || 0,
-        price: item.price,
-        images: item.images,
-        ...(item.variant && { variant: item.variant }),
-      });
-    }
-
-    const subOrderIds: string[] = [];
-    for (const [vendorId, products] of Array.from(subOrdersByVendor.entries())) {
-      const subOrderProducts = products.map((p: any) => {
-        // p.price is already final_price (post-discount unit price)
-        const finalPrice = p.price * p.quantity;
-        return {
-          ...p,
-          finalPrice: parseFloat(finalPrice.toFixed(2))
-        };
-      });
-
-      const subtotal = subOrderProducts.reduce((acc: number, p: any) => acc + p.finalPrice, 0);
-      const taxes = parseFloat((subtotal * TAX_RATE).toFixed(2));
-      const total = parseFloat((subtotal + taxes).toFixed(2));
-
-      const subOrder = new SubOrder({
-        orderId: newOrderId,
-        userId: decoded.userId,
-        vendorId,
-        products: subOrderProducts,
-        status: "pending",
-        taxes,
-        subtotal,
-        total
-      });
-      await subOrder.save();
-      subOrderIds.push(subOrder._id.toString());
-    }
-
-    // Step 9: Create the main order with subOrderIds
+    // Step 8: Create the main order with items directly
     const order = new Order({
       user: decoded.userId,
-      subOrderIds,
+      items: orderItems.map((item) => ({
+        product: item.product,
+        quantity: item.quantity,
+        price: item.price,
+        ...(item.variant && { variant: item.variant }),
+      })),
       deliveryAddress: {
         full_name: deliveryAddress.full_name,
         street: deliveryAddress.street,
@@ -479,90 +428,6 @@ export async function POST(request: NextRequest) {
         success: true,
         message: "Order placed successfully",
         orderId: order._id,
-      });
-    } else if (paymentMethod === "STRIPE") {
-      // Build Stripe line items from DB product data
-      const populatedOrderItems = await Promise.all(
-        orderItems.map(async (item) => {
-          const product = await Product.findById(item.product);
-          return { ...item, productName: product?.name || `Product` };
-        })
-      );
-
-      const origin = request.headers.get("origin") || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
-
-      const stripeLineItems = populatedOrderItems.map((item) => ({
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: item.productName,
-          },
-          unit_amount: Math.round(item.price * 100), // item.price is final_price (post-discount), Stripe expects cents
-        },
-        quantity: item.quantity,
-      }));
-
-      if (deliveryFee > 0) {
-        stripeLineItems.push({
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: "Delivery Fee",
-            },
-            unit_amount: Math.round(deliveryFee * 100),
-          },
-          quantity: 1,
-        });
-      }
-
-      if (taxes > 0) {
-        stripeLineItems.push({
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: "Tax",
-            },
-            unit_amount: Math.round(taxes * 100),
-          },
-          quantity: 1,
-        });
-      }
-
-      let stripeDiscounts = undefined;
-      if (promoDiscount > 0) {
-        const coupon = await stripe.coupons.create({
-          amount_off: Math.round(promoDiscount * 100),
-          currency: "usd",
-          duration: "once",
-          name: promoDetails?.code || "Discount",
-        });
-        stripeDiscounts = [{ coupon: coupon.id }];
-      }
-
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
-        mode: "payment",
-        client_reference_id: order._id.toString(),
-        metadata: {
-          orderId: order._id.toString(),
-          userId: decoded.userId.toString(),
-          isDirectBuy: isDirectBuy ? "true" : "false",
-        },
-        line_items: stripeLineItems,
-        ...(stripeDiscounts && { discounts: stripeDiscounts }),
-        success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${origin}/checkout?canceled=true`,
-      });
-
-      // Update order with Stripe Session ID
-      order.stripeSessionId = session.id;
-      await order.save();
-
-      return NextResponse.json({
-        success: true,
-        message: "Stripe session created",
-        sessionId: session.id,
-        url: session.url,
       });
     }
 

@@ -4,7 +4,6 @@ import { getCurrencySymbol } from "@/lib/currency";
 import connectToDatabase from "@/lib/db";
 import Product from "@/models/Product";
 import Category from "@/models/Category";
-import Vendor from "@/models/Vendor";
 
 export type SearchResult = {
   suggestions: { label: string; bold: string }[];
@@ -21,18 +20,12 @@ export async function searchSite(query: string): Promise<SearchResult> {
 
   const lowerQuery = query.toLowerCase();
 
-  const [products, vendors] = await Promise.all([
-    Product.find({
-      $or: [
-        { name: { $regex: lowerQuery, $options: "i" } },
-        { category: { $regex: lowerQuery, $options: "i" } },
-      ],
-    }).limit(10),
-    Vendor.find({
-      storeName: { $regex: lowerQuery, $options: "i" },
-      vendorStatus: "approved",
-    }).limit(5),
-  ]);
+  const products = await Product.find({
+    $or: [
+      { name: { $regex: lowerQuery, $options: "i" } },
+      { category: { $regex: lowerQuery, $options: "i" } },
+    ],
+  }).limit(10);
 
   const categorySet = new Set<string>();
   products.forEach((p) => categorySet.add(p.category));
@@ -47,11 +40,6 @@ export async function searchSite(query: string): Promise<SearchResult> {
     }
   });
 
-  const stores = vendors.map((v) => ({
-    id: v._id.toString(),
-    name: v.storeName,
-  }));
-
   const formattedProducts = products.map((p) => ({
     name: p.name,
     price: getCurrencySymbol(p.currency) + ` ${p.final_price}`,
@@ -61,7 +49,7 @@ export async function searchSite(query: string): Promise<SearchResult> {
 
   return {
     suggestions: suggestions.slice(0, 7),
-    stores,
+    stores: [],
     products: formattedProducts,
   };
 }

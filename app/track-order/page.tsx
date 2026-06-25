@@ -352,7 +352,7 @@ export default function TrackOrderPage() {
                   <div>
                     <h3 className="font-bold text-gray-900 mb-2">Payment Details</h3>
                     <div className="text-sm text-gray-600 space-y-1">
-                      <p>Method: <span className="font-medium text-gray-900">{trackingResult.paymentMethod === 'STRIPE' ? 'Credit Card' : 'Cash on Delivery'}</span></p>
+                      <p>Method: <span className="font-medium text-gray-900">{trackingResult.paymentMethod === 'COD' ? 'Cash on Delivery' : ''}</span></p>
                       <p>Status: <span className="font-medium text-gray-900 capitalize">{trackingResult.paymentStatus || 'unpaid'}</span></p>
                     </div>
                   </div>
@@ -364,25 +364,25 @@ export default function TrackOrderPage() {
                   <div className="space-y-2 text-sm text-gray-600">
                     <div className="flex justify-between">
                       <span>Subtotal</span>
-                      <span className="font-medium text-gray-900">${trackingResult.subtotal?.toFixed(2)}</span>
+                      <span className="font-medium text-gray-900">৳{trackingResult.subtotal?.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Delivery Fee</span>
-                      <span className="font-medium text-gray-900">{trackingResult.deliveryFee === 0 ? "Free" : `$${trackingResult.deliveryFee?.toFixed(2)}`}</span>
+                      <span className="font-medium text-gray-900">{trackingResult.deliveryFee === 0 ? "Free" : `৳${trackingResult.deliveryFee?.toFixed(2)}`}</span>
                     </div>
                     {trackingResult.promoDiscount > 0 && (
                       <div className="flex justify-between text-[#003d29]">
                         <span>Discount</span>
-                        <span className="font-medium">-${trackingResult.promoDiscount?.toFixed(2)}</span>
+                        <span className="font-medium">-৳{trackingResult.promoDiscount?.toFixed(2)}</span>
                       </div>
                     )}
                     <div className="flex justify-between">
                       <span>Taxes</span>
-                      <span className="font-medium text-gray-900">${trackingResult.taxes?.toFixed(2)}</span>
+                      <span className="font-medium text-gray-900">৳{trackingResult.taxes?.toFixed(2)}</span>
                     </div>
                     <div className="pt-2 border-t border-gray-200 flex justify-between font-bold text-lg text-gray-900">
                       <span>Total</span>
-                      <span>${trackingResult.totalPrice?.toFixed(2)}</span>
+                      <span>৳{trackingResult.totalPrice?.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
@@ -406,7 +406,7 @@ export default function TrackOrderPage() {
                               <p className="text-sm text-gray-500">Qty: {product.quantity} {product.variant && `• ${product.variant}`}</p>
                             </div>
                             <div className="text-right">
-                              <p className="font-medium text-gray-900">${product.finalPrice?.toFixed(2)}</p>
+                              <p className="font-medium text-gray-900">৳{product.finalPrice?.toFixed(2)}</p>
                             </div>
                           </div>
                         ))}

@@ -14,7 +14,7 @@ const reviewSchema = new mongoose.Schema(
     },
     order: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "SubOrder",
+      ref: "Order",
       required: true,
     },
     rating: {
