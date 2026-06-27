@@ -213,6 +213,21 @@ export interface AdminOrder {
   updatedAt: string;
 }
 
+export function useAdminOrder(id: string | null) {
+  const token = useAuthStore((s) => s.token);
+
+  return useQuery({
+    queryKey: ["admin", "order", id, token],
+    queryFn: async () => {
+      const { data } = await axios.get(`/api/admin/orders/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data.data as AdminOrder;
+    },
+    enabled: !!token && !!id,
+  });
+}
+
 export function useAdminOrders(params?: {
   page?: number;
   limit?: number;

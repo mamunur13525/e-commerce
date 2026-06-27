@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import OrderDetailsSheet from "@/components/account/OrderDetailsSheet";
 import { useGetOrders } from "@/hooks/api/orders";
 import { useAuthStore } from "@/store/auth-store";
 import { Card, CardContent } from "@/components/ui/card";
@@ -158,9 +159,15 @@ const OrderCard = ({
   order: any;
   getStatusColor: (status: string) => string;
 }) => {
+  const [sheetOpen, setSheetOpen] = useState(false);
+
   return (
-    <div key={order._id}>
-      <Card className="hover:border-[#003d29]/30 transition-colors border-gray-200 shadow-sm cursor-pointer ">
+    <>
+      <div key={order._id}>
+      <Card
+        className="hover:border-[#003d29]/30 transition-colors border-gray-200 shadow-sm cursor-pointer"
+        onClick={() => setSheetOpen(true)}
+      >
         <CardContent className="p-5">
           <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b pb-4 mb-4">
             <div>
@@ -190,10 +197,7 @@ const OrderCard = ({
             </div>
           </div>
 
-          <Link
-            href={`/account/orders/${order._id}`}
-            className="flex items-center justify-between group"
-          >
+          <div className="flex items-center justify-between">
             {/* Image thumbnails preview */}
             <div className="flex items-center gap-2">
               {order.items.slice(0, 4).map((item: any, idx: number) => (
@@ -223,13 +227,24 @@ const OrderCard = ({
               )}
             </div>
 
-            <div className="text-sm font-medium text-[#003d29] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+            <Link
+              href={`/account/orders/${order._id}`}
+              className="text-sm font-medium text-[#003d29] flex items-center gap-1 hover:translate-x-1 transition-transform"
+              onClick={(e) => e.stopPropagation()}
+            >
               View Details
               <ArrowRight01Icon className="size-4" />
-            </div>
-          </Link>
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>
+
+      <OrderDetailsSheet
+        order={order}
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+      />
+    </>
   );
 };

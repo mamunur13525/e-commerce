@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   useAdminOrders,
   useUpdateOrderStatus,
@@ -16,7 +17,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Search01Icon, FilterIcon } from "hugeicons-react";
+import { Search01Icon, FilterIcon, ArrowRight01Icon } from "hugeicons-react";
 import { toast } from "sonner";
 
 const ORDER_STATUSES = ["pending", "processing", "shipped", "delivered", "cancelled"] as const;
@@ -46,6 +47,7 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function AdminOrdersPage() {
+  const router = useRouter();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -249,7 +251,8 @@ export default function AdminOrdersPage() {
                 {data.data.map((order) => (
                   <tr
                     key={order._id}
-                    className="border-b border-gray-50 hover:bg-gray-50"
+                    className="border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition-colors"
+                    onClick={() => router.push(`/admin/orders/${order._id}`)}
                   >
                     <td className="py-3 px-4">
                       <span className="font-mono text-xs font-medium text-gray-900">
@@ -288,13 +291,28 @@ export default function AdminOrdersPage() {
                       {new Date(order.createdAt).toLocaleDateString()}
                     </td>
                     <td className="py-3 px-4 text-right">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openEditDialog(order)}
-                      >
-                        Edit Status
-                      </Button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEditDialog(order);
+                          }}
+                        >
+                          Edit Status
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/admin/orders/${order._id}`);
+                          }}
+                        >
+                          <ArrowRight01Icon className="size-4" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
