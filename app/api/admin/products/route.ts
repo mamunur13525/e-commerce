@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     await connectToDatabase();
 
     const body = await request.json();
-    const { name, description, price, final_price, quantity, weight, rating, category, discount, currency, image, images } = body;
+    const { name, description, price, final_price, quantity, weight, rating, category, discount, currency, image, images, sizes, colors } = body;
 
     // Validation
     if (!name || !description || !price || !quantity || !category) {
@@ -86,6 +86,8 @@ export async function POST(request: NextRequest) {
       currency: currency || "USD",
       image: image || {},
       images: images || [],
+      sizes: sizes || undefined,
+      colors: colors || undefined,
     });
 
     return NextResponse.json(

@@ -27,6 +27,8 @@ import { useCompareStore } from "@/store/compare-store";
 import { getCurrencySymbol } from "@/lib/currency";
 import { ProductReviews } from "@/components/product/product-reviews";
 import { ProductDiscussion } from "@/components/product/product-discussion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
 
 export default function ProductPage() {
   const params = useParams();
@@ -35,9 +37,15 @@ export default function ProductPage() {
 
   const { isAuthenticated, token } = useAuthStore();
   const addToCartMutation = useAddToCart(isAuthenticated ? token : null);
-  const addToWishlistMutation = useAddToWishlist(isAuthenticated ? token : null);
-  const removeFromWishlistMutation = useRemoveFromWishlist(isAuthenticated ? token : null);
-  const { data: wishlist = [] } = useGetWishlist(isAuthenticated ? token : null);
+  const addToWishlistMutation = useAddToWishlist(
+    isAuthenticated ? token : null,
+  );
+  const removeFromWishlistMutation = useRemoveFromWishlist(
+    isAuthenticated ? token : null,
+  );
+  const { data: wishlist = [] } = useGetWishlist(
+    isAuthenticated ? token : null,
+  );
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -299,8 +307,6 @@ export default function ProductPage() {
 
           {/* Product Info */}
           <div className="space-y-5">
-
-
             <div>
               {/* Product Title */}
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
@@ -314,10 +320,11 @@ export default function ProductPage() {
                 {[...Array(5)].map((_, i) => (
                   <StarIcon
                     key={i}
-                    className={`size-4 ${i < Math.floor(product.rating || 0)
-                      ? "text-yellow-400 fill-yellow-400"
-                      : "text-gray-300 fill-gray-300"
-                      }`}
+                    className={`size-4 ${
+                      i < Math.floor(product.rating || 0)
+                        ? "text-yellow-400 fill-yellow-400"
+                        : "text-gray-300 fill-gray-300"
+                    }`}
                   />
                 ))}
               </div>
@@ -342,7 +349,6 @@ export default function ProductPage() {
               <span className="font-black text-2xl text-gray-900 mb-1">
                 .{(displayPrice % 1).toFixed(2).split(".")[1]}
               </span>
-
             </div>
 
             {/* Discount Info */}
@@ -390,10 +396,13 @@ export default function ProductPage() {
                   "flex items-center gap-2 text-sm font-medium transition-colors px-4 py-2 rounded-lg",
                   isWishlisted
                     ? "text-red-600 bg-red-50 hover:text-red-700 hover:bg-red-100"
-                    : "text-gray-700 hover:text-red-600 hover:bg-red-50"
+                    : "text-gray-700 hover:text-red-600 hover:bg-red-50",
                 )}
                 onClick={handleWishlistToggle}
-                disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
+                disabled={
+                  addToWishlistMutation.isPending ||
+                  removeFromWishlistMutation.isPending
+                }
               >
                 <svg
                   className="w-5 h-5"
@@ -416,7 +425,7 @@ export default function ProductPage() {
                   "flex items-center gap-2 text-sm font-medium transition-colors px-4 py-2 rounded-lg",
                   isCompared
                     ? "text-blue-600 bg-blue-50 hover:text-blue-700 hover:bg-blue-100"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-blue-50",
                 )}
                 onClick={handleCompareToggle}
               >
@@ -465,7 +474,6 @@ export default function ProductPage() {
                   <span className="text-gray-600 ml-2">{product.weight}</span>
                 </div>
               )}
-
             </div>
 
             {/* Delivery & Daily Deal Info */}
@@ -532,22 +540,32 @@ export default function ProductPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4">
-          {/* Description */}
-          <div className="mb-5 w-full">
-            <h4 className="font-semibold text-2xl text-gray-900 border-b py-2 mb-2 w-full">Product details</h4>
-            <p className="text-gray-600 leading-relaxed">
-              {product.description}
-            </p>
-          </div></div>
+        <Tabs defaultValue="description" className="w-full">
+          <div className="border-b border-gray-200 mb-4">
 
-
-        <div className="grid grid-cols-1 gap-4">
-          <ProductReviews productId={product._id} />
-          <ProductDiscussion productId={product._id} />
-        </div>
-
-
+          <TabsList variant="line" className="w-full  sm:w-lg">
+            <TabsTrigger className="cursor-pointer font-bold" value="description">Description</TabsTrigger>
+            <TabsTrigger className="cursor-pointer font-bold" value="reviews">Reviews</TabsTrigger>
+            <TabsTrigger className="cursor-pointer font-bold" value="discussion">Discussion</TabsTrigger>
+          </TabsList>
+          </div>
+          <TabsContent value="description">
+            {" "}
+            {/* Description */}
+            <div className="mb-5 w-full space-y-6">
+             
+              <p className="text-gray-600 leading-relaxed">
+                {product.description}
+              </p>
+            </div>
+          </TabsContent>
+          <TabsContent value="reviews">
+            <ProductReviews productId={product._id} />
+          </TabsContent>
+          <TabsContent value="discussion">
+            <ProductDiscussion productId={product._id} />
+          </TabsContent>
+        </Tabs>
 
         {/* Related Products */}
         <ProductSection title="You might also like" />

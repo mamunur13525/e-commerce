@@ -27,7 +27,8 @@ const productSchema = new mongoose.Schema({
     },
     rating: {
         type: Number,
-        required: true
+        required: false,
+        default: 0
     },
     category: {
         type: String,
@@ -48,6 +49,23 @@ const productSchema = new mongoose.Schema({
     images: {
         type: Array,
         required: true
+    },
+    sizes: {
+        type: [String],
+        required: false
+    },
+    colors: {
+        type: [{
+            name: {
+                type: String,
+                required: true
+            },
+            code: {
+                type: String,
+                required: true
+            }
+        }],
+        required: false
     }
 },
     {

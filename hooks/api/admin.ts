@@ -52,6 +52,8 @@ export interface AdminProduct {
   currency: string;
   image: any;
   images: any[];
+  sizes?: string[];
+  colors?: Array<{ name: string; code: string }>;
   createdAt: string;
   updatedAt: string;
 }

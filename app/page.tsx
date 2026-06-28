@@ -8,8 +8,8 @@ import { DiscountGrid } from "@/components/home/discount-grid";
 import { ServicesSection } from "@/components/home/services-section";
 import { ConnectWithUs } from "@/components/home/connect-with-us";
 import { useMetadata } from "@/hooks";
-import { LoadingScreen } from "@/components/loading";
 import { Suspense } from "react";
+import { LoadingScreen } from "@/components/loading/animated-loading-icon";
 
 function HomeContent() {
   // Fetch metadata using TanStack Query

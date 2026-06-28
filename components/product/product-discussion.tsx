@@ -94,14 +94,9 @@ export function ProductDiscussion({ productId }: ProductDiscussionProps) {
   };
 
   return (
-    <div className="space-y-8 py-8 border-t">
+    <div className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start gap-8">
         <div className="flex-1 space-y-6 w-full">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Questions about this product</h2>
-            <p className="text-gray-500">Ask questions  about this product.</p>
-          </div>
-
           {/* Comments List */}
           <div className="space-y-6">
             {isLoading ? (

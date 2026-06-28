@@ -73,8 +73,8 @@ export function ProductCard({
       )}
 
       {/* Image and Wishlist Container */}
-      <div className="relative w-full aspect-square mb-3 group-hover:scale-105 transition-transform duration-300 self-center">
-        <Link href={`/products/${id}`} className="block w-full h-full rounded-lg overflow-hidden">
+      <div className="bg-[#e8e8e8] rounded-lg relative w-full aspect-square mb-3 group-hover:scale-105 transition-transform duration-300 self-center">
+        <Link href={`/products/${id}`} className="block w-full h-full  overflow-hidden">
           <Image ref={imageRef} src={imageSrc} alt={title} fill className="object-cover rounded-lg" />
         </Link>
 
