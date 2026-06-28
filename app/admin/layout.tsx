@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/auth-store";
 import { DashboardLayout } from "@/components/admin/dashboard-layout";
 

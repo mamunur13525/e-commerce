@@ -42,26 +42,18 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { hero_slider, offers, discout_cards } = body;
 
-    // Find existing metadata document or create a new one
-    let metadata = await Metadata.findOne();
+    // Build update object with only provided fields
+    const updateData: Record<string, any> = {};
+    if (hero_slider !== undefined) updateData.hero_slider = hero_slider;
+    if (offers !== undefined) updateData.offers = offers;
+    if (discout_cards !== undefined) updateData.discout_cards = discout_cards;
 
-    if (!metadata) {
-      metadata = new Metadata();
-    }
-
-    if (hero_slider !== undefined) {
-      metadata.hero_slider = hero_slider;
-    }
-
-    if (offers !== undefined) {
-      metadata.offers = offers;
-    }
-
-    if (discout_cards !== undefined) {
-      metadata.discout_cards = discout_cards;
-    }
-
-    await metadata.save();
+    // Atomically update the first document or create if none exists
+    const metadata = await Metadata.findOneAndUpdate(
+      {},
+      { $set: updateData },
+      { upsert: true, new: true }
+    );
 
     return NextResponse.json({
       success: true,

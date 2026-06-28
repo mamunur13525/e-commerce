@@ -139,15 +139,15 @@ const metadataSchema = new mongoose.Schema(
   {
     hero_slider: {
       type: [heroSliderSchema],
-      required: true,
+      default: [],
     },
     offers: {
       type: [offerSchema],
-      required: true,
+      default: [],
     },
     discout_cards: {
       type: [discountCardSchema],
-      required: true,
+      default: [],
     }
   },
   {

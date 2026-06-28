@@ -17,6 +17,15 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Pagination } from "@/components/ui/pagination";
 import { Search01Icon, FilterIcon, ArrowRight01Icon } from "hugeicons-react";
 import { toast } from "sonner";
 
@@ -121,10 +130,9 @@ export default function AdminOrdersPage() {
   const hasFilters = statusFilter || paymentFilter || fromDate || toDate;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">            <div className="flex items-center justify-between gap-4 flex-wrap">
         <h1 className="text-2xl font-bold text-gray-900">Orders</h1>
-        <Button variant="outline" onClick={() => setShowFilters(!showFilters)}>
+        <Button variant="outline" size="sm" onClick={() => setShowFilters(!showFilters)}>
           <FilterIcon className="size-4" />
           Filters
           {hasFilters && (
@@ -134,7 +142,7 @@ export default function AdminOrdersPage() {
       </div>
 
       {/* Search */}
-      <div className="relative max-w-sm">
+      <div className="relative w-full sm:max-w-sm">
         <Search01Icon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
         <input
           type="text"
@@ -233,125 +241,102 @@ export default function AdminOrdersPage() {
             <p className="text-gray-500">No orders found.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-100 bg-gray-50">
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Order ID</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Customer</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Items</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Total</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Status</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Payment</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Date</th>
-                  <th className="text-right py-3 px-4 font-medium text-gray-500">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.data.map((order) => (
-                  <tr
-                    key={order._id}
-                    className="border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition-colors"
-                    onClick={() => router.push(`/admin/orders/${order._id}`)}
-                  >
-                    <td className="py-3 px-4">
-                      <span className="font-mono text-xs font-medium text-gray-900">
-                        {order.orderId}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      <div>
-                        <p className="font-medium text-gray-900">
-                          {order.user
-                            ? `${order.user.first_name} ${order.user.last_name}`
-                            : order.guestInfo?.name || "Guest"}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {order.user?.email || order.guestInfo?.email || ""}
-                        </p>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="text-gray-600">
-                        {order.items?.length || 0} item(s)
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="font-medium">
-                        ${order.totalPrice?.toFixed(2)}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      <StatusBadge status={order.status} />
-                    </td>
-                    <td className="py-3 px-4">
-                      <StatusBadge status={order.paymentStatus} />
-                    </td>
-                    <td className="py-3 px-4 text-gray-500 text-xs">
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openEditDialog(order);
-                          }}
-                        >
-                          Edit Status
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            router.push(`/admin/orders/${order._id}`);
-                          }}
-                        >
-                          <ArrowRight01Icon className="size-4" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Order ID</TableHead>
+                <TableHead>Customer</TableHead>
+                <TableHead>Items</TableHead>
+                <TableHead>Total</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Payment</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.data.map((order) => (
+                <TableRow
+                  key={order._id}
+                  className="cursor-pointer"
+                  onClick={() => router.push(`/admin/orders/${order._id}`)}
+                >
+                  <TableCell>
+                    <span className="font-mono text-xs font-medium text-gray-900">
+                      {order.orderId}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        {order.user
+                          ? `${order.user.first_name} ${order.user.last_name}`
+                          : order.guestInfo?.name || "Guest"}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {order.user?.email || order.guestInfo?.email || ""}
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-gray-600">
+                    {order.items?.length || 0} item(s)
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    ${order.totalPrice?.toFixed(2)}
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge status={order.status} />
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge status={order.paymentStatus} />
+                  </TableCell>
+                  <TableCell className="text-gray-500 text-xs">
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openEditDialog(order);
+                        }}
+                      >
+                        Edit Status
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/admin/orders/${order._id}`);
+                        }}
+                      >
+                        <ArrowRight01Icon className="size-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         )}
 
         {/* Pagination */}
         {data && data.pagination.pages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-            <p className="text-sm text-gray-500">
-              Page {data.pagination.page} of {data.pagination.pages} ({data.pagination.total} total)
-            </p>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-              >
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={!data.pagination.hasMore}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
+          <Pagination
+            page={page}
+            totalPages={data.pagination.pages}
+            total={data.pagination.total}
+            onPageChange={(p) => setPage(p)}
+          />
         )}
       </div>
 
       {/* Edit Order Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md w-[calc(100%-2rem)] sm:w-full">
           <DialogHeader>
             <DialogTitle>Edit Order</DialogTitle>
             <DialogDescription>
@@ -435,13 +420,14 @@ export default function AdminOrdersPage() {
             )}
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
+          <DialogFooter className="flex-col-reverse sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setEditDialogOpen(false)} className="w-full sm:w-auto">
               Cancel
             </Button>
             <Button
               onClick={handleUpdateOrder}
               disabled={updateOrderStatus.isPending}
+              className="w-full sm:w-auto"
             >
               {updateOrderStatus.isPending ? "Updating..." : "Update Order"}
             </Button>

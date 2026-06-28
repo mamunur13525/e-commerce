@@ -266,7 +266,7 @@ export default function AdminProductsPage() {
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit(onSubmit)} className="py-4">
-            <div className="grid grid-cols-[400px_1fr] gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-[400px_1fr] gap-6">
               {/* Left Column - Image Upload */}
               <ImageUploadSection
                 control={control}
@@ -295,10 +295,11 @@ export default function AdminProductsPage() {
                 />
               </div>
             </div>
-            <DialogFooter className="pt-4 border-t border-gray-100 mt-4">
+            <DialogFooter className="pt-4 border-t border-gray-100 mt-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
               <Button
                 type="button"
                 variant="outline"
+                className="w-full sm:w-auto"
                 onClick={() => {
                   setIsCreateOpen(false);
                   reset(defaultValues);
@@ -306,7 +307,7 @@ export default function AdminProductsPage() {
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={createProduct.isPending}>
+              <Button type="submit" disabled={createProduct.isPending} className="w-full sm:w-auto">
                 {createProduct.isPending ? "Creating..." : "Create Product"}
               </Button>
             </DialogFooter>
@@ -333,7 +334,7 @@ export default function AdminProductsPage() {
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit(onSubmit)} className="py-4">
-            <div className="grid grid-cols-[400px_1fr] gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-[400px_1fr] gap-6">
               {/* Left Column - Image Upload */}
               <ImageUploadSection
                 control={control}
@@ -362,10 +363,11 @@ export default function AdminProductsPage() {
                 />
               </div>
             </div>
-            <DialogFooter className="pt-4 border-t border-gray-100 mt-4">
+            <DialogFooter className="pt-4 border-t border-gray-100 mt-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
               <Button
                 type="button"
                 variant="outline"
+                className="w-full sm:w-auto"
                 onClick={() => {
                   setIsEditOpen(false);
                   setEditingProduct(null);
@@ -374,7 +376,7 @@ export default function AdminProductsPage() {
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={updateProduct.isPending}>
+              <Button type="submit" disabled={updateProduct.isPending} className="w-full sm:w-auto">
                 {updateProduct.isPending ? "Updating..." : "Update Product"}
               </Button>
             </DialogFooter>

@@ -30,6 +30,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Pagination } from "@/components/ui/pagination";
 import { Add01Icon, Edit01Icon, Delete01Icon, Search01Icon } from "hugeicons-react";
 import { toast } from "sonner";
 
@@ -207,17 +216,17 @@ export default function AdminPromosPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
         <h1 className="text-2xl font-bold text-gray-900">Promos &amp; Coupons</h1>
-        <Button onClick={openCreate}>
+        <Button onClick={openCreate} size="sm">
           <Add01Icon className="size-4" />
           Add Promo
         </Button>
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-4">
-        <div className="relative max-w-sm flex-1">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div className="relative w-full sm:max-w-sm">
           <Search01Icon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
           <input
             type="text"
@@ -254,160 +263,138 @@ export default function AdminPromosPage() {
             <p className="text-gray-500">No promos found.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-100 bg-gray-50">
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Code</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Description</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Type</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Value</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Usage</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Status</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Expiry</th>
-                  <th className="text-right py-3 px-4 font-medium text-gray-500">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.data.map((promo) => (
-                  <tr
-                    key={promo._id}
-                    className="border-b border-gray-50 hover:bg-gray-50"
-                  >
-                    <td className="py-3 px-4">
-                      <span className="font-semibold text-gray-900 uppercase tracking-wide">
-                        {promo.code}
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Code</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Value</TableHead>
+                <TableHead>Usage</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Expiry</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.data.map((promo) => (
+                <TableRow key={promo._id}>
+                  <TableCell>
+                    <span className="font-semibold text-gray-900 uppercase tracking-wide">
+                      {promo.code}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-gray-600 max-w-[200px] truncate">
+                    {promo.description || "-"}
+                  </TableCell>
+                  <TableCell>
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                        promo.discountType === "percentage"
+                          ? "bg-blue-100 text-blue-700"
+                          : "bg-purple-100 text-purple-700"
+                      }`}
+                    >
+                      {promo.discountType === "percentage" ? "% Off" : "Fixed"}
+                    </span>
+                  </TableCell>
+                  <TableCell className="font-medium text-gray-900">
+                    {promo.discountType === "percentage"
+                      ? `${promo.discountValue}%`
+                      : `\u09F3${promo.discountValue.toFixed(2)}`}
+                    {promo.discountType === "percentage" && promo.maxDiscount && (
+                      <span className="text-gray-400 text-xs ml-1">
+                        (max \u09F3{promo.maxDiscount})
                       </span>
-                    </td>
-                    <td className="py-3 px-4 text-gray-600 max-w-[200px] truncate">
-                      {promo.description || "-"}
-                    </td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                          promo.discountType === "percentage"
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-purple-100 text-purple-700"
-                        }`}
-                      >
-                        {promo.discountType === "percentage" ? "% Off" : "Fixed"}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 font-medium text-gray-900">
-                      {promo.discountType === "percentage"
-                        ? `${promo.discountValue}%`
-                        : `\u09F3${promo.discountValue.toFixed(2)}`}
-                      {promo.discountType === "percentage" && promo.maxDiscount && (
-                        <span className="text-gray-400 text-xs ml-1">
-                          (max \u09F3{promo.maxDiscount})
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="text-gray-600">
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <span className="text-gray-600">
                         {promo.usageCount}
                         {promo.maxUsageCount ? ` / ${promo.maxUsageCount}` : ""}
                       </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      {isExpired(promo.expiryDate) ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
-                          Expired
-                        </span>
-                      ) : promo.isActive ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                          Active
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                          Inactive
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`${
-                          isExpired(promo.expiryDate)
-                            ? "text-red-500"
-                            : "text-gray-600"
-                        }`}
-                      >
-                        {formatDate(promo.expiryDate)}
+                  </TableCell>
+                  <TableCell>
+                    {isExpired(promo.expiryDate) ? (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
+                        Expired
                       </span>
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          onClick={() => openEdit(promo)}
-                        >
-                          <Edit01Icon className="size-4" />
-                        </Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger
-                            render={
-                              <Button variant="ghost" size="icon-sm">
-                                <Delete01Icon className="size-4 text-red-500" />
-                              </Button>
-                            }
-                          />
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Promo</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to delete promo code{" "}
-                                <span className="font-bold text-black uppercase">
-                                  &quot;{promo.code}&quot;
-                                </span>
-                                ? This action cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleDelete(promo._id)}
-                                className="bg-red-500 hover:bg-red-600"
-                              >
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    ) : promo.isActive ? (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                        Active
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                        Inactive
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <span
+                      className={`${
+                        isExpired(promo.expiryDate)
+                          ? "text-red-500"
+                          : "text-gray-600"
+                      }`}
+                    >
+                      {formatDate(promo.expiryDate)}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => openEdit(promo)}
+                      >
+                        <Edit01Icon className="size-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger
+                          render={
+                            <Button variant="ghost" size="icon-sm">
+                              <Delete01Icon className="size-4 text-red-500" />
+                            </Button>
+                          }
+                        />
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Promo</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete promo code{" "}
+                              <span className="font-bold text-black uppercase">
+                                &quot;{promo.code}&quot;
+                              </span>
+                              ? This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(promo._id)}
+                              className="bg-red-500 hover:bg-red-600"
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         )}
 
         {/* Pagination */}
         {data && data.pagination.pages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-            <p className="text-sm text-gray-500">
-              Page {data.pagination.page} of {data.pagination.pages} ({data.pagination.total} total)
-            </p>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page <= 1}
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-              >
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={!data.pagination.hasMore}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
+          <Pagination
+            page={page}
+            totalPages={data.pagination.pages}
+            total={data.pagination.total}
+            onPageChange={(p) => setPage(p)}
+          />
         )}
       </div>
 
@@ -422,8 +409,8 @@ export default function AdminPromosPage() {
             resetForm();
           }
         }}
-      >
-        <DialogContent className="max-w-xl">
+            >
+        <DialogContent className="max-w-xl w-[calc(100%-2rem)] sm:w-full">
           <DialogHeader>
             <DialogTitle>{isCreateOpen ? "Add Promo" : "Edit Promo"}</DialogTitle>
             <DialogDescription>
@@ -435,7 +422,7 @@ export default function AdminPromosPage() {
 
           <div className="space-y-5">
             {/* Code & Type */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">
                   Code <span className="text-red-500">*</span>
@@ -465,7 +452,7 @@ export default function AdminPromosPage() {
             </div>
 
             {/* Discount Value & Max Discount */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">
                   {form.discountType === "percentage"
@@ -498,7 +485,7 @@ export default function AdminPromosPage() {
             </div>
 
             {/* Min Order Amount & Max Usage */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Min Order Amount (৳)</label>
                 <Input
@@ -573,9 +560,10 @@ export default function AdminPromosPage() {
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="flex-col-reverse sm:flex-row gap-2">
             <Button
               variant="outline"
+              className="w-full sm:w-auto"
               onClick={() => {
                 setIsCreateOpen(false);
                 setIsEditOpen(false);
@@ -585,7 +573,7 @@ export default function AdminPromosPage() {
             >
               Cancel
             </Button>
-            <Button onClick={isCreateOpen ? handleCreate : handleUpdate}>
+            <Button onClick={isCreateOpen ? handleCreate : handleUpdate} className="w-full sm:w-auto">
               {isCreateOpen ? "Create Promo" : "Update Promo"}
             </Button>
           </DialogFooter>

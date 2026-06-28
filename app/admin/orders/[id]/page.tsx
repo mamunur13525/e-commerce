@@ -8,6 +8,14 @@ import {
 } from "@/hooks/api/admin";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { ArrowLeft01Icon } from "hugeicons-react";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -171,59 +179,59 @@ function OrderItemsTable({ order }: { order: AdminOrder }) {
           Ordered Items ({order.items?.length || 0})
         </h3>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-gray-50 bg-gray-50">
-              <th className="text-left py-3 px-6 font-medium text-gray-500">Product</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-500">Price</th>
-              <th className="text-center py-3 px-4 font-medium text-gray-500">Quantity</th>
-              <th className="text-right py-3 px-6 font-medium text-gray-500">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {order.items?.map((item: any, index: number) => {
-              const productName = item.product?.name || "Unknown Product";
-              const unitPrice = item.price || 0;
-              const quantity = item.quantity || 1;
-              const totalPrice = unitPrice * quantity;
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Product</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead className="text-center">Quantity</TableHead>
+            <TableHead className="text-right">Total</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {order.items?.map((item: any, index: number) => {
+            const productName = item.product?.name || "Unknown Product";
+            const unitPrice = item.price || 0;
+            const quantity = item.quantity || 1;
+            const totalPrice = unitPrice * quantity;
 
-              return (
-                <tr key={index} className="border-b border-gray-50">
-                  <td className="py-3 px-6">
-                    <div className="flex items-center gap-3">
-                      {item.product?.images?.[0] ? (
-                        <Image
-                          src={item.product.images[0]||""}
-                          alt={productName}
-                          className="w-10 h-10 rounded-lg object-cover bg-gray-50"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-xs text-gray-400">
-                          N/A
-                        </div>
-                      )}
-                      <div>
-                        <p className="font-medium text-gray-900 truncate max-w-[200px]">
-                          {productName}
-                        </p>
-                        {item.variant && (
-                          <p className="text-xs text-gray-500">Variant: {item.variant}</p>
-                        )}
+            return (
+              <TableRow key={index}>
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    {item.product?.images?.[0] ? (
+                      <Image
+                        src={item.product.images[0]||""}
+                        alt={productName}
+                        className="w-10 h-10 rounded-lg object-cover bg-gray-50"
+                        width={40}
+                        height={40}
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-xs text-gray-400 shrink-0">
+                        N/A
                       </div>
+                    )}
+                    <div>
+                      <p className="font-medium text-gray-900 truncate max-w-[200px]">
+                        {productName}
+                      </p>
+                      {item.variant && (
+                        <p className="text-xs text-gray-500">Variant: {item.variant}</p>
+                      )}
                     </div>
-                  </td>
-                  <td className="py-3 px-4 text-gray-600">${unitPrice.toFixed(2)}</td>
-                  <td className="py-3 px-4 text-center text-gray-900">{quantity}</td>
-                  <td className="py-3 px-6 text-right font-medium text-gray-900">
-                    ${totalPrice.toFixed(2)}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+                  </div>
+                </TableCell>
+                <TableCell className="text-gray-600">${unitPrice.toFixed(2)}</TableCell>
+                <TableCell className="text-center text-gray-900">{quantity}</TableCell>
+                <TableCell className="text-right font-medium text-gray-900">
+                  ${totalPrice.toFixed(2)}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
     </div>
   );
 }
@@ -323,7 +331,7 @@ export default function AdminOrderDetailPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-4">
           <Button
             variant="outline"
@@ -349,7 +357,7 @@ export default function AdminOrderDetailPage() {
             </p>
           </div>
         </div>
-        <Button onClick={openEditDialog}>Edit Status</Button>
+        <Button onClick={openEditDialog} className="w-full sm:w-auto">Edit Status</Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -372,7 +380,7 @@ export default function AdminOrderDetailPage() {
 
       {/* Edit Order Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md w-[calc(100%-2rem)] sm:w-full">
           <DialogHeader>
             <DialogTitle>Edit Order</DialogTitle>
             <DialogDescription>
@@ -453,13 +461,14 @@ export default function AdminOrderDetailPage() {
             )}
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
+          <DialogFooter className="flex-col-reverse sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setEditDialogOpen(false)} className="w-full sm:w-auto">
               Cancel
             </Button>
             <Button
               onClick={handleUpdateOrder}
               disabled={updateOrderStatus.isPending}
+              className="w-full sm:w-auto"
             >
               {updateOrderStatus.isPending ? "Updating..." : "Update Order"}
             </Button>

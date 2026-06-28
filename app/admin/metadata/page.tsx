@@ -176,7 +176,7 @@ export default function AdminMetadataPage() {
                       Remove
                     </button>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700">Background Color</label>
                       <Input {...form.register(`hero_slider.${index}.bg_color`)} placeholder="#003d29" />
@@ -214,7 +214,7 @@ export default function AdminMetadataPage() {
                       className="w-full min-h-[80px] px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#003d29]/20 focus:border-[#003d29]"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700">CTA Button Text</label>
                       <Input {...form.register(`hero_slider.${index}.cta_btn.text`)} placeholder="Shop Now" />
@@ -224,7 +224,7 @@ export default function AdminMetadataPage() {
                       <Input {...form.register(`hero_slider.${index}.cta_btn.link`)} placeholder="/shop" />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700">CTA Button Color</label>
                       <Input {...form.register(`hero_slider.${index}.cta_btn.color`)} placeholder="#ffffff" />
@@ -285,7 +285,7 @@ export default function AdminMetadataPage() {
                       className="w-full min-h-[80px] px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#003d29]/20 focus:border-[#003d29]"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700">Product Image URL</label>
                       <Input {...form.register(`offers.${index}.product_image`)} placeholder="https://..." />
@@ -352,7 +352,7 @@ export default function AdminMetadataPage() {
                       Remove
                     </button>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700">Type</label>
                       <Input {...form.register(`discout_cards.${index}.type`)} placeholder="percentage" />
@@ -378,7 +378,7 @@ export default function AdminMetadataPage() {
                     <label className="text-sm font-medium text-gray-700">Background Color</label>
                     <Input {...form.register(`discout_cards.${index}.bg_color`)} placeholder="#f5f5f5" />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700">CTA Button Text</label>
                       <Input {...form.register(`discout_cards.${index}.cta_btn.text`)} placeholder="Shop Now" />
@@ -388,7 +388,7 @@ export default function AdminMetadataPage() {
                       <Input {...form.register(`discout_cards.${index}.cta_btn.link`)} placeholder="/shop" />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-gray-700">CTA Button Color</label>
                       <Input {...form.register(`discout_cards.${index}.cta_btn.color`)} placeholder="#003d29" />

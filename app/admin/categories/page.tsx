@@ -31,6 +31,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useForm } from "react-hook-form";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Add01Icon, Edit01Icon, Delete01Icon, Search01Icon } from "hugeicons-react";
 import { toast } from "sonner";
 
@@ -162,7 +170,7 @@ export default function AdminCategoriesPage() {
       </div>
 
       {/* Search */}
-      <div className="relative max-w-sm">
+      <div className="relative w-full sm:max-w-sm">
         <Search01Icon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
         <input
           type="text"
@@ -186,103 +194,96 @@ export default function AdminCategoriesPage() {
             <p className="text-gray-500">No categories found.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-gray-100 bg-gray-50">
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Icon</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Name</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Type</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Subtitle</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Color</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Slug</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-500">Products</th>
-                  <th className="text-right py-3 px-4 font-medium text-gray-500">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredCategories.map((category) => (
-                  <tr
-                    key={category._id}
-                    className="border-b border-gray-50 hover:bg-gray-50"
-                  >
-                    <td className="py-3 px-4 text-xl">
-                      {category.icon}
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="font-medium text-gray-900">
-                        {category.name}
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Icon</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Subtitle</TableHead>
+                <TableHead>Color</TableHead>
+                <TableHead>Slug</TableHead>
+                <TableHead>Products</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredCategories.map((category) => (
+                <TableRow key={category._id}>
+                  <TableCell className="text-xl">{category.icon}</TableCell>
+                  <TableCell>
+                    <span className="font-medium text-gray-900">
+                      {category.name}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-gray-600">{category.type}</TableCell>
+                  <TableCell className="text-gray-500 max-w-[180px] truncate">
+                    {category.subtitle}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-5 h-5 rounded-full border border-gray-200 shrink-0"
+                        style={{ backgroundColor: category.color }}
+                      />
+                      <span className="text-xs text-gray-500 font-mono">
+                        {category.color}
                       </span>
-                    </td>
-                    <td className="py-3 px-4 text-gray-600">{category.type}</td>
-                    <td className="py-3 px-4 text-gray-500 max-w-[180px] truncate">
-                      {category.subtitle}
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="w-5 h-5 rounded-full border border-gray-200"
-                          style={{ backgroundColor: category.color }}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-gray-500 text-xs font-mono">
+                    {category.slug || "-"}
+                  </TableCell>
+                  <TableCell>
+                    <span className="font-medium text-gray-900">
+                      {category.count}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => openEdit(category)}
+                      >
+                        <Edit01Icon className="size-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger
+                          render={
+                            <Button variant="ghost" size="icon-sm">
+                              <Delete01Icon className="size-4 text-red-500" />
+                            </Button>
+                          }
                         />
-                        <span className="text-xs text-gray-500 font-mono">
-                          {category.color}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 text-gray-500 text-xs font-mono">
-                      {category.slug || "-"}
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className="font-medium text-gray-900">
-                        {category.count}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          onClick={() => openEdit(category)}
-                        >
-                          <Edit01Icon className="size-4" />
-                        </Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger
-                            render={
-                              <Button variant="ghost" size="icon-sm">
-                                <Delete01Icon className="size-4 text-red-500" />
-                              </Button>
-                            }
-                          />
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Category</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to delete{" "}
-                                <span className="font-bold text-black">
-                                  &quot;{category.name}&quot;
-                                </span>
-                                ? This action cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleDelete(category._id, category.name)}
-                                className="bg-red-500 hover:bg-red-600"
-                              >
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            </div>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Category</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete{" "}
+                              <span className="font-bold text-black">
+                                &quot;{category.name}&quot;
+                              </span>
+                              ? This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(category._id, category.name)}
+                              className="bg-red-500 hover:bg-red-600"
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         )}
       </div>
 
@@ -306,7 +307,7 @@ export default function AdminCategoriesPage() {
           <form onSubmit={handleSubmit(isCreateOpen ? handleCreate : handleEdit)}>
             <div className="space-y-4">
               {/* Name & Type */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">
                     Name <span className="text-red-500">*</span>
@@ -348,7 +349,7 @@ export default function AdminCategoriesPage() {
               </div>
 
               {/* Color & Icon */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">
                     Color <span className="text-red-500">*</span>
@@ -382,7 +383,7 @@ export default function AdminCategoriesPage() {
                 </div>
 
                 {/* Slug & Count */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Slug</label>
                     <Input

@@ -3,6 +3,14 @@
 import { useAdminDashboard } from "@/hooks/api/admin";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
   PackageIcon,
   UserGroupIcon,
   ShoppingBag01Icon,
@@ -138,42 +146,40 @@ export default function AdminDashboardPage() {
         {recentOrders.length === 0 ? (
           <p className="text-[#7A7A7A] text-sm">No orders yet.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[#ECECEC]">
-                  <th className="text-left py-3 px-2 font-medium text-[#7A7A7A]">Order ID</th>
-                  <th className="text-left py-3 px-2 font-medium text-[#7A7A7A]">Customer</th>
-                  <th className="text-left py-3 px-2 font-medium text-[#7A7A7A]">Total</th>
-                  <th className="text-left py-3 px-2 font-medium text-[#7A7A7A]">Status</th>
-                  <th className="text-left py-3 px-2 font-medium text-[#7A7A7A]">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentOrders.map((order: any) => (
-                  <tr key={order._id} className="border-b border-[#ECECEC]/50 hover:bg-[#F6F6F6]">
-                    <td className="py-3 px-2 font-medium text-[#111111]">
-                      {order.orderId}
-                    </td>
-                    <td className="py-3 px-2 text-[#7A7A7A]">
-                      {order.user
-                        ? `${order.user.first_name} ${order.user.last_name}`
-                        : order.guestInfo?.name || "Guest"}
-                    </td>
-                    <td className="py-3 px-2 text-[#111111] font-medium">
-                      ${order.totalPrice?.toFixed(2)}
-                    </td>
-                    <td className="py-3 px-2">
-                      <StatusBadge status={order.status} />
-                    </td>
-                    <td className="py-3 px-2 text-[#7A7A7A]">
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Order ID</TableHead>
+                <TableHead>Customer</TableHead>
+                <TableHead>Total</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Date</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {recentOrders.map((order: any) => (
+                <TableRow key={order._id}>
+                  <TableCell className="font-medium text-gray-900">
+                    {order.orderId}
+                  </TableCell>
+                  <TableCell className="text-gray-600">
+                    {order.user
+                      ? `${order.user.first_name} ${order.user.last_name}`
+                      : order.guestInfo?.name || "Guest"}
+                  </TableCell>
+                  <TableCell className="font-medium text-gray-900">
+                    ${order.totalPrice?.toFixed(2)}
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge status={order.status} />
+                  </TableCell>
+                  <TableCell className="text-gray-500">
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         )}
       </div>
     </div>

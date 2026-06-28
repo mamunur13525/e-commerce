@@ -1,32 +1,27 @@
-"use client";
 
-import { useState } from "react";
-import { Sidebar } from "./sidebar";
+import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
+import { AppSidebar } from "./sidebar";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-
   return (
-    <div className="h-screen bg-[#F6F6F6] flex  overflow-hidden">
-      {/* Sidebar */}
-      <div className="shrink-0 h-full">
-        <Sidebar
-          collapsed={sidebarCollapsed}
-          onToggleCollapse={() => setSidebarCollapsed((prev) => !prev)}
-        />
-      </div>
+    <SidebarProvider defaultOpen={true}>
+      <div className="flex min-h-screen w-full bg-gray-50/80">
+        <AppSidebar />
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Main Content */}
-        <main className="flex-1 bg-white  border border-[#ECECEC] p-6 overflow-auto">
-          {children}
-        </main>
+        <SidebarInset className="flex-1 flex flex-col min-w-0">
+          
+
+          {/* Main Content */}
+          <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
+              <SidebarTrigger className="md:hidden" />
+            {children}
+          </div>
+        </SidebarInset>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }

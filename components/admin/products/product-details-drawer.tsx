@@ -11,7 +11,15 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { AdminProduct } from "@/hooks/api/admin";
-import { Calendar01Icon, DollarCircleIcon, PackageIcon, RulerIcon, SwatchIcon, Tag01Icon } from "hugeicons-react";
+import {
+  Calendar01Icon,
+  DollarCircleIcon,
+  PackageIcon,
+  RulerIcon,
+  SwatchIcon,
+  Tag01Icon,
+} from "hugeicons-react";
+import { Button } from "@/components/ui/button";
 
 interface ProductDetailsDrawerProps {
   product: AdminProduct | null;
@@ -43,45 +51,50 @@ export function ProductDetailsDrawer({
         </SheetHeader>
 
         <div className="space-y-6">
-         <div className="space-y-4">
-           {/* Main Image */}
-          {product.image?.url && (
-            <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-gray-50">
-              <Image
-                src={product.image.url}
-                alt={product.name}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 400px"
-              />
-            </div>
-          )}
-
-          {/* Additional Images */}
-          {product.images && product.images.length > 0 && (
-            <>
-              <div>
-                <h4 className="text-sm font-medium text-gray-500 mb-2">Gallery</h4>
-                <div className="grid grid-cols-5 gap-2">
-                  {product.images.map((img, idx) => (
-                    img?.url && (
-                      <div key={idx} className="relative aspect-square rounded-md overflow-hidden bg-gray-50">
-                        <Image
-                          src={img.url}
-                          alt={`${product.name} image ${idx + 1}`}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 33vw, 150px"
-                        />
-                      </div>
-                    )
-                  ))}
-                </div>
+          <div className="space-y-4">
+            {/* Main Image */}
+            {product.image?.url && (
+              <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-gray-50">
+                <Image
+                  src={product.image.url}
+                  alt={product.name}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 400px"
+                />
               </div>
-            </>
-          )}
+            )}
 
-         </div>
+            {/* Additional Images */}
+            {product.images && product.images.length > 0 && (
+              <>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 mb-2">
+                    Gallery
+                  </h4>
+                  <div className="grid grid-cols-5 gap-2">
+                    {product.images.map(
+                      (img, idx) =>
+                        img?.url && (
+                          <div
+                            key={idx}
+                            className="relative aspect-square rounded-md overflow-hidden bg-gray-50"
+                          >
+                            <Image
+                              src={img.url}
+                              alt={`${product.name} image ${idx + 1}`}
+                              fill
+                              className="object-cover"
+                              sizes="(max-width: 768px) 33vw, 150px"
+                            />
+                          </div>
+                        ),
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
           {/* Price Section */}
           <div className="space-y-2">
             <div className="flex items-baseline gap-3">
@@ -95,7 +108,10 @@ export function ProductDetailsDrawer({
               )}
             </div>
             {product.discount > 0 && (
-              <Badge variant="secondary" className="bg-green-50 text-green-700 border-green-200">
+              <Badge
+                variant="secondary"
+                className="bg-green-50 text-green-700 border-green-200"
+              >
                 {product.discount}% OFF
               </Badge>
             )}
@@ -105,7 +121,9 @@ export function ProductDetailsDrawer({
 
           {/* Description */}
           <div>
-            <h4 className="text-sm font-medium text-gray-500 mb-1">Description</h4>
+            <h4 className="text-sm font-medium text-gray-500 mb-1">
+              Description
+            </h4>
             <p className="text-sm text-gray-700 leading-relaxed">
               {product.description || "No description provided."}
             </p>
@@ -118,17 +136,25 @@ export function ProductDetailsDrawer({
             <div className="space-y-1">
               <div className="flex items-center gap-1.5 text-gray-400">
                 <Tag01Icon className="size-3.5" />
-                <span className="text-xs font-medium uppercase tracking-wider">Category</span>
+                <span className="text-xs font-medium uppercase tracking-wider">
+                  Category
+                </span>
               </div>
-              <p className="text-sm font-medium text-gray-900">{product.category}</p>
+              <p className="text-sm font-medium text-gray-900">
+                {product.category}
+              </p>
             </div>
 
             <div className="space-y-1">
               <div className="flex items-center gap-1.5 text-gray-400">
                 <PackageIcon className="size-3.5" />
-                <span className="text-xs font-medium uppercase tracking-wider">Stock</span>
+                <span className="text-xs font-medium uppercase tracking-wider">
+                  Stock
+                </span>
               </div>
-              <p className={`text-sm font-medium ${product.quantity <= 5 ? "text-red-500" : "text-gray-900"}`}>
+              <p
+                className={`text-sm font-medium ${product.quantity <= 5 ? "text-red-500" : "text-gray-900"}`}
+              >
                 {product.quantity} units
               </p>
             </div>
@@ -136,33 +162,49 @@ export function ProductDetailsDrawer({
             <div className="space-y-1">
               <div className="flex items-center gap-1.5 text-gray-400">
                 <DollarCircleIcon className="size-3.5" />
-                <span className="text-xs font-medium uppercase tracking-wider">Currency</span>
+                <span className="text-xs font-medium uppercase tracking-wider">
+                  Currency
+                </span>
               </div>
-              <p className="text-sm font-medium text-gray-900">{product.currency}</p>
+              <p className="text-sm font-medium text-gray-900">
+                {product.currency}
+              </p>
             </div>
 
             <div className="space-y-1">
               <div className="flex items-center gap-1.5 text-gray-400">
                 <PackageIcon className="size-3.5" />
-                <span className="text-xs font-medium uppercase tracking-wider">Weight</span>
+                <span className="text-xs font-medium uppercase tracking-wider">
+                  Weight
+                </span>
               </div>
-              <p className="text-sm font-medium text-gray-900">{product.weight || "N/A"}</p>
+              <p className="text-sm font-medium text-gray-900">
+                {product.weight || "N/A"}
+              </p>
             </div>
 
             <div className="space-y-1">
               <div className="flex items-center gap-1.5 text-gray-400">
                 <Calendar01Icon className="size-3.5" />
-                <span className="text-xs font-medium uppercase tracking-wider">Created</span>
+                <span className="text-xs font-medium uppercase tracking-wider">
+                  Created
+                </span>
               </div>
-              <p className="text-sm font-medium text-gray-900">{formatDate(product.createdAt)}</p>
+              <p className="text-sm font-medium text-gray-900">
+                {formatDate(product.createdAt)}
+              </p>
             </div>
 
             <div className="space-y-1">
               <div className="flex items-center gap-1.5 text-gray-400">
                 <Calendar01Icon className="size-3.5" />
-                <span className="text-xs font-medium uppercase tracking-wider">Updated</span>
+                <span className="text-xs font-medium uppercase tracking-wider">
+                  Updated
+                </span>
               </div>
-              <p className="text-sm font-medium text-gray-900">{formatDate(product.updatedAt)}</p>
+              <p className="text-sm font-medium text-gray-900">
+                {formatDate(product.updatedAt)}
+              </p>
             </div>
           </div>
 
@@ -173,7 +215,9 @@ export function ProductDetailsDrawer({
               <div>
                 <div className="flex items-center gap-1.5 text-gray-400 mb-2">
                   <RulerIcon className="size-3.5" />
-                  <span className="text-xs font-medium uppercase tracking-wider">Sizes</span>
+                  <span className="text-xs font-medium uppercase tracking-wider">
+                    Sizes
+                  </span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {product.sizes.map((size) => (
@@ -193,7 +237,9 @@ export function ProductDetailsDrawer({
               <div>
                 <div className="flex items-center gap-1.5 text-gray-400 mb-2">
                   <SwatchIcon className="size-3.5" />
-                  <span className="text-xs font-medium uppercase tracking-wider">Colors</span>
+                  <span className="text-xs font-medium uppercase tracking-wider">
+                    Colors
+                  </span>
                 </div>
                 <div className="flex flex-wrap gap-3">
                   {product.colors.map((color, idx) => (
@@ -203,14 +249,15 @@ export function ProductDetailsDrawer({
                         style={{ backgroundColor: color.code }}
                         title={color.name}
                       />
-                      <span className="text-sm text-gray-700">{color.name}</span>
+                      <span className="text-sm text-gray-700">
+                        {color.name}
+                      </span>
                     </div>
                   ))}
                 </div>
               </div>
             </>
           )}
-
         </div>
       </SheetContent>
     </Sheet>

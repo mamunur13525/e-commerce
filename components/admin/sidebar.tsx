@@ -1,44 +1,50 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { SidebarItem } from "./sidebar-item";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+  SidebarRail,
+  useSidebar,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { UserProfile } from "./user-profile";
 import {
   DashboardSquare01Icon,
   ShoppingBag01Icon,
   UserGroupIcon,
   PackageIcon,
-  ArrowLeft01Icon,
-  ArrowRight01Icon,
   CouponPercentIcon,
   Layers01Icon,
-  SlidersHorizontal01Icon,
   Database01Icon,
 } from "hugeicons-react";
 import Image from "next/image";
-import logo from '@/public/assets/logo2.png';
-
-interface SidebarProps {
-  collapsed: boolean;
-  onToggleCollapse: () => void;
-}
+import Link from "next/link";
+import logo from "@/public/assets/logo2.png";
+import { cn } from "@/lib/utils";
 
 const managementItems = [
   { icon: DashboardSquare01Icon, label: "Dashboard", href: "/admin" },
   { icon: PackageIcon, label: "Product", href: "/admin/products" },
   { icon: Layers01Icon, label: "Category", href: "/admin/categories" },
   { icon: UserGroupIcon, label: "Customer", href: "/admin/users" },
-  { icon: ShoppingBag01Icon, label: "My Order", href: "/admin/orders" },  
+  { icon: ShoppingBag01Icon, label: "My Order", href: "/admin/orders" },
   { icon: CouponPercentIcon, label: "Promo", href: "/admin/promos" },
   { icon: Database01Icon, label: "Metadata", href: "/admin/metadata" },
-
 ];
 
-
-
-export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
+export function AppSidebar() {
   const pathname = usePathname();
+  const { state } = useSidebar();
+  const collapsed = state === "collapsed";
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin";
@@ -46,50 +52,82 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
   };
 
   return (
-    <aside
-      className={cn(
-        "h-full p-6 flex flex-col transition-all duration-300 ease-in-out relative ",
-        collapsed ? "w-22" : "w-70"
-      )}
-    >
-      {/* Logo */}
-      <div className="mb-8 flex ">          
-          <Image src={logo} alt="Logo" className={cn("h-12 w-fit ", collapsed && "h-fit w-fit")} />
-
-      </div>
-
-
-     
-        <div className="space-y-1">
-          {managementItems.map((item) => (
-            <SidebarItem
-              key={item.href}
-              icon={item.icon}
-              label={item.label}
-              href={item.href}
-              active={isActive(item.href)}
-              collapsed={collapsed}
-            />
-          ))}
+    <Sidebar collapsible="icon" variant="sidebar">
+      {/* Logo Header */}
+      <SidebarHeader className="py-2">
+        <div className="flex items-center justify-between gap-2 px-3">
+          {!collapsed && (
+            <Link href="/admin">
+              <div className="h-12">
+                <Image
+                  src={logo}
+                  alt="Logo"
+                  className="h-full w-fit object-contain"
+                />
+              </div>
+            </Link>
+          )}
+          <SidebarTrigger className="hidden md:block cursor-pointer" />
         </div>
+      </SidebarHeader>
 
-      {/* Spacer */}
-      <div className="flex-1" />
-      {/* Collapse Toggle */}
-      <button
-        onClick={onToggleCollapse}
-        className="absolute top-16 -right-3 flex items-center justify-center  mb-3 p-1.5 text-[#3e3e3e] hover:text-[#111111] hover:bg-[#F2F2F2] rounded-xl transition-colors bg-gray-300"
-        aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-      >
-        {collapsed ? (
-          <ArrowRight01Icon className="size-4" />
-        ) : (
-          <ArrowLeft01Icon className="size-4" />
-        )}
-      </button>
+      {/* Navigation */}
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-3 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/40">
+            Main Menu
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {managementItems.map((item) => {
+                const active = isActive(item.href);
+                return (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      render={<Link href={item.href} />}
+                      isActive={active}
+                      tooltip={item.label}
+                      className={cn(
+                        "relative group/menu-button py-4 h-10",
+                        active && "font-semibold bg-white! shadow-sm shadow-[#003d29]/20",
+                      )}
+                    >
+                      {/* Active indicator bar */}
+                      {active && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-[#003d29] shadow-sm shadow-[#003d29]/30" />
+                      )}
+                      <item.icon
+                        className={cn(
+                          "size-[24px] shrink-0",
+                          active
+                            ? "text-[#003d29]"
+                            : "text-sidebar-foreground/60 group-hover/menu-button:text-sidebar-foreground",
+                        )}
+                      />
+                      <span
+                        className={cn(
+                          "text-base",
+                          active ? "text-[#003d29]" : "",
+                        )}
+                      >
+                        {item.label}
+                      </span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
 
-      {/* User Profile */}
-      <UserProfile collapsed={collapsed} />
-    </aside>
+      {/* Footer with User Profile */}
+      <SidebarFooter className="border-t border-sidebar-border/50 p-3">
+        <UserProfile />
+      </SidebarFooter>
+
+      {/* Desktop collapse rail */}
+      <SidebarRail />
+    </Sidebar>
   );
 }
