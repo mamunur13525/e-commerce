@@ -19,7 +19,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import Image from 'next/image'
+import Image from "next/image";
 
 const ORDER_STATUSES = ["pending", "processing", "shipped", "delivered", "cancelled"] as const;
 const PAYMENT_STATUSES = ["unpaid", "paid", "failed", "refunded"] as const;
@@ -194,7 +194,7 @@ function OrderItemsTable({ order }: { order: AdminOrder }) {
                     <div className="flex items-center gap-3">
                       {item.product?.images?.[0] ? (
                         <Image
-                          src={item.product.images[0]}
+                          src={item.product.images[0]||""}
                           alt={productName}
                           className="w-10 h-10 rounded-lg object-cover bg-gray-50"
                         />

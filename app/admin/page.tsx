@@ -23,11 +23,11 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-6">
+    <div className="bg-white rounded-xl border border-[#ECECEC] p-6">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-gray-500 font-medium">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+          <p className="text-sm text-[#7A7A7A] font-medium">{title}</p>
+          <p className="text-2xl font-bold text-[#111111] mt-1">{value}</p>
         </div>
         <div
           className="w-12 h-12 rounded-xl flex items-center justify-center"
@@ -88,10 +88,6 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-      </div>
-
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
@@ -137,40 +133,40 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Recent Orders */}
-      <div className="bg-white rounded-xl border border-gray-100 p-6">
-        <h2 className="text-lg font-bold text-gray-900 mb-4">Recent Orders</h2>
+      <div className="bg-white rounded-xl border border-[#ECECEC] p-6">
+        <h2 className="text-lg font-bold text-[#111111] mb-4">Recent Orders</h2>
         {recentOrders.length === 0 ? (
-          <p className="text-gray-500 text-sm">No orders yet.</p>
+          <p className="text-[#7A7A7A] text-sm">No orders yet.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="text-left py-3 px-2 font-medium text-gray-500">Order ID</th>
-                  <th className="text-left py-3 px-2 font-medium text-gray-500">Customer</th>
-                  <th className="text-left py-3 px-2 font-medium text-gray-500">Total</th>
-                  <th className="text-left py-3 px-2 font-medium text-gray-500">Status</th>
-                  <th className="text-left py-3 px-2 font-medium text-gray-500">Date</th>
+                <tr className="border-b border-[#ECECEC]">
+                  <th className="text-left py-3 px-2 font-medium text-[#7A7A7A]">Order ID</th>
+                  <th className="text-left py-3 px-2 font-medium text-[#7A7A7A]">Customer</th>
+                  <th className="text-left py-3 px-2 font-medium text-[#7A7A7A]">Total</th>
+                  <th className="text-left py-3 px-2 font-medium text-[#7A7A7A]">Status</th>
+                  <th className="text-left py-3 px-2 font-medium text-[#7A7A7A]">Date</th>
                 </tr>
               </thead>
               <tbody>
                 {recentOrders.map((order: any) => (
-                  <tr key={order._id} className="border-b border-gray-50 hover:bg-gray-50">
-                    <td className="py-3 px-2 font-medium text-gray-900">
+                  <tr key={order._id} className="border-b border-[#ECECEC]/50 hover:bg-[#F6F6F6]">
+                    <td className="py-3 px-2 font-medium text-[#111111]">
                       {order.orderId}
                     </td>
-                    <td className="py-3 px-2 text-gray-600">
+                    <td className="py-3 px-2 text-[#7A7A7A]">
                       {order.user
                         ? `${order.user.first_name} ${order.user.last_name}`
                         : order.guestInfo?.name || "Guest"}
                     </td>
-                    <td className="py-3 px-2 text-gray-900 font-medium">
+                    <td className="py-3 px-2 text-[#111111] font-medium">
                       ${order.totalPrice?.toFixed(2)}
                     </td>
                     <td className="py-3 px-2">
                       <StatusBadge status={order.status} />
                     </td>
-                    <td className="py-3 px-2 text-gray-500">
+                    <td className="py-3 px-2 text-[#7A7A7A]">
                       {new Date(order.createdAt).toLocaleDateString()}
                     </td>
                   </tr>

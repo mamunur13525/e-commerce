@@ -265,7 +265,10 @@ export default function AdminProductsPage() {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Delete Product</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Are you sure you want to delete "{product.name}"? This action
+                                Are you sure you want to delete 
+                                
+                                <span className='font-bold text-black'>&quot;{product.name}&quot;</span>
+                                ? This action
                                 cannot be undone.
                               </AlertDialogDescription>
                             </AlertDialogHeader>

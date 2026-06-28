@@ -53,7 +53,7 @@ export default function WishlistPage() {
     return (
         <main className="min-h-screen bg-gray-50 pb-16">
             <div className="bg-[#003d29] py-12 px-4 mb-8">
-                <div className="container mx-auto max-w-7xl">
+                <div className="container mx-auto">
                     <div className="flex flex-col md:flex-row md:items-center gap-4">
                         <Link href="/">
                             <Button variant="ghost" size="icon" className="rounded-full text-white hover:bg-white/20 hover:text-white">
@@ -75,7 +75,7 @@ export default function WishlistPage() {
                 </div>
             </div>
 
-            <div className="container mx-auto max-w-7xl px-4 md:px-8">
+            <div className="container mx-auto px-4 md:px-8">
                 {/* Loading State */}
                 {isLoading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

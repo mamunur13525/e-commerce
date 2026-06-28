@@ -281,3 +281,247 @@ export function useUpdateOrderStatus() {
     },
   });
 }
+
+// ============ PROMOS ============
+
+export interface AdminPromo {
+  _id: string;
+  code: string;
+  description?: string;
+  discountType: "percentage" | "fixed";
+  discountValue: number;
+  maxDiscount?: number | null;
+  minOrderAmount: number;
+  maxUsageCount?: number | null;
+  usageCount: number;
+  expiryDate: string;
+  isActive: boolean;
+  applicableToFirstOrder: boolean;
+  specificProductIds: string[];
+  specificCategoryIds: string[];
+  usedBy: any[];
+  createdBy: string;
+  updatedBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function useAdminPromos(params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  isActive?: string;
+}) {
+  const token = useAuthStore((s) => s.token);
+
+  return useQuery({
+    queryKey: ["admin", "promos", token, params],
+    queryFn: async () => {
+      const { data } = await axios.get("/api/admin/promos", {
+        params,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data as PaginatedResponse<AdminPromo>;
+    },
+    enabled: !!token,
+  });
+}
+
+export function useCreatePromo() {
+  const token = useAuthStore((s) => s.token);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (promoData: any) => {
+      const { data } = await axios.post("/api/admin/promos", promoData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "promos"] });
+    },
+  });
+}
+
+export function useUpdatePromo() {
+  const token = useAuthStore((s) => s.token);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, ...promoData }: any) => {
+      const { data } = await axios.put(`/api/admin/promos/${id}`, promoData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "promos"] });
+    },
+  });
+}
+
+export function useDeletePromo() {
+  const token = useAuthStore((s) => s.token);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data } = await axios.delete(`/api/admin/promos/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "promos"] });
+    },
+  });
+}
+
+
+// ============ CATEGORIES ============
+
+export interface AdminCategory {
+  _id: string;
+  type: string;
+  name: string;
+  subtitle: string;
+  color: string;
+  icon: string;
+  slug?: string;
+  count: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function useAdminCategories() {
+  const token = useAuthStore((s) => s.token);
+
+  return useQuery({
+    queryKey: ["admin", "categories", token],
+    queryFn: async () => {
+      const { data } = await axios.get("/api/admin/categories", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data as { success: boolean; data: AdminCategory[] };
+    },
+    enabled: !!token,
+  });
+}
+
+export function useCreateCategory() {
+  const token = useAuthStore((s) => s.token);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (categoryData: any) => {
+      const { data } = await axios.post("/api/admin/categories", categoryData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "categories"] });
+    },
+  });
+}
+
+export function useUpdateCategory() {
+  const token = useAuthStore((s) => s.token);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, ...categoryData }: any) => {
+      const { data } = await axios.put(`/api/admin/categories/${id}`, categoryData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "categories"] });
+    },
+  });
+}
+
+export function useDeleteCategory() {
+  const token = useAuthStore((s) => s.token);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data } = await axios.delete(`/api/admin/categories/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "categories"] });
+    },
+  });
+}
+
+// ============ METADATA ============
+
+export interface AdminMetadata {
+  _id: string;
+  hero_slider: Array<{
+    bg_color: string;
+    title: string;
+    description: string;
+    cta_btn: { color: string; text: string; bg_color: string; link: string };
+    image_url: string;
+  }>;
+  offers: Array<{
+    _id: string;
+    sub_title: string;
+    title: string;
+    description: string;
+    product_image: string;
+    primary_color: string;
+    secondary_color: string;
+  }>;
+  discout_cards: Array<{
+    _id: string;
+    type: string;
+    icon: string;
+    title: string;
+    description: string;
+    bg_color: string;
+    cta_btn: { color: string; text: string; bg_color: string; link: string };
+  }>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function useAdminMetadata() {
+  const token = useAuthStore((s) => s.token);
+
+  return useQuery({
+    queryKey: ["admin", "metadata", token],
+    queryFn: async () => {
+      const { data } = await axios.get("/api/admin/metadata", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data.data as AdminMetadata;
+    },
+    enabled: !!token,
+  });
+}
+
+export function useUpdateMetadata() {
+  const token = useAuthStore((s) => s.token);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (metadataData: any) => {
+      const { data } = await axios.put("/api/admin/metadata", metadataData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "metadata"] });
+    },
+  });
+}
+
