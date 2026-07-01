@@ -112,7 +112,12 @@ export function ProductDetailsDrawer({
                 variant="secondary"
                 className="bg-green-50 text-green-700 border-green-200"
               >
-                {product.discount}% OFF
+                {product.discountType === "amount"
+                  ? `৳${product.discount} OFF`
+                  : `${product.discount}% OFF`}
+                <span className="text-green-500 font-normal text-[10px] ml-1">
+                  ({product.discountType === "amount" ? "Amount" : "Percentage"})
+                </span>
               </Badge>
             )}
           </div>

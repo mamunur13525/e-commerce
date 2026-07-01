@@ -38,6 +38,11 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    discountType: {
+        type: String,
+        enum: ["amount", "percentage"],
+        default: "percentage"
+    },
     currency: {
         type: String,
         required: true

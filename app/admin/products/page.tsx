@@ -67,13 +67,21 @@ export default function AdminProductsPage() {
   const price = watch("price");
   const hasDiscount = watch("hasDiscount");
   const discount = watch("discount");
+  const discountType = watch("discountType");
 
   useEffect(() => {
     const p = parseFloat(price as any) || 0;
     const d = hasDiscount ? (parseFloat(discount as any) || 0) : 0;
-    const final = p - (p * (d / 100));
-    setValue("final_price", Number(final.toFixed(2)));
-  }, [price, hasDiscount, discount, setValue]);
+    let final: number;
+    if (hasDiscount && discountType === "amount") {
+      final = p - d;
+    } else if (hasDiscount && discountType === "percentage") {
+      final = p - (p * (d / 100));
+    } else {
+      final = p;
+    }
+    setValue("final_price", Number(Math.max(0, final).toFixed(2)));
+  }, [price, hasDiscount, discount, discountType, setValue]);
 
   // Sizes management state & functions
   const [newSize, setNewSize] = useState("");
@@ -141,6 +149,7 @@ export default function AdminProductsPage() {
       price: product.price,
       hasDiscount: product.discount > 0,
       discount: product.discount,
+      discountType: product.discountType || "percentage",
       final_price: product.final_price,
       quantity: product.quantity,
       weight: product.weight,
@@ -166,6 +175,7 @@ export default function AdminProductsPage() {
       weight: formData.weight,
       category: formData.category,
       discount: formData.hasDiscount ? formData.discount : 0,
+      discountType: formData.hasDiscount ? formData.discountType : "percentage",
       currency: formData.currency,
       image: formData.image,
       images: formData.images,

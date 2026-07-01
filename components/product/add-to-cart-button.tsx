@@ -9,6 +9,7 @@ import { useAuthModalStore } from "@/store/auth-modal-store";
 import { useAddToCart, useUpdateCartItem, useGetCart } from "@/hooks";
 import { useCartAnimation } from "@/components/context/cart-animation-context";
 import { toast } from "sonner";
+import Image from "next/image";
 
 interface AddToCartButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   productId: string;
@@ -121,12 +122,16 @@ export function AddToCartButton({
             )}
           </Button>
           {/* Hidden image for animation fallback */}
-          <img
-            ref={imageRef}
-            src={imageSrc}
-            className="fixed opacity-0 pointer-events-none size-1"
-            alt=""
-          />
+          {imageSrc && (
+            <Image
+              width={1}
+              height={1}
+              ref={imageRef}
+              src={imageSrc || ""}
+              className="fixed opacity-0 pointer-events-none size-1"
+              alt=""
+            />
+          )}
         </>
       );
     }
@@ -174,12 +179,16 @@ export function AddToCartButton({
         )}
       </Button>
       {/* Hidden image for animation fallback */}
-      <img
-        ref={imageRef}
-        src={imageSrc}
-        className="fixed opacity-0 pointer-events-none size-1"
-        alt=""
-      />
+      {imageSrc && (
+        <Image
+          width={1}
+          height={1}
+          ref={imageRef}
+          src={imageSrc || ""}
+          className="fixed opacity-0 pointer-events-none size-1"
+          alt=""
+        />
+      )}
     </>
   );
 }

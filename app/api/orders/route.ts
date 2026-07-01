@@ -4,12 +4,13 @@ import Order from "@/models/Order";
 import Cart from "@/models/Cart";
 import Product from "@/models/Product";
 import Promo from "@/models/Promo";
+import DeliveryZone from "@/models/DeliveryZone";
+import Settings from "@/models/Settings";
 import User from "@/models/User";
 import connectDB from "@/lib/db";
 import { sendOrderConfirmationEmail } from "@/lib/mail";
 
 // Server-side constants
-const DELIVERY_FEE = 16.0;
 const TAX_RATE = 0.1; // 10%
 
 /**
@@ -105,7 +106,7 @@ export async function POST(request: NextRequest) {
 
     // Only accept identifiers and choices from the client
     const body = await request.json();
-    const { addressId, paymentMethod, promoCode, itemIds, buyNowProductId, buyNowQuantity, guestInfo, guestAddress } = body;
+    const { addressId, paymentMethod, promoCode, itemIds, buyNowProductId, buyNowQuantity, guestInfo, guestAddress, deliveryZoneId } = body;
 
     // Validate required fields
     if (!paymentMethod) {
@@ -115,9 +116,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (paymentMethod !== "COD") {
+    if (paymentMethod !== "COD" && paymentMethod !== "Online") {
       return NextResponse.json(
-        { success: false, message: "Only Cash on Delivery payment is allowed" },
+        { success: false, message: "Invalid payment method. Allowed: COD, Online" },
         { status: 400 }
       );
     }
@@ -363,14 +364,40 @@ export async function POST(request: NextRequest) {
       // If promo is invalid, we silently ignore it (order proceeds without discount)
     }
 
-    // Step 6: Compute all monetary values server-side
-    const deliveryFee = DELIVERY_FEE;
+    // Step 6: Get delivery zone fee from DB
+    let deliveryFee = 0;
+    let deliveryZoneName = "";
+    if (deliveryZoneId) {
+      const zone = await DeliveryZone.findById(deliveryZoneId);
+      if (zone) {
+        deliveryFee = zone.fee;
+        deliveryZoneName = zone.name;
+      }
+    }
+
+    // Step 7: Calculate online payment discount (if applicable)
+    let onlinePaymentDiscount = 0;
+    if (paymentMethod === "Online") {
+      const settings = await Settings.findOne().lean();
+      if (settings && settings.onlinePaymentDiscount) {
+        const { type, value } = settings.onlinePaymentDiscount;
+        if (value > 0) {
+          if (type === "percentage") {
+            onlinePaymentDiscount = (subtotal * value) / 100;
+          } else {
+            onlinePaymentDiscount = value;
+          }
+          onlinePaymentDiscount = parseFloat(onlinePaymentDiscount.toFixed(2));
+        }
+      }
+    }
+
     const taxes = parseFloat(((subtotal - promoDiscount) * TAX_RATE).toFixed(2));
     const totalPrice = parseFloat(
-      (subtotal + deliveryFee - promoDiscount + taxes).toFixed(2)
+      (subtotal + deliveryFee - promoDiscount + taxes - onlinePaymentDiscount).toFixed(2)
     );
 
-    // Step 7: Generate a unique orderId
+    // Generate a unique orderId
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let isUnique = false;
     let newOrderId = "";
@@ -383,7 +410,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Step 8: Create the main order with items directly
+    // Create the main order with items directly
     const orderData: Record<string, unknown> = {
       ...(userId ? { user: userId } : {}),
       ...(guestInfo ? {
@@ -402,6 +429,9 @@ export async function POST(request: NextRequest) {
       deliveryAddress: deliveryAddressData,
       subtotal,
       deliveryFee,
+      deliveryZoneId: deliveryZoneId || "",
+      deliveryZoneName,
+      onlinePaymentDiscount,
       ...(promoDetails && {
         promoCode: {
           code: promoDetails.code,
@@ -414,7 +444,7 @@ export async function POST(request: NextRequest) {
       taxes,
       totalPrice,
       paymentMethod,
-      paymentStatus: "unpaid",
+      paymentStatus: paymentMethod === "Online" ? "paid" : "unpaid",
       status: "pending",
       orderId: newOrderId,
     };
@@ -423,7 +453,7 @@ export async function POST(request: NextRequest) {
     console.log({ order })
     await order.save();
 
-    // Step 10: Record promo usage (only for authenticated users)
+    // Record promo usage (only for authenticated users)
     if (promoDiscount > 0 && promoDetails && userId) {
       await Promo.findOneAndUpdate(
         { code: promoDetails.code },
@@ -440,65 +470,61 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (paymentMethod === "COD") {
-      // Decrease stock for COD orders immediately
-      for (const item of orderItems) {
-        await Product.findByIdAndUpdate(item.product, {
-          $inc: { quantity: -item.quantity },
-        });
-      }
-
-      // Remove ordered items from cart only for authenticated users
-      if (userId && !isDirectBuy) {
-        const orderedProductIds = orderItems.map((item) => item.product);
-        await Cart.findOneAndUpdate(
-          { user: userId, status: "active" },
-          { $pull: { items: { product: { $in: orderedProductIds } } } }
-        );
-        // Recalculate cart totals
-        const updatedCart = await Cart.findOne({ user: userId, status: "active" });
-        if (updatedCart) {
-          await updatedCart.save();
-        }
-      }
-
-      // Send order confirmation email if we have an email address
-      const customerEmail = userId
-        ? (await User.findById(userId))?.email
-        : guestInfo?.email;
-
-      if (customerEmail) {
-        const appUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
-        const userInfo = userId ? await User.findById(userId) : null;
-        sendOrderConfirmationEmail(customerEmail, {
-          orderId: newOrderId,
-          orderDetailsUrl: `${appUrl}/account/orders/${order._id}`,
-          customerName: userInfo?.name || deliveryAddressData.full_name,
-          items: orderItems.map((item) => ({
-            name: item.name || "Product",
-            quantity: item.quantity,
-            price: item.price,
-          })),
-          subtotal,
-          deliveryFee,
-          promoDiscount,
-          taxes,
-          totalPrice,
-          paymentMethod,
-          deliveryAddress: deliveryAddressData,
-        }).catch((err) =>
-          console.error("Failed to send order confirmation email:", err)
-        );
-      }
-
-      return NextResponse.json({
-        success: true,
-        message: "Order placed successfully",
-        orderId: order._id,
+    // Decrease stock for all orders immediately
+    for (const item of orderItems) {
+      await Product.findByIdAndUpdate(item.product, {
+        $inc: { quantity: -item.quantity },
       });
     }
 
-    return NextResponse.json({ success: false, message: "Invalid payment method" }, { status: 400 });
+    // Remove ordered items from cart only for authenticated users
+    if (userId && !isDirectBuy) {
+      const orderedProductIds = orderItems.map((item) => item.product);
+      await Cart.findOneAndUpdate(
+        { user: userId, status: "active" },
+        { $pull: { items: { product: { $in: orderedProductIds } } } }
+      );
+      // Recalculate cart totals
+      const updatedCart = await Cart.findOne({ user: userId, status: "active" });
+      if (updatedCart) {
+        await updatedCart.save();
+      }
+    }
+
+    // Send order confirmation email if we have an email address
+    const customerEmail = userId
+      ? (await User.findById(userId))?.email
+      : guestInfo?.email;
+
+    if (customerEmail) {
+      const appUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+      const userInfo = userId ? await User.findById(userId) : null;
+      sendOrderConfirmationEmail(customerEmail, {
+        orderId: newOrderId,
+        orderDetailsUrl: `${appUrl}/account/orders/${order._id}`,
+        customerName: userInfo?.name || deliveryAddressData.full_name,
+        items: orderItems.map((item) => ({
+          name: item.name || "Product",
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        subtotal,
+        deliveryFee,
+        promoDiscount,
+        taxes,
+        totalPrice,
+        paymentMethod,
+        deliveryAddress: deliveryAddressData,
+      }).catch((err) =>
+        console.error("Failed to send order confirmation email:", err)
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Order placed successfully",
+      orderId: order._id,
+    });
 
   } catch (error: unknown) {
     console.error("Error creating order:", error);

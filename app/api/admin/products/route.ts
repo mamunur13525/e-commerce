@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     await connectToDatabase();
 
     const body = await request.json();
-    const { name, description, price, final_price, quantity, weight, rating, category, discount, currency, image, images, sizes, colors } = body;
+    const { name, description, price, final_price, quantity, weight, rating, category, discount, discountType, currency, image, images, sizes, colors } = body;
 
     // Validation
     if (!name || !description || !price || !quantity || !category) {
@@ -72,8 +72,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    const product = await Product.create({
+console.log({discount, discountType})
+const productData = {
       name,
       description,
       price: Number(price),
@@ -83,12 +83,15 @@ export async function POST(request: NextRequest) {
       rating: rating !== undefined ? Number(rating) : 0,
       category,
       discount: discount !== undefined ? Number(discount) : 0,
+      discountType: discountType || "percentage",
       currency: currency || "USD",
       image: image || {},
       images: images || [],
       sizes: sizes || undefined,
       colors: colors || undefined,
-    });
+    };
+    console.log({productData})
+    const product = await Product.create(productData);
 
     return NextResponse.json(
       { success: true, data: product, message: "Product created successfully" },

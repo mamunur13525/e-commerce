@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Message01Icon, Loading03Icon, ArrowUp01Icon, ArrowDown01Icon } from "hugeicons-react";
+import {
+  Message01Icon,
+  Loading03Icon,
+  ArrowUp01Icon,
+  ArrowDown01Icon,
+} from "hugeicons-react";
 import { Button } from "@/components/ui/button";
 import { useComments, useAddComment } from "@/hooks";
 import { useAuthStore } from "@/store/auth-store";
@@ -28,16 +33,21 @@ export function ProductDiscussion({ productId }: ProductDiscussionProps) {
   const [newComment, setNewComment] = useState("");
   const [replyTo, setReplyTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
-  const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
+  const [expandedComments, setExpandedComments] = useState<Set<string>>(
+    new Set(),
+  );
 
   const mainComments = useMemo(() => {
-    return comments.filter(c => !c.parentId);
+    return comments.filter((c) => !c.parentId);
   }, [comments]);
 
   const getReplies = (parentId: string) => {
-    return comments.filter(c => c.parentId === parentId).sort((a, b) =>
-      new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-    );
+    return comments
+      .filter((c) => c.parentId === parentId)
+      .sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      );
   };
 
   const toggleReplies = (commentId: string) => {
@@ -130,7 +140,8 @@ export function ProductDiscussion({ productId }: ProductDiscussionProps) {
                         <div>
                           <div className="flex items-center gap-2">
                             <h4 className="font-semibold text-sm text-gray-900">
-                              {comment?.user?.first_name} {comment?.user?.last_name}
+                              {comment?.user?.first_name}{" "}
+                              {comment?.user?.last_name}
                             </h4>
                             {comment.isVendor && (
                               <span className="bg-[#003d29] text-white text-[10px] px-2 py-0.5 rounded-full font-medium">
@@ -148,7 +159,11 @@ export function ProductDiscussion({ productId }: ProductDiscussionProps) {
                       </p>
                       <div className="flex items-center gap-4">
                         <button
-                          onClick={() => setReplyTo(replyTo === comment._id ? null : comment._id)}
+                          onClick={() =>
+                            setReplyTo(
+                              replyTo === comment._id ? null : comment._id,
+                            )
+                          }
                           className="text-xs font-medium text-[#003d29] hover:underline"
                         >
                           Reply
@@ -158,8 +173,13 @@ export function ProductDiscussion({ productId }: ProductDiscussionProps) {
                             onClick={() => toggleReplies(comment._id)}
                             className="text-xs font-medium text-gray-500 hover:text-gray-700 flex items-center gap-1 cursor-pointer"
                           >
-                            {isExpanded ? <ArrowUp01Icon className="size-3" /> : <ArrowDown01Icon className="size-3" />}
-                            {replies.length} {replies.length === 1 ? 'reply' : 'replies'}
+                            {isExpanded ? (
+                              <ArrowUp01Icon className="size-3" />
+                            ) : (
+                              <ArrowDown01Icon className="size-3" />
+                            )}
+                            {replies.length}{" "}
+                            {replies.length === 1 ? "reply" : "replies"}
                           </button>
                         )}
                       </div>
@@ -189,7 +209,11 @@ export function ProductDiscussion({ productId }: ProductDiscussionProps) {
                               disabled={addCommentMutation.isPending}
                               className="bg-[#003d29] hover:bg-[#002d1f] text-white text-xs rounded-full px-4"
                             >
-                              {addCommentMutation.isPending ? <Loading03Icon className="size-3 animate-spin" /> : "Post Reply"}
+                              {addCommentMutation.isPending ? (
+                                <Loading03Icon className="size-3 animate-spin" />
+                              ) : (
+                                "Post Reply"
+                              )}
                             </Button>
                           </div>
                         </div>
@@ -200,26 +224,30 @@ export function ProductDiscussion({ productId }: ProductDiscussionProps) {
                     {isExpanded && replies.length > 0 && (
                       <div className="ml-8 space-y-4 border-l-2 border-gray-100 pl-4">
                         {replies.map((reply) => (
-                          <div key={reply._id} className="bg-gray-50 rounded-xl p-4">
+                          <div
+                            key={reply._id}
+                            className="bg-gray-50 rounded-xl p-4"
+                          >
                             <div className="flex items-center gap-2 mb-2">
                               <div className="size-6 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                                {reply.user.image ? (
+                                {reply?.user?.image ? (
                                   <Image
-                                    src={reply.user.image}
-                                    alt={reply.user.first_name}
+                                    src={reply?.user?.image || ""}
+                                    alt={reply?.user?.first_name}
                                     width={24}
                                     height={24}
                                     className="object-cover"
                                   />
                                 ) : (
                                   <span className="text-gray-500 text-[10px] font-bold">
-                                    {reply.user.first_name[0]}
+                                    {reply?.user?.first_name?.[0]}
                                   </span>
                                 )}
                               </div>
                               <div className="flex items-center gap-2">
                                 <h5 className="font-semibold text-xs text-gray-900">
-                                  {reply.user.first_name} {reply.user.last_name}
+                                  {reply?.user?.first_name}{" "}
+                                  {reply?.user?.last_name}
                                 </h5>
                                 {reply.isVendor && (
                                   <span className="bg-[#003d29] text-white text-[8px] px-1.5 py-0.5 rounded-full font-medium">
@@ -244,7 +272,9 @@ export function ProductDiscussion({ productId }: ProductDiscussionProps) {
             ) : (
               <div className="text-center py-12 bg-gray-50 rounded-xl">
                 <Message01Icon className="size-12 mx-auto text-gray-300 mb-3" />
-                <p className="text-gray-500">No discussions yet. Be the first to ask!</p>
+                <p className="text-gray-500">
+                  No discussions yet. Be the first to ask!
+                </p>
               </div>
             )}
           </div>
@@ -255,13 +285,13 @@ export function ProductDiscussion({ productId }: ProductDiscussionProps) {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPage(p => Math.max(1, p - 1))}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
                 className="rounded-full px-4 border-gray-200 text-[#003d29] font-semibold disabled:opacity-50"
               >
                 Previous
               </Button>
-              
+
               <div className="flex items-center gap-1">
                 {[...Array(pagination.pages)].map((_, i) => (
                   <Button
@@ -271,7 +301,9 @@ export function ProductDiscussion({ productId }: ProductDiscussionProps) {
                     onClick={() => setPage(i + 1)}
                     className={cn(
                       "size-8 rounded-full p-0 text-sm font-bold",
-                      page === i + 1 ? "bg-[#003d29] text-white hover:bg-[#003d29]" : "text-gray-500 hover:text-[#003d29]"
+                      page === i + 1
+                        ? "bg-[#003d29] text-white hover:bg-[#003d29]"
+                        : "text-gray-500 hover:text-[#003d29]",
                     )}
                   >
                     {i + 1}
@@ -282,7 +314,9 @@ export function ProductDiscussion({ productId }: ProductDiscussionProps) {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPage(p => Math.min(pagination.pages, p + 1))}
+                onClick={() =>
+                  setPage((p) => Math.min(pagination.pages, p + 1))
+                }
                 disabled={page === pagination.pages}
                 className="rounded-full px-4 border-gray-200 text-[#003d29] font-semibold disabled:opacity-50"
               >
@@ -296,7 +330,10 @@ export function ProductDiscussion({ productId }: ProductDiscussionProps) {
         <div className="w-full md:w-80 shrink-0 sticky top-24">
           <div className="bg-gray-50 p-6 rounded-xl space-y-4 border">
             <h3 className="font-bold text-gray-900">Post a comment</h3>
-            <p className="text-xs text-gray-500">Your email address will not be published. Required fields are marked *</p>
+            <p className="text-xs text-gray-500">
+              Your email address will not be published. Required fields are
+              marked *
+            </p>
             <form onSubmit={handleSubmitComment} className="space-y-4">
               <textarea
                 value={newComment}
@@ -310,7 +347,11 @@ export function ProductDiscussion({ productId }: ProductDiscussionProps) {
                 disabled={addCommentMutation.isPending}
                 className="w-full bg-[#003d29] hover:bg-[#002d1f] text-white rounded-full py-6 font-semibold"
               >
-                {addCommentMutation.isPending && !replyTo ? <Loading03Icon className="animate-spin" /> : "Post Comment"}
+                {addCommentMutation.isPending && !replyTo ? (
+                  <Loading03Icon className="animate-spin" />
+                ) : (
+                  "Post Comment"
+                )}
               </Button>
             </form>
           </div>

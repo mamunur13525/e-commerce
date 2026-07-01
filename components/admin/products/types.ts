@@ -4,6 +4,7 @@ export interface ProductFormData {
   price: number;
   hasDiscount: boolean;
   discount: number;
+  discountType: "amount" | "percentage";
   final_price: number;
   quantity: number;
   weight: string;
@@ -23,6 +24,7 @@ export const defaultValues: ProductFormData = {
   price: 0,
   hasDiscount: false,
   discount: 0,
+  discountType: "percentage",
   final_price: 0,
   quantity: 0,
   weight: "",

@@ -17,7 +17,7 @@ export function PromoBanners({ offers }: PromoBannersProps) {
     const displayOffers = offers && offers.length > 0 ? offers : [];
     return (
         <section className="container mx-auto px-4 py-8">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {displayOffers.map((item, index) => {
                     const Icon = DEFAULT_ICONS[index] || Sun01Icon;
                     return (

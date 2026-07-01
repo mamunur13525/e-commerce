@@ -38,7 +38,6 @@ import { toast } from "sonner";
 import { useState } from "react";
 import Image from "next/image";
 import logo from "@/public/assets/logo2.png";
-import { FavouriteFreeIcons } from "@hugeicons/core-free-icons";
 
 export function Navbar() {
   const pathname = usePathname();

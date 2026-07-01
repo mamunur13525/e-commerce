@@ -25,6 +25,8 @@ import {
   CouponPercentIcon,
   Layers01Icon,
   Database01Icon,
+  MapPinIcon,
+  Settings01Icon,
 } from "hugeicons-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -38,7 +40,9 @@ const managementItems = [
   { icon: UserGroupIcon, label: "Customer", href: "/admin/users" },
   { icon: ShoppingBag01Icon, label: "My Order", href: "/admin/orders" },
   { icon: CouponPercentIcon, label: "Promo", href: "/admin/promos" },
+  { icon: MapPinIcon, label: "Delivery Zones", href: "/admin/delivery-zones" },
   { icon: Database01Icon, label: "Metadata", href: "/admin/metadata" },
+  { icon: Settings01Icon, label: "Settings", href: "/admin/settings" },
 ];
 
 export function AppSidebar() {

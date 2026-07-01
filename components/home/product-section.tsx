@@ -100,7 +100,7 @@ export function ProductSection({ categories, title, isShowingCategoryFilter = fa
   }, [refetch]);
 
   return (
-    <section className="container mx-auto px-4 pb-24">
+    <section className="container mx-auto pb-24">
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-3xl font-bold text-[#003d29]">{title}</h2>
         <Link
@@ -117,7 +117,7 @@ export function ProductSection({ categories, title, isShowingCategoryFilter = fa
         }
 
         {isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
             {[...Array(10)].map((_, i) => (
               <ProductCardSkeleton key={i} />
             ))}
@@ -142,7 +142,7 @@ export function ProductSection({ categories, title, isShowingCategoryFilter = fa
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2"
           >
             <AnimatePresence mode="popLayout">
               {products.length > 0 ? (

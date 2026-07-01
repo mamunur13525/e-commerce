@@ -62,6 +62,18 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    deliveryZoneId: {
+      type: String,
+      required: false,
+    },
+    deliveryZoneName: {
+      type: String,
+      required: false,
+    },
+    onlinePaymentDiscount: {
+      type: Number,
+      default: 0,
+    },
     promoCode: {
       code: {
         type: String,
@@ -94,7 +106,7 @@ const orderSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      enum: ["COD"],
+      enum: ["COD", "Online"],
       required: true,
     },
     paymentStatus: {

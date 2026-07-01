@@ -49,6 +49,7 @@ export interface AdminProduct {
   rating: number;
   category: string;
   discount: number;
+  discountType?: "amount" | "percentage";
   currency: string;
   image: any;
   images: any[];
@@ -523,6 +524,135 @@ export function useUpdateMetadata() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "metadata"] });
+    },
+  });
+}
+
+// ============ DELIVERY ZONES ============
+
+export interface AdminDeliveryZone {
+  _id: string;
+  name: string;
+  fee: number;
+  estimatedDelivery: string;
+  isActive: boolean;
+  createdBy: string;
+  updatedBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function useAdminDeliveryZones(params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+}) {
+  const token = useAuthStore((s) => s.token);
+
+  return useQuery({
+    queryKey: ["admin", "delivery-zones", token, params],
+    queryFn: async () => {
+      const { data } = await axios.get("/api/admin/delivery-zones", {
+        params,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data as PaginatedResponse<AdminDeliveryZone>;
+    },
+    enabled: !!token,
+  });
+}
+
+export function useCreateDeliveryZone() {
+  const token = useAuthStore((s) => s.token);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (zoneData: any) => {
+      const { data } = await axios.post("/api/admin/delivery-zones", zoneData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "delivery-zones"] });
+    },
+  });
+}
+
+export function useUpdateDeliveryZone() {
+  const token = useAuthStore((s) => s.token);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, ...zoneData }: any) => {
+      const { data } = await axios.put(`/api/admin/delivery-zones/${id}`, zoneData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "delivery-zones"] });
+    },
+  });
+}
+
+export function useDeleteDeliveryZone() {
+  const token = useAuthStore((s) => s.token);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data } = await axios.delete(`/api/admin/delivery-zones/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "delivery-zones"] });
+    },
+  });
+}
+
+// ============ SETTINGS ============
+
+export interface AdminSettings {
+  _id: string;
+  onlinePaymentDiscount: {
+    type: "percentage" | "fixed";
+    value: number;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function useAdminSettings() {
+  const token = useAuthStore((s) => s.token);
+
+  return useQuery({
+    queryKey: ["admin", "settings", token],
+    queryFn: async () => {
+      const { data } = await axios.get("/api/admin/settings", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data.data as AdminSettings;
+    },
+    enabled: !!token,
+  });
+}
+
+export function useUpdateSettings() {
+  const token = useAuthStore((s) => s.token);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (settingsData: any) => {
+      const { data } = await axios.put("/api/admin/settings", settingsData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "settings"] });
     },
   });
 }

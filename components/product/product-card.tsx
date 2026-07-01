@@ -75,7 +75,10 @@ export function ProductCard({
       {/* Image and Wishlist Container */}
       <div className="bg-[#e8e8e8] rounded-lg relative w-full aspect-square mb-3 group-hover:scale-105 transition-transform duration-300 self-center">
         <Link href={`/products/${id}`} className="block w-full h-full  overflow-hidden">
-          <Image ref={imageRef} src={imageSrc} alt={title} fill className="object-cover rounded-lg" />
+        {
+          imageSrc &&
+          <Image ref={imageRef} src={imageSrc||""} alt={title} fill className="object-cover rounded-lg" />
+        }
         </Link>
 
         {/* Wishlist Button */}
@@ -96,7 +99,7 @@ export function ProductCard({
 
       {/* Content */}
       <Link href={`/products/${id}`} className="block w-full mb-1">
-        <h3 className="font-bold text-gray-800 text-3xl leading-tight hover:text-[#003d29] transition-colors line-clamp-2 min-h-10" title={title}>{title}</h3>
+        <h3 className="font-bold text-gray-800 text-xl sm:text-2xl leading-tight hover:text-[#003d29] transition-colors line-clamp-2 min-h-10" title={title}>{title}</h3>
       </Link>
 
       {/* Rating */}

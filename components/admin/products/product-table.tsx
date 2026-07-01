@@ -75,8 +75,8 @@ export function ProductTable({
             <TableHead>Name</TableHead>
             <TableHead>Category</TableHead>
             <TableHead>Price</TableHead>
-            <TableHead>Stock</TableHead>
             <TableHead>Discount</TableHead>
+            <TableHead>Stock</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -116,6 +116,20 @@ export function ProductTable({
                   </span>
                 )}
               </TableCell>
+                    <TableCell>
+                {product.discount > 0 ? (
+                  <span className="text-green-600 font-medium">
+                    {product.discountType === "amount"
+                      ? `৳${product.discount} off`
+                      : `${product.discount}%`}
+                    {/* <span className="text-green-500 font-normal text-xs ml-1">
+                      ({product.discountType === "amount" ? "Amount" : "Percentage"})
+                    </span> */}
+                  </span>
+                ) : (
+                  <span className="text-gray-400">-</span>
+                )}
+              </TableCell>
               <TableCell>
                 <span
                   className={`font-medium ${
@@ -125,15 +139,7 @@ export function ProductTable({
                   {product.quantity}
                 </span>
               </TableCell>
-              <TableCell>
-                {product.discount > 0 ? (
-                  <span className="text-green-600 font-medium">
-                    {product.discount}%
-                  </span>
-                ) : (
-                  <span className="text-gray-400">-</span>
-                )}
-              </TableCell>
+        
               <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-1">
                   <Button

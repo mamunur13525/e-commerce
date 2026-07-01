@@ -108,7 +108,7 @@ export function ProductFormFields({
       </div>
 
       {/* 4. Discount Checkbox & Input */}
-      <div className="flex items-center gap-6 py-2 border-y border-gray-100 my-1">
+      <div className="flex flex-col gap-3 py-2 border-y border-gray-100 my-1">
         <div className="flex items-center gap-2">
           <Controller
             control={control}
@@ -117,7 +117,13 @@ export function ProductFormFields({
               <Checkbox
                 id="hasDiscount"
                 checked={field.value}
-                onCheckedChange={field.onChange}
+                onCheckedChange={(checked) => {
+                  field.onChange(checked);
+                  // Auto-select percentage discount type when applying discount
+                  if (checked) {
+                    setValue("discountType", "percentage");
+                  }
+                }}
                 className="rounded-md border-gray-300 data-[state=checked]:bg-[#003d29] data-[state=checked]:border-[#003d29]"
               />
             )}
@@ -128,20 +134,49 @@ export function ProductFormFields({
         </div>
 
         {watch("hasDiscount") && (
-          <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2 duration-200">
-            <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Discount (%)</label>
-            <Input
-              type="number"
-              className="w-24 h-9"
-              placeholder="e.g. 10"
-              {...register("discount", {
-                valueAsNumber: true,
-                validate: (v: number) => (v >= 0 && v <= 100) || "Discount must be between 0 and 100",
-              })}
-            />
-            {errors.discount && (
-              <p className="text-red-500 text-xs mt-1">{errors.discount.message as string}</p>
-            )}
+          <div className="flex items-center gap-4 animate-in fade-in slide-in-from-left-2 duration-200 pl-6">
+            {/* Discount Type Selector */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Type</label>
+              <Controller
+                control={control}
+                name="discountType"
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="w-28 h-9 border border-gray-200">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="percentage">Percentage</SelectItem>
+                      <SelectItem value="amount">Amount (৳)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+
+            {/* Discount Value Input */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                {watch("discountType") === "percentage" ? "Discount (%)" : "Discount (৳)"}
+              </label>
+              <Input
+                type="number"
+                className="w-24 h-9"
+                placeholder={watch("discountType") === "percentage" ? "e.g. 10" : "e.g. 50"}
+                {...register("discount", {
+                  valueAsNumber: true,
+                  validate: (v: number) => {
+                    if (v < 0) return "Discount cannot be negative";
+                    if (watch("discountType") === "percentage" && v > 100) return "Percentage must be ≤ 100";
+                    return true;
+                  },
+                })}
+              />
+              {errors.discount && (
+                <p className="text-red-500 text-xs mt-1">{errors.discount.message as string}</p>
+              )}
+            </div>
           </div>
         )}
       </div>
