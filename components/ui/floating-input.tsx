@@ -10,7 +10,7 @@ export interface FloatingInputProps
 }
 
 const FloatingInput = React.forwardRef<HTMLInputElement, FloatingInputProps>(
-    ({ className, label, startIcon, id, ...props }, ref) => {
+    ({ className, label, startIcon, id, placeholder, ...props }, ref) => {
         // Generate a random ID if none provided to link label and input
         const generatedId = React.useId();
         const inputId = id || generatedId;
@@ -22,10 +22,11 @@ const FloatingInput = React.forwardRef<HTMLInputElement, FloatingInputProps>(
                     id={inputId}
                     className={cn(
                         "peer block w-full rounded-xl border border-gray-200 bg-transparent px-4 pb-2.5 pt-6 text-sm text-gray-900 focus:border-[#003d29] focus:outline-none focus:ring-0",
+                        placeholder && "placeholder:text-gray-400 placeholder:opacity-0 focus:placeholder:opacity-100 transition-opacity duration-200",
                         startIcon && "pl-11", // Add padding if icon exists
                         className
                     )}
-                    placeholder=" "
+                    placeholder={placeholder || " "}
                     ref={ref}
                     {...props}
                 />

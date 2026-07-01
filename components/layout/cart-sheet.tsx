@@ -70,7 +70,7 @@ export function CartSheet() {
               {displayCartItems.length}
             </span>
           )}
-          <span className="text-white/90 group-hover:text-white duration-200">Cart</span>
+          <span className="hidden md:inline text-white/90 group-hover:text-white duration-200">Cart</span>
         </div>
       </SheetTrigger>
       <SheetContent className="flex flex-col w-full sm:max-w-md p-0 gap-0 ">

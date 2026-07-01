@@ -70,7 +70,7 @@ export function Navbar() {
   const handleCloseSidebar = () => setSheetOpen(false);
   return (
     <header className="bg-[#003d29] backdrop-blur-2xl text-white  sticky top-0 z-50">
-      <div className="container mx-auto py-4 flex items-center justify-between gap-4">
+      <div className="container mx-auto py-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
         {/* Left: Menu & Logo */}
         <div className="flex items-center gap-4">
           {/* Sidebar Trigger */}
@@ -160,14 +160,16 @@ export function Navbar() {
           </Link>
         </div>
 
-        {/* Center: Search Bar */}
-        <SearchBar />
+        {/* Center: Search Bar - full width on mobile, inline on desktop */}
+        <div className="order-3 md:order-0 w-11/12 mx-auto md:flex-1 md:max-w-2xl">
+          <SearchBar />
+        </div>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-6">
           <Link href="/wishlist" className="group relative flex items-center justify-center gap-2 cursor-pointer">
             <FavouriteIcon className="size-6 text-white/90 group-hover:text-white duration-200" />
-            <span className="text-white/90 group-hover:text-white duration-200">Wishlist</span>
+            <span className="hidden md:inline text-white/90 group-hover:text-white duration-200">Wishlist</span>
           </Link>
 
           <CartSheet />

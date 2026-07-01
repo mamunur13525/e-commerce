@@ -5,14 +5,17 @@ import SetAddressDefaultButton from "./SetAddressDefaultButton";
 
 interface AddressProps {
   address: {
-    city?: string;
-    country?: string;
-    full_name?: string;
-    isDefault?: boolean;
-    state?: string;
-    street?: string;
-    zip?: string;
     _id?: string;
+    full_name?: string;
+    phone?: string;
+    building?: string;
+    colony?: string;
+    region?: string;
+    city?: string;
+    area?: string;
+    address?: string;
+    label?: string;
+    isDefault?: boolean;
   };
   deleteIcon?: boolean;
 }
@@ -21,11 +24,15 @@ const AddressCard = ({ address, deleteIcon = true }: AddressProps) => {
   const {
     isDefault = false,
     _id = "",
-    city = "",
-    state = "",
-    zip = "",
     full_name = "",
-    street = "",
+    phone = "",
+    building = "",
+    colony = "",
+    region = "",
+    city = "",
+    area = "",
+    address: addressLine = "",
+    label = "",
   } = address;
   return (
     <div
@@ -50,16 +57,24 @@ const AddressCard = ({ address, deleteIcon = true }: AddressProps) => {
         <div>
           <div className="flex items-center gap-2">
             <h4 className="font-bold text-[#003d29]">{full_name}</h4>
+            {label && (
+              <span className="text-[10px] font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                {label}
+              </span>
+            )}
             {isDefault && (
               <span className="text-[10px] font-bold bg-[#003d29] text-white px-2 py-0.5 rounded-full">
                 DEFAULT
               </span>
             )}
           </div>
-          <p className="text-gray-600 text-sm mt-1">{street}</p>
+          {phone && <p className="text-gray-600 text-sm mt-1">{phone}</p>}
+          <p className="text-gray-600 text-sm">{building}</p>
+          <p className="text-gray-600 text-sm">{colony}</p>
           <p className="text-gray-500 text-sm">
-            {city}, {state} {zip}
+            {area}{area && city ? ", " : ""}{city}{city && region ? ", " : ""}{region}
           </p>
+          {addressLine && <p className="text-gray-500 text-sm">{addressLine}</p>}
         </div>
       </div>
 

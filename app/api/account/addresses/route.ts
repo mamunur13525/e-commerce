@@ -16,10 +16,10 @@ export async function POST(request: NextRequest) {
 
     await connectToDatabase();
     const body = await request.json();
-    const { full_name,  street, city, state, zip, country, isDefault } = body;
+    const { full_name, phone, building, colony, region, city, area, address, label, isDefault } = body;
 
     // Validation
-    if (!full_name || !street || !city || !state || !zip) {
+    if (!full_name || !phone || !building || !colony || !region || !city || !area || !address) {
       return NextResponse.json(
         { success: false, message: "All address fields are required" },
         { status: 400 }
@@ -40,11 +40,14 @@ export async function POST(request: NextRequest) {
     const newAddress = {
       _id: new mongoose.Types.ObjectId(),
       full_name,
-      street,
+      phone,
+      building,
+      colony,
+      region,
       city,
-      state,
-      zip,
-      country: country || "Bangladesh",
+      area,
+      address,
+      label: label || "Home",
       isDefault: isDefault || (user.addresses.length === 0),
     };
 

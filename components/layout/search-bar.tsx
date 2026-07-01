@@ -136,7 +136,7 @@ export function SearchBar() {
   return (
     <div
       ref={containerRef}
-      className="relative flex-1 max-w-2xl mx-4 hidden md:block"
+      className="relative w-full max-w-2xl md:mx-auto"
     >
       {/* Input Field */}
       <div className="relative group">
@@ -173,7 +173,7 @@ export function SearchBar() {
 
       {/* Dropdown Results */}
       <div
-        className={`absolute left-0 top-14 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 transition-[height,opacity,width] duration-300 ease-out ${isOpen ? "opacity-100 w-[130%]" : "w-full opacity-0 pointer-events-none"}`}
+        className={`absolute left-0 top-14 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 transition-[height,opacity,width] duration-300 ease-out ${isOpen ? "opacity-100 w-full md:w-[150%] lg:w-[130%]" : "w-full opacity-0 pointer-events-none"}`}
         style={{
           height: isOpen ? (height === "auto" ? "auto" : `${height}px`) : "0px",
         }}

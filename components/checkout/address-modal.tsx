@@ -16,11 +16,14 @@ import AddAddressModalButton from "../address/AddAddressModalButton";
 export interface Address {
   _id: string;
   full_name: string;
-  street: string;
+  phone: string;
+  building: string;
+  colony: string;
+  region: string;
   city: string;
-  state: string;
-  zip: string;
-  country: string;
+  area: string;
+  address: string;
+  label: string;
   isDefault: boolean;
 }
 

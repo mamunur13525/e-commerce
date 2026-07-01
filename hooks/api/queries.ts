@@ -490,11 +490,13 @@ export const useUpdateProfile = (token: string | null): UseMutationResult<Profil
 export interface AddAddressData {
   full_name: string;
   phone: string;
-  street: string;
+  building: string;
+  colony: string;
+  region: string;
   city: string;
-  state: string;
-  zip: string;
-  country?: string;
+  area: string;
+  address: string;
+  label?: string;
   isDefault?: boolean;
 }
 

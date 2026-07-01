@@ -2,11 +2,13 @@ export interface Address {
   _id?: string;
   full_name: string;
   phone: string;
-  street: string;
+  building: string;
+  colony: string;
+  region: string;
   city: string;
-  state: string;
-  zip: string;
-  country?: string;
+  area: string;
+  address: string;
+  label: string;
   isDefault: boolean;
 }
 
@@ -41,4 +43,3 @@ export interface SignupCredentials {
   password: string;
   otp?: string;
 }
-

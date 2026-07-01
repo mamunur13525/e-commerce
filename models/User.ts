@@ -46,7 +46,22 @@ const userSchema = new mongoose.Schema(
           required: true,
           trim: true,
         },
-        street: {
+        phone: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        building: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        colony: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        region: {
           type: String,
           required: true,
           trim: true,
@@ -56,19 +71,19 @@ const userSchema = new mongoose.Schema(
           required: true,
           trim: true,
         },
-        state: {
+        area: {
           type: String,
           required: true,
           trim: true,
         },
-        zip: {
+        address: {
           type: String,
           required: true,
           trim: true,
         },
-        country: {
+        label: {
           type: String,
-          default: "United States",
+          default: "Home",
           trim: true,
         },
         isDefault: {
