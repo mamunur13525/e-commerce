@@ -22,19 +22,18 @@ import { useTrackOrder } from "@/hooks/api/orders";
 
 export default function TrackOrderPage() {
   const [orderId, setOrderId] = useState("");
-  const [email, setEmail] = useState("");
   const [trackingResult, setTrackingResult] = useState<any>(null);
 
   const trackOrderMutation = useTrackOrder();
 
   const handleTrack = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!orderId || !email) {
-      toast.error("Please enter both Order ID and Billing Email.");
+    if (!orderId) {
+      toast.error("Please enter your Order ID.");
       return;
     }
     trackOrderMutation.mutate(
-      { orderId, email },
+      { orderId },
       {
         onSuccess: (data) => {
           setTrackingResult(data);
@@ -43,7 +42,7 @@ export default function TrackOrderPage() {
         onError: (error: any) => {
           setTrackingResult(null);
           toast.error(
-            error.response?.data?.message || "Order not found or invalid details."
+            error.response?.data?.message || "Order not found."
           );
         },
       }
@@ -67,7 +66,7 @@ export default function TrackOrderPage() {
           <CardHeader>
             <CardTitle>Track via Order ID</CardTitle>
             <CardDescription>
-              Check the status of your order using your Order ID and billing email.
+              Enter your Order ID below to check the current status of your order.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -75,18 +74,9 @@ export default function TrackOrderPage() {
               <div className="space-y-2">
                 <FloatingInput
                   id="order-id"
-                  label="Order ID"
+                  label="Order ID (e.g. ORD-XXXXXXXX)"
                   value={orderId}
                   onChange={(e) => setOrderId(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <FloatingInput
-                  id="billing-email"
-                  label="Billing Email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <Button
@@ -341,8 +331,10 @@ export default function TrackOrderPage() {
                     {trackingResult.deliveryAddress ? (
                       <div className="text-sm text-gray-600 space-y-1">
                         <p className="font-medium text-gray-900">{trackingResult.deliveryAddress.full_name}</p>
-                        <p>{trackingResult.deliveryAddress.street}</p>
-                        <p>{trackingResult.deliveryAddress.city}, {trackingResult.deliveryAddress.state} {trackingResult.deliveryAddress.zip}</p>
+                                <p>{trackingResult.deliveryAddress.building}</p>
+                        {trackingResult.deliveryAddress.colony && <p>{trackingResult.deliveryAddress.colony}</p>}
+                        <p>{trackingResult.deliveryAddress.address}</p>
+                        <p>{trackingResult.deliveryAddress.city}, {trackingResult.deliveryAddress.region}{trackingResult.deliveryAddress.area ? ` - ${trackingResult.deliveryAddress.area}` : ""}</p>
                         <p>{trackingResult.deliveryAddress.country}</p>
                       </div>
                     ) : (

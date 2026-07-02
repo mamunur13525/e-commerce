@@ -466,13 +466,18 @@ export default function OrderDetailsPage({
                 <p className="font-semibold text-gray-900 mb-1">
                   {order.deliveryAddress.full_name}
                 </p>
+                {order.deliveryAddress.phone && (
+                  <p className="text-sm text-gray-500 mb-1">{order.deliveryAddress.phone}</p>
+                )}
                 <div className="text-sm text-gray-600 space-y-0.5">
-                  <p>{order.deliveryAddress.street}</p>
+                  <p>{order.deliveryAddress.building}</p>
+                  {order.deliveryAddress.colony && <p>{order.deliveryAddress.colony}</p>}
+                  <p>{order.deliveryAddress.address}</p>
                   <p>
-                    {order.deliveryAddress.city}, {order.deliveryAddress.state}{" "}
-                    {order.deliveryAddress.zip}
+                    {order.deliveryAddress.city}, {order.deliveryAddress.region}
+                    {order.deliveryAddress.area ? ` - ${order.deliveryAddress.area}` : ""}
                   </p>
-                  <p>{order.deliveryAddress.country}</p>
+                  <p>{order.deliveryAddress.country || "Bangladesh"}</p>
                 </div>
               </div>
             </CardContent>

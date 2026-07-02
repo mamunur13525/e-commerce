@@ -98,10 +98,13 @@ export interface OrderConfirmationData {
   paymentMethod: string;
   deliveryAddress: {
     full_name: string;
-    street: string;
+    phone?: string;
+    building: string;
+    colony?: string;
+    region: string;
     city: string;
-    state: string;
-    zip: string;
+    area?: string;
+    address: string;
     country: string;
   };
 }
@@ -136,10 +139,12 @@ export const sendOrderConfirmationEmail = async (
     .join("");
 
   const addressLine = [
-    deliveryAddress.street,
+    deliveryAddress.building,
+    deliveryAddress.colony,
+    deliveryAddress.address,
     deliveryAddress.city,
-    deliveryAddress.state,
-    deliveryAddress.zip,
+    deliveryAddress.region,
+    deliveryAddress.area,
     deliveryAddress.country,
   ]
     .filter(Boolean)

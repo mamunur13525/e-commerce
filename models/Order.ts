@@ -25,10 +25,14 @@ const orderItemSchema = new mongoose.Schema({
 const deliveryAddressSchema = new mongoose.Schema(
   {
     full_name: { type: String, required: true },
-    street: { type: String, required: true },
+    phone: { type: String, default: "" },
+    building: { type: String, required: true },
+    colony: { type: String, default: "" },
+    region: { type: String, required: true },
     city: { type: String, required: true },
-    state: { type: String, required: true },
-    zip: { type: String, required: true },
+    area: { type: String, default: "" },
+    address: { type: String, required: true },
+    label: { type: String, default: "Home" },
     country: { type: String, default: "Bangladesh" },
   },
   { _id: false },

@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
-      if (!guestAddress || !guestAddress.full_name || !guestAddress.street || !guestAddress.city || !guestAddress.state || !guestAddress.zip) {
+      if (!guestAddress || !guestAddress.full_name || !guestAddress.building || !guestAddress.region || !guestAddress.city || !guestAddress.address) {
         return NextResponse.json(
           { success: false, message: "Delivery address fields are required for guest checkout" },
           { status: 400 }
@@ -142,10 +142,14 @@ export async function POST(request: NextRequest) {
     // Step 1: Resolve delivery address
     let deliveryAddressData: {
       full_name: string;
-      street: string;
+      phone: string;
+      building: string;
+      colony: string;
+      region: string;
       city: string;
-      state: string;
-      zip: string;
+      area: string;
+      address: string;
+      label: string;
       country: string;
     };
 
@@ -176,21 +180,29 @@ export async function POST(request: NextRequest) {
 
       deliveryAddressData = {
         full_name: deliveryAddress.full_name,
-        street: deliveryAddress.street,
+        phone: deliveryAddress.phone || "",
+        building: deliveryAddress.building,
+        colony: deliveryAddress.colony || "",
+        region: deliveryAddress.region,
         city: deliveryAddress.city,
-        state: deliveryAddress.state,
-        zip: deliveryAddress.zip,
-        country: deliveryAddress.country,
+        area: deliveryAddress.area || "",
+        address: deliveryAddress.address,
+        label: deliveryAddress.label || "Home",
+        country: deliveryAddress.country || "Bangladesh",
       };
     } else {
       // Guest user: use address from request body
       deliveryAddressData = {
         full_name: guestAddress.full_name,
-        street: guestAddress.street,
+        phone: guestAddress.phone || "",
+        building: guestAddress.building,
+        colony: guestAddress.colony || "",
+        region: guestAddress.region,
         city: guestAddress.city,
-        state: guestAddress.state,
-        zip: guestAddress.zip,
-        country: guestAddress.country || "Bangladesh",
+        area: guestAddress.area || "",
+        address: guestAddress.address,
+        label: "Home",
+        country: "Bangladesh",
       };
     }
 

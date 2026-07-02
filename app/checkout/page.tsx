@@ -20,6 +20,14 @@ import AddressCard from "@/components/address/AddressCard";
 import AddAddressModalButton from "@/components/address/AddAddressModalButton";
 import { FloatingInput } from "@/components/ui/floating-input";
 import { UserIcon, Mail01Icon, TelephoneIcon } from "hugeicons-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { getRegions, getCitiesByRegion } from "@/lib/locations";
 
 function CheckoutContent() {
   const { isAuthenticated, token } = useAuthStore();
@@ -400,21 +408,53 @@ function CheckoutContent() {
                     onChange={(e) => setGuestAddress({ ...guestAddress, colony: e.target.value })}
                     required
                   />
+                  {/* Region & City - Cascading Selects */}
                   <div className="grid grid-cols-2 gap-4">
-                    <FloatingInput
-                      id="delivery-region"
-                      label="Region"
-                      value={guestAddress.region}
-                      onChange={(e) => setGuestAddress({ ...guestAddress, region: e.target.value })}
-                      required
-                    />
-                    <FloatingInput
-                      id="delivery-city"
-                      label="City"
-                      value={guestAddress.city}
-                      onChange={(e) => setGuestAddress({ ...guestAddress, city: e.target.value })}
-                      required
-                    />
+                    <div className="space-y-1.5">
+                     
+                      <Select
+                        value={guestAddress.region}
+                        onValueChange={(value: string | null) =>
+                          setGuestAddress({ ...guestAddress, region: value ?? "", city: "" })
+                        }
+                      >
+                        <SelectTrigger className="w-full h-14! bg-white border-gray-200">
+                          <span className={!guestAddress.region ? "text-muted-foreground" : ""}>
+                            {guestAddress.region || "Select region"}
+                          </span>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {getRegions().map((region) => (
+                            <SelectItem key={region} value={region}>
+                              {region}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                    
+                      <Select
+                        value={guestAddress.city}
+                        onValueChange={(value: string | null) =>
+                          setGuestAddress({ ...guestAddress, city: value ?? "" })
+                        }
+                        disabled={!guestAddress.region}
+                      >
+                        <SelectTrigger className="w-full h-14! bg-white border-gray-200">
+                          <span className={!guestAddress.city ? "text-muted-foreground" : ""}>
+                            {guestAddress.city || (guestAddress.region ? "Select city" : "Select region first")}
+                          </span>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {getCitiesByRegion(guestAddress.region).map((city) => (
+                            <SelectItem key={city} value={city}>
+                              {city}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                   <FloatingInput
                     id="delivery-address"

@@ -34,10 +34,9 @@ export function useGetOrderDetails(orderId: string, token: string | null) {
 
 export function useTrackOrder() {
   return useMutation({
-    mutationFn: async ({ orderId, email }: { orderId: string; email: string }) => {
+    mutationFn: async ({ orderId }: { orderId: string }) => {
       const { data } = await axios.post("/api/track-order", {
         orderId,
-        email,
       });
       return data.data;
     },

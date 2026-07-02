@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import Order from "@/models/Order";
-import User from "@/models/User";
 import connectDB from "@/lib/db";
 
 export async function POST(request: NextRequest) {
@@ -8,11 +7,11 @@ export async function POST(request: NextRequest) {
     await connectDB();
 
     const body = await request.json();
-    const { orderId, email } = body;
+    const { orderId } = body;
 
-    if (!orderId || !email) {
+    if (!orderId) {
       return NextResponse.json(
-        { success: false, message: "Order ID and email are required." },
+        { success: false, message: "Order ID is required." },
         { status: 400 }
       );
     }
@@ -25,16 +24,6 @@ export async function POST(request: NextRequest) {
     if (!order) {
       return NextResponse.json(
         { success: false, message: "No order found with that Order ID." },
-        { status: 404 }
-      );
-    }
-
-    // Verify the email belongs to the order's user
-    const user = await User.findById(order.user).select("email").lean() as any;
-
-    if (!user || user.email.toLowerCase() !== email.trim().toLowerCase()) {
-      return NextResponse.json(
-        { success: false, message: "No order found with that Order ID and email combination." },
         { status: 404 }
       );
     }

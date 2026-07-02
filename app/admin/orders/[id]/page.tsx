@@ -161,9 +161,13 @@ function DeliveryAddressCard({ order }: { order: AdminOrder }) {
       <h3 className="text-sm font-semibold text-gray-900 mb-4">Delivery Address</h3>
       <div className="text-sm space-y-1">
         <p className="font-medium text-gray-900">{addr.full_name}</p>
+        {addr.phone && <p className="text-gray-600">{addr.phone}</p>}
         <p className="text-gray-600">{addr.street}</p>
         <p className="text-gray-600">
-          {addr.city}, {addr.state} {addr.zip}
+          {addr.city}, {addr.state}
+        </p>
+        <p className="text-gray-600">
+          {addr.zip !== "N/A" ? addr.zip : ""}
         </p>
         <p className="text-gray-600">{addr.country}</p>
       </div>
@@ -194,14 +198,13 @@ function OrderItemsTable({ order }: { order: AdminOrder }) {
             const unitPrice = item.price || 0;
             const quantity = item.quantity || 1;
             const totalPrice = unitPrice * quantity;
-
             return (
               <TableRow key={index}>
                 <TableCell>
                   <div className="flex items-center gap-3">
-                    {item.product?.images?.[0] ? (
+                    {item.product?.images?.[0]?.display_url ? (
                       <Image
-                        src={item.product.images[0]||""}
+                        src={item?.product?.images[0]?.display_url||""}
                         alt={productName}
                         className="w-10 h-10 rounded-lg object-cover bg-gray-50"
                         width={40}

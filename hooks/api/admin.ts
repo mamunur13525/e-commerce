@@ -196,13 +196,34 @@ export function useDeleteUser() {
 
 // ============ ORDERS ============
 
+export interface DeliveryAddress {
+  full_name: string;
+  street: string;
+  city: string;
+  state: string;
+  zip: string;
+  country: string;
+  phone?: string;
+}
+
+export interface OrderItem {
+  product?: {
+    _id: string;
+    name: string;
+    images?: Array<{ display_url: string }>;
+  };
+  variant?: string;
+  price: number;
+  quantity: number;
+}
+
 export interface AdminOrder {
   _id: string;
   orderId: string;
   user?: { _id: string; first_name: string; last_name: string; email: string };
   guestInfo?: { name: string; email: string; phone: string };
-  items: any[];
-  deliveryAddress: any;
+  items: OrderItem[];
+  deliveryAddress: DeliveryAddress;
   subtotal: number;
   deliveryFee: number;
   promoDiscount: number;
