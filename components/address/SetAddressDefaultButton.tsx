@@ -3,7 +3,7 @@ import { useAuthStore } from "@/store/auth-store";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 
-const SetAddressDefaultButton = ({ addressId }: { addressId: string }) => {
+const SetAddressDefaultButton = ({ addressId, text='Set as Default' }: { addressId: string; text?: string }) => {
   const { token } = useAuthStore();
 
   const setDefaultAddressMutation = useSetDefaultAddress(token);
@@ -23,9 +23,9 @@ const SetAddressDefaultButton = ({ addressId }: { addressId: string }) => {
       size="sm"
       onClick={() => handleSetDefault(addressId)}
       disabled={setDefaultAddressMutation.isPending}
-      className="text-gray-500 hover:text-[#003d29] cursor-pointer"
-    >
-      Set as Default
+      className="rounded-full bg-[#003d29] hover:bg-[#002a1c] hover:text-white text-white h-9 px-4 py-2 text-sm cursor-pointer"
+      >
+      {text}
     </Button>
   );
 };

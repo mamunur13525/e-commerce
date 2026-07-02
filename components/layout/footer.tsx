@@ -1,45 +1,59 @@
 "use client";
 
 import Link from "next/link";
-import {
-  HelpCircleIcon,
-  GiftIcon,
-} from "hugeicons-react";
 import Image from "next/image";
-import { toast } from "sonner";
 import logo from "@/public/assets/logo.png";
 
 export function Footer() {
   return (
-    <footer className="bg-[#fdf9ed]  text-gray-900 border-t border-gray-100">
-      <div className="container mx-auto px-4 ">
-        <div className="py-16 flex items-start flex-wrap justify-between">
-          {/* Brand Column */}
-          <div className="lg:col-span-2">
-            <Link href="/" className="mb-6 flex items-center gap-2">
-              {/* Logo */}
-              <div className="relative size-24">
-              <Image src={logo} alt={'logo'}/>
+    <footer className="bg-[#fdf9ed] text-gray-900">
+      {/* Main Footer Content */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="py-12 lg:py-16">
+          <div className="flex flex-col sm:flex-row  gap-8">
+            {/* Brand Column */}
+            <div className="flex-1 -translate-y-5">
+              <Link href="/" className="inline-flex items-center group">
+                <div className="relative size-16 sm:size-20 transition-transform duration-300 group-hover:scale-105">
+                  <Image 
+                    src={logo} 
+                    alt={"PocketShop Logo"} 
+                    className="object-contain"
+                  />
+                </div>
+              </Link>
+              <p className="text-sm leading-relaxed text-gray-600 max-w-sm mb-6">
+                A fast, secure, and easy-to-use online marketplace connecting buyers and sellers for everything you need.
+              </p>
+              
+              {/* Social Media Links */}
+              <div className="flex items-center gap-3">
+                <a 
+                  href="https://www.facebook.com/Pocketshop"
+                  target="_blank" 
+                  className="w-10 h-10 rounded-full bg-white border border-gray-200 hover:bg-amber-500 hover:text-white hover:border-amber-500 flex items-center justify-center transition-all duration-200 shadow-sm"
+                  aria-label="Facebook"
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </svg>
+                </a>
+               
               </div>
-            </Link>
-            <p className="mb-8 max-w-sm text-sm leading-relaxed text-gray-700">
-              A fast, secure, and easy-to-use online marketplace connecting buyers and sellers for everything you need.
-            </p>
-          </div>
-
-          <div className="flex items-start gap-10">
-
-            <div className="ml-auto">
-              <h4 className="mb-6 font-semibold">About us</h4>
-              <ul className="space-y-4 text-sm text-gray-700">
-                {[
-                  "About",
-                  "Help"
-                ].map((item) => (
+            </div>
+<div className="flex items-start justify-between gap-8 sm:gap-12 lg:gap-16">
+  
+            {/* Shop Links */}
+            <div className="mr-auto sm:ml-auto">
+              <h4 className="mb-5 font-semibold text-sm uppercase tracking-wider text-gray-900">
+                Shop
+              </h4>
+              <ul className="space-y-3 text-sm text-gray-600">
+                {["All Categories", "Help"].map((item) => (
                   <li key={item}>
                     <Link
                       href="#"
-                      className="hover:text-amber-500 transition-colors"
+                      className="hover:text-amber-600 transition-colors duration-200 inline-block"
                     >
                       {item}
                     </Link>
@@ -48,88 +62,60 @@ export function Footer() {
               </ul>
             </div>
 
-            <div>
-              <h4 className="mb-6 font-semibold">Services</h4>
-              <ul className="space-y-4 text-sm text-gray-700">
+            {/* Customer Service Links */}
+            <div className="mr-auto sm:ml-auto">
+              <h4 className="mb-5 font-semibold text-sm uppercase tracking-wider text-gray-900">
+                Customer Service
+              </h4>
+              <ul className="space-y-3 text-sm text-gray-600">
                 {[
-                  "Gift Card",
-                  "Mobile App",
+                  { label: "Track orders", link: "/track-order" },
+                  { label: "Return & Refund", link: "/return-refund" },
+                  { label: "Contact Us", link: "/contact" },
                 ].map((item) => (
-                  <li key={item}>
+                  <li key={item.link}>
                     <Link
-                      href="#"
-                      className="hover:text-amber-500 transition-colors"
+                      href={item.link}
+                      className="hover:text-amber-600 transition-colors duration-200 inline-block"
                     >
-                      {item}
+                      {item.label}
                     </Link>
                   </li>
                 ))}
               </ul>
-
             </div>
-            <div>
-              <h4 className="mb-6 font-semibold">Help</h4>
-              <ul className="space-y-4 text-sm text-gray-700">
-                <li>
-                  <Link
-                    href="/return-refund"
-                    className="text-sm text-gray-700 hover:text-amber-500 transition-colors"
-                  >
-                    Return & Refund
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/track-order"
-                    className="text-sm text-gray-700 hover:text-amber-500 transition-colors"
-                  >
-                    Track orders
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/contact"
-                    className="text-sm text-gray-700 hover:text-amber-500 transition-colors"
-                  >
-                    Contact us
-                  </Link>
-                </li>
+
+            {/* About Us Links */}
+            <div className="mr-24 sm:ml-auto ">
+              <h4 className="mb-5 font-semibold text-sm uppercase tracking-wider text-gray-900">
+                About Us
+              </h4>
+              <ul className="space-y-3 text-sm text-gray-600">
+                {[
+                  { label: "Terms of Use", link: "/terms" },
+                  { label: "Privacy Policy", link: "/privacy" },
+                ].map((item) => (
+                  <li key={item.link}>
+                    <Link
+                      href={item.link}
+                      className="hover:text-amber-600 transition-colors duration-200 inline-block"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
+  </div>
           </div>
         </div>
+
         {/* Bottom Bar */}
-        <div className="border-t py-6">
-          <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 text-sm text-gray-700 md:flex-row">
-            <div className="flex gap-6">
-              <button
-                onClick={() => toast.warning("Coming soon")}
-                className="flex items-center gap-2 hover:text-[#003d29] bg-transparent hover:bg-transparent hover:border-none text-inherit cursor-pointer"
-              >
-                <GiftIcon className="text-pink-400 size-4" />
-                Gift Cards
-              </button>
-              <Link
-                href="#"
-                className="flex items-center gap-2 hover:text-[#003d29]"
-              >
-                <HelpCircleIcon className="text-pink-400 size-4" />
-                Help Center
-              </Link>
-            </div>
-
-            <div className="flex gap-6">
-              <Link href="/terms" className="hover:text-[#003d29]">
-                Terms of Use
-              </Link>
-              <Link href="/privacy" className="hover:text-[#003d29]">
-                Privacy Policy
-              </Link>
-            </div>
-
-            <div className="text-center md:text-right">
-              All Right reserved by Gromuse | 2026
-            </div>
+        <div className="border-t border-gray-200 py-6">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-sm text-gray-600">
+            <p className="text-center">
+              © 2026 PocketShop. All rights reserved.
+            </p>
           </div>
         </div>
       </div>

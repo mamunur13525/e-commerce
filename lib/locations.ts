@@ -104,17 +104,6 @@ export const locations: Region[] = [
         ],
       },
       {
-        name: "Mymensingh",
-        areas: [
-          { name: "Mymensingh Sadar" },
-          { name: "Trishal" },
-          { name: "Muktagachha" },
-          { name: "Bhaluka" },
-          { name: "Phulpur" },
-          { name: "Gafargaon" },
-        ],
-      },
-      {
         name: "Kishoreganj",
         areas: [
           { name: "Kishoreganj Sadar" },
@@ -194,36 +183,7 @@ export const locations: Region[] = [
           { name: "Kalukhali" },
         ],
       },
-      {
-        name: "Netrokona",
-        areas: [
-          { name: "Netrokona Sadar" },
-          { name: "Kendua" },
-          { name: "Atpara" },
-          { name: "Barhatta" },
-          { name: "Durgapur" },
-        ],
-      },
-      {
-        name: "Sherpur",
-        areas: [
-          { name: "Sherpur Sadar" },
-          { name: "Nalitabari" },
-          { name: "Sreebardi" },
-          { name: "Jhenaigati" },
-        ],
-      },
-      {
-        name: "Jamalpur",
-        areas: [
-          { name: "Jamalpur Sadar" },
-          { name: "Dewanganj" },
-          { name: "Islampur" },
-          { name: "Madarganj" },
-          { name: "Sarishabari" },
-          { name: "Bakshiganj" },
-        ],
-      },
+    
     ],
   },
   {

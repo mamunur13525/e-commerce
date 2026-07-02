@@ -81,7 +81,7 @@ const AddressCard = ({ address, deleteIcon = true }: AddressProps) => {
       <div className="flex items-center gap-2">
         {!isDefault && (
           <>
-            <SetAddressDefaultButton addressId={_id!} />
+            <SetAddressDefaultButton text="Select Address" addressId={_id!} />
           </>
         )}
         {deleteIcon && <DeleteAddressAlertWithButton addressId={_id!} />}

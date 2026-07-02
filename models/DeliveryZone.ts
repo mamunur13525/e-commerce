@@ -7,6 +7,15 @@ const deliveryZoneSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    city: {
+      type: String,
+      required: function(this: any) { return !this.allRemaining; },
+      trim: true,
+    },
+    allRemaining: {
+      type: Boolean,
+      default: false,
+    },
     fee: {
       type: Number,
       required: true,

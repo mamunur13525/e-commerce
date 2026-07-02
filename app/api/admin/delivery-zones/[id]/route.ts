@@ -31,6 +31,8 @@ export async function PUT(
     };
 
     if (body.name) updateData.name = body.name.trim();
+    if (body.city !== undefined) updateData.city = body.city ? body.city.trim() : "";
+    if (body.allRemaining !== undefined) updateData.allRemaining = Boolean(body.allRemaining);
     if (body.fee !== undefined) updateData.fee = Number(body.fee);
     if (body.estimatedDelivery) updateData.estimatedDelivery = body.estimatedDelivery.trim();
 

@@ -468,11 +468,8 @@ export function useDeleteCategory() {
 export interface AdminMetadata {
   _id: string;
   hero_slider: Array<{
-    bg_color: string;
-    title: string;
-    description: string;
-    cta_btn: { color: string; text: string; bg_color: string; link: string };
     image_url: string;
+    link?: string;
   }>;
   offers: Array<{
     _id: string;
@@ -533,6 +530,8 @@ export function useUpdateMetadata() {
 export interface AdminDeliveryZone {
   _id: string;
   name: string;
+  city: string;
+  allRemaining: boolean;
   fee: number;
   estimatedDelivery: string;
   isActive: boolean;

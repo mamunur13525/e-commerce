@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     await connectToDatabase();
 
     const body = await request.json();
-    const { name, fee, estimatedDelivery, isActive } = body;
+    const { name, city, allRemaining, fee, estimatedDelivery, isActive } = body;
 
     if (!name || fee === undefined || !estimatedDelivery) {
       return NextResponse.json(
@@ -69,8 +69,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!allRemaining && !city) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Either select a city or enable 'All Remaining Cities'",
+        },
+        { status: 400 }
+      );
+    }
+
     const zone = await DeliveryZone.create({
       name: name.trim(),
+      city: allRemaining ? "" : (city?.trim() || ""),
+      allRemaining: Boolean(allRemaining),
       fee: Number(fee),
       estimatedDelivery: estimatedDelivery.trim(),
       isActive: isActive !== undefined ? Boolean(isActive) : true,

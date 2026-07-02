@@ -3,17 +3,11 @@
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useContactUs, ContactUsData } from "@/hooks/api/queries";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FloatingInput } from "@/components/ui/floating-input";
 import { FloatingTextarea } from "@/components/ui/floating-textarea";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Mail01Icon, CallIcon, Location01Icon } from "hugeicons-react";
+import { Mail01Icon, Location01Icon } from "hugeicons-react";
 
 export default function ContactPage() {
   const contactMutation = useContactUs();
@@ -41,7 +35,8 @@ export default function ContactPage() {
           Contact Us
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Have a question or need assistance? We're here to help. Reach out to us through any of the channels below or send us a message.
+          Have a question or need assistance? We're here to help. Reach out to
+          us through any of the channels below or send us a message.
         </p>
       </div>
 
@@ -56,14 +51,18 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg">Email Us</h3>
-                  <p className="text-muted-foreground">support@gromuse.com</p>
-                  <p className="text-muted-foreground">info@gromuse.com</p>
+                  <a
+                    href="mailto:pocketshoponlinebd@gmail.com"
+                    className="text-blue-800 hover:text-blue-700 underline"
+                  >
+                    pocketshoponlinebd@gmail.com
+                  </a>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          {/* <Card>
             <CardContent className="pt-6">
               <div className="flex items-start gap-4">
                 <div className="bg-amber-100 p-3 rounded-lg">
@@ -71,12 +70,13 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg">Call Us</h3>
-                  <p className="text-muted-foreground">+1 (555) 000-0000</p>
-                  <p className="text-muted-foreground">Mon-Fri, 9am-6pm</p>
+                  <a href="tel:+15550000000" className="text-blue-800 hover:text-blue-700 underline">
+                    +1 (555) 000-0000
+                  </a>
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
 
           <Card>
             <CardContent className="pt-6">
@@ -86,8 +86,10 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg">Visit Us</h3>
-                  <p className="text-muted-foreground">123 Market Street</p>
-                  <p className="text-muted-foreground">San Francisco, CA 94103</p>
+                  <p className="text-muted-foreground">
+                    Pollibidut, Chandra, Kaliakair
+                  </p>
+                  <p className="text-muted-foreground"> Gazipur.</p>
                 </div>
               </div>
             </CardContent>
@@ -104,53 +106,81 @@ export default function ContactPage() {
               <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <FloatingInput 
-                      id="first-name" 
-                      label="First Name" 
-                      {...register("firstName", { required: "First name is required" })}
+                    <FloatingInput
+                      id="first-name"
+                      label="First Name"
+                      {...register("firstName", {
+                        required: "First name is required",
+                      })}
                     />
-                    {errors.firstName && <p className="text-red-500 text-sm">{errors.firstName.message}</p>}
+                    {errors.firstName && (
+                      <p className="text-red-500 text-sm">
+                        {errors.firstName.message}
+                      </p>
+                    )}
                   </div>
                   <div className="space-y-2">
-                    <FloatingInput 
-                      id="last-name" 
-                      label="Last Name" 
-                      {...register("lastName", { required: "Last name is required" })}
+                    <FloatingInput
+                      id="last-name"
+                      label="Last Name"
+                      {...register("lastName", {
+                        required: "Last name is required",
+                      })}
                     />
-                    {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName.message}</p>}
+                    {errors.lastName && (
+                      <p className="text-red-500 text-sm">
+                        {errors.lastName.message}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <FloatingInput 
-                    id="email" 
-                    type="email" 
-                    label="Email Address" 
-                    {...register("email", { 
+                  <FloatingInput
+                    id="email"
+                    type="email"
+                    label="Email Address"
+                    {...register("email", {
                       required: "Email is required",
                       pattern: {
                         value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                         message: "Invalid email address",
-                      }
+                      },
                     })}
                   />
-                  {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+                  {errors.email && (
+                    <p className="text-red-500 text-sm">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-2">
-                  <FloatingInput 
-                    id="subject" 
-                    label="Subject" 
-                    {...register("subject", { required: "Subject is required" })}
+                  <FloatingInput
+                    id="subject"
+                    label="Subject"
+                    {...register("subject", {
+                      required: "Subject is required",
+                    })}
                   />
-                  {errors.subject && <p className="text-red-500 text-sm">{errors.subject.message}</p>}
+                  {errors.subject && (
+                    <p className="text-red-500 text-sm">
+                      {errors.subject.message}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <FloatingTextarea
                     id="message"
                     label="Message"
                     className="min-h-[150px]"
-                    {...register("message", { required: "Message is required" })}
+                    {...register("message", {
+                      required: "Message is required",
+                    })}
                   />
-                  {errors.message && <p className="text-red-500 text-sm">{errors.message.message}</p>}
+                  {errors.message && (
+                    <p className="text-red-500 text-sm">
+                      {errors.message.message}
+                    </p>
+                  )}
                 </div>
                 <Button
                   type="submit"

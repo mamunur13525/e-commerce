@@ -44,11 +44,12 @@ function CheckoutContent() {
   });
   const [guestAddress, setGuestAddress] = useState({
     full_name: "",
-    street: "",
+    building: "",
+    colony: "",
+    region: "",
     city: "",
-    state: "",
-    zip: "",
-    country: "Bangladesh",
+    area: "",
+    address: "",
   });
 
   // Queries
@@ -74,9 +75,45 @@ function CheckoutContent() {
   } | null>(null);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
+  const [deliveryFee, setDeliveryFee] = useState(0);
   const router = useRouter();
 
   const selectedAddress = addressesData?.find((addr) => addr.isDefault);
+
+  // Fetch delivery fee based on selected address region/city
+  React.useEffect(() => {
+    const fetchDeliveryFee = async () => {
+      let region = "";
+      let city = "";
+
+      if (isAuthenticated && selectedAddress) {
+        region = selectedAddress.region || "";
+        city = selectedAddress.city || "";
+      } else if (!isAuthenticated) {
+        region = guestAddress.region;
+        city = guestAddress.city;
+      }
+
+      if (!city) {
+        setDeliveryFee(0);
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/public/delivery-fee?city=${encodeURIComponent(city)}`);
+        const data = await res.json();
+        if (data.success && data.data) {
+          setDeliveryFee(data.data.fee);
+        } else {
+          setDeliveryFee(0);
+        }
+      } catch {
+        setDeliveryFee(0);
+      }
+    };
+
+    fetchDeliveryFee();
+  }, [isAuthenticated, selectedAddress, guestAddress.region, guestAddress.city]);
 
   const isDirectBuy = !!buyNowProductId;
 
@@ -108,7 +145,6 @@ function CheckoutContent() {
     (acc, item) => acc + (item.product?.final_price || 0) * item.quantity,
     0,
   );
-  const deliveryFee = 16.0;
   const promoDiscount = appliedPromo?.discount || 0;
   const taxes = (subtotal - promoDiscount) * 0.1;
   const total = subtotal + deliveryFee - promoDiscount + taxes;
@@ -139,7 +175,7 @@ function CheckoutContent() {
         return;
       }
       // Validate guest address
-      if (!guestAddress.full_name.trim() || !guestAddress.street.trim() || !guestAddress.city.trim() || !guestAddress.state.trim() || !guestAddress.zip.trim()) {
+      if (!guestAddress.full_name.trim() || !guestAddress.building.trim() || !guestAddress.colony.trim() || !guestAddress.region.trim() || !guestAddress.city.trim() || !guestAddress.address.trim()) {
         toast.error("Please fill in all delivery address fields.");
         return;
       }
@@ -350,14 +386,28 @@ function CheckoutContent() {
                     required
                   />
                   <FloatingInput
-                    id="delivery-street"
-                    label="Street Address"
-                    value={guestAddress.street}
-                    onChange={(e) => setGuestAddress({ ...guestAddress, street: e.target.value })}
+                    id="delivery-building"
+                    label="Building / House No / Floor / Street"
+                    value={guestAddress.building}
+                    onChange={(e) => setGuestAddress({ ...guestAddress, building: e.target.value })}
                     startIcon={<Edit02Icon className="size-5" />}
                     required
                   />
+                  <FloatingInput
+                    id="delivery-colony"
+                    label="Colony / Suburb / Locality / Landmark"
+                    value={guestAddress.colony}
+                    onChange={(e) => setGuestAddress({ ...guestAddress, colony: e.target.value })}
+                    required
+                  />
                   <div className="grid grid-cols-2 gap-4">
+                    <FloatingInput
+                      id="delivery-region"
+                      label="Region"
+                      value={guestAddress.region}
+                      onChange={(e) => setGuestAddress({ ...guestAddress, region: e.target.value })}
+                      required
+                    />
                     <FloatingInput
                       id="delivery-city"
                       label="City"
@@ -365,29 +415,14 @@ function CheckoutContent() {
                       onChange={(e) => setGuestAddress({ ...guestAddress, city: e.target.value })}
                       required
                     />
-                    <FloatingInput
-                      id="delivery-state"
-                      label="State"
-                      value={guestAddress.state}
-                      onChange={(e) => setGuestAddress({ ...guestAddress, state: e.target.value })}
-                      required
-                    />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <FloatingInput
-                      id="delivery-zip"
-                      label="ZIP Code"
-                      value={guestAddress.zip}
-                      onChange={(e) => setGuestAddress({ ...guestAddress, zip: e.target.value })}
-                      required
-                    />
-                    <FloatingInput
-                      id="delivery-country"
-                      label="Country"
-                      value={guestAddress.country}
-                      onChange={(e) => setGuestAddress({ ...guestAddress, country: e.target.value })}
-                    />
-                  </div>
+                  <FloatingInput
+                    id="delivery-address"
+                    label="Address"
+                    value={guestAddress.address}
+                    onChange={(e) => setGuestAddress({ ...guestAddress, address: e.target.value })}
+                    required
+                  />
                 </div>
               )}
             </CardContent>

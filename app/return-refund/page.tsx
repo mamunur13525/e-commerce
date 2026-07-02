@@ -4,67 +4,8 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import {
-    UserCircleIcon,
-    ViewIcon,
-    PackageIcon,
-    Alert01Icon,
-    DocumentValidationIcon,
-    TruckDeliveryIcon,
-    TaskDone01Icon,
-    Location01Icon,
-    CursorCircleSelection01Icon,
-} from "hugeicons-react";
 
 export default function ReturnRefundPage() {
-    const steps = [
-        {
-            title: "Sign in to your Daraz Account, then go to the \"Account\" option on the bottom of your homepage.",
-            icon: <UserCircleIcon className="size-6 text-white" />,
-            align: "left"
-        },
-        {
-            title: "Tap on \"View All Orders\" at the top of the page.",
-            icon: <ViewIcon className="size-6 text-white" />,
-            align: "right"
-        },
-        {
-            title: "Tap on the \"Return/Refund\" option for the relevant order.",
-            icon: <PackageIcon className="size-6 text-white" />,
-            align: "left"
-        },
-        {
-            title: "If you have ordered more than one item in the same order, then scroll through the items list and click on \"Return/Refund\" of the item you want to return.",
-            icon: <CursorCircleSelection01Icon className="size-6 text-white" />,
-            align: "right"
-        },
-        {
-            title: "Select the type of return problem you're facing.",
-            icon: <Alert01Icon className="size-6 text-white" />,
-            align: "left"
-        },
-        {
-            title: "Fill out the Online Return Form with all the relevant information and proof.",
-            icon: <DocumentValidationIcon className="size-6 text-white" />,
-            align: "right"
-        },
-        {
-            title: "Select Pick Up or Drop Off as per your preference.",
-            icon: <TruckDeliveryIcon className="size-6 text-white" />,
-            align: "left"
-        },
-        {
-            title: "Submit the request, after reading the Return/Refund policy.",
-            icon: <TaskDone01Icon className="size-6 text-white" />,
-            align: "right"
-        },
-        {
-            title: "Head to your nearest drop-off point or wait for collection by our pick-up service. Ensure that your contact information is correct and available to avail our pickup services.",
-            icon: <Location01Icon className="size-6 text-white" />,
-            align: "center"
-        }
-    ];
-
     return (
         <main className="container mx-auto max-w-4xl px-4 py-12">
             <div className="space-y-4 text-center mb-12">
@@ -77,96 +18,123 @@ export default function ReturnRefundPage() {
             </div>
 
             <div className="space-y-12">
-                {/* How to return section */}
+                {/* Return Policy Section */}
                 <section>
                     <div className="bg-[#ff6a00] text-white py-4 px-6 rounded-t-xl text-center">
-                        <h2 className="text-2xl font-bold uppercase tracking-wide">How to return a product?</h2>
+                        <h2 className="text-2xl font-bold uppercase tracking-wide">Return Policy (রিটার্ন নীতি)</h2>
                     </div>
-                    <div className="bg-[#fff3eb] p-8 md:p-12 rounded-b-xl relative overflow-hidden">
-
-                        <div className="relative max-w-2xl mx-auto">
-                            {/* The dashed line */}
-                            <div className="absolute left-1/2 top-4 bottom-12 w-1.5 border-l-4 border-dashed border-[#ff6a00] -translate-x-1/2 z-0 hidden md:block"></div>
-
-                            {/* Mobile line */}
-                            <div className="absolute left-8 top-4 bottom-12 w-1.5 border-l-4 border-dashed border-[#ff6a00] z-0 md:hidden"></div>
-
-                            <div className="space-y-8 md:space-y-12 relative z-10">
-                                {steps.map((step, index) => (
-                                    <div key={index} className={`flex items-center gap-6 md:gap-0 ${step.align === 'center' ? 'flex-col justify-center text-center mt-12' : 'flex-row'}`}>
-
-                                        {/* Left text block for desktop */}
-                                        <div className={`hidden md:block md:w-1/2 ${step.align === 'left' ? 'text-right pr-12' : 'pl-12 opacity-0'}`}>
-                                            {step.align === 'left' && <p className="text-gray-800 font-medium text-sm lg:text-base leading-relaxed">{step.title}</p>}
-                                        </div>
-
-                                        {/* Icon */}
-                                        <div className={`relative flex-shrink-0 z-10 flex items-center justify-center w-16 h-16 rounded-full bg-indigo-800 border-4 border-[#fff3eb] shadow-md ${step.align === 'center' ? 'md:mx-auto' : 'md:absolute md:left-1/2 md:-translate-x-1/2'}`}>
-                                            {step.icon}
-                                        </div>
-
-                                        {/* Right text block for desktop */}
-                                        <div className={`hidden md:block md:w-1/2 ${step.align === 'right' ? 'text-left pl-12' : 'pr-12 opacity-0'}`}>
-                                            {step.align === 'right' && <p className="text-gray-800 font-medium text-sm lg:text-base leading-relaxed">{step.title}</p>}
-                                        </div>
-
-                                        {/* Mobile text block */}
-                                        <div className={`md:hidden ${step.align === 'center' ? 'text-center' : 'text-left'}`}>
-                                            <p className="text-gray-800 font-medium text-sm leading-relaxed">{step.title}</p>
-                                        </div>
-
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                    </div>
-                    <p className="mt-6 text-sm text-center text-muted-foreground">
-                        You can view your return tracking number as soon as you have filled the Online Return Form and logged your return request.
-                    </p>
-                </section>
-
-                {/* Conditions section */}
-                <section>
-                    <Card className="border-t-4 border-t-[#003d29]">
-                        <CardHeader>
-                            <CardTitle className="text-2xl">CONDITIONS FOR RETURNS</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div>
-                                <p className="font-semibold text-gray-900 mb-4">
-                                    To ensure a smooth and hassle-free return process, please review the requirements below:
-                                </p>
-                                <ol className="list-decimal space-y-3 pl-5 text-gray-700">
-                                    <li>
-                                        The product must be in its original condition—unused, unworn, unwashed, and free of any flaws. For fashion items, feel free to try them on to check the size, as this counts as unworn.
-                                    </li>
-                                    <li>
-                                        Make sure you include the original tags, user manuals, warranty cards, freebies, invoice, and any accessories that came with the product.
-                                    </li>
-                                    <li>
-                                        Please return the product in its original, undamaged manufacturer's packaging or box. If the product was delivered in Daraz packaging/box, kindly use the same packaging/box for the return. To avoid damage, do not tape or place stickers directly on the manufacturer's packaging/box.
-                                    </li>
-                                </ol>
-                            </div>
-
-                            <div className="font-semibold text-gray-900 bg-red-50 p-4 rounded-md border-l-4 border-red-500">
-                                If your returned item does not meet these requirements, we may not be able to process your refund request.
-                            </div>
-
-                            <div>
-                                <h3 className="font-bold text-gray-900 mb-2">Important Reminder:</h3>
-                                <ul className="list-disc space-y-2 pl-5 text-gray-700">
-                                    <li>If your return request is rejected, the item will be sent back to you within 4-6 days, after the Quality Check Process.</li>
-                                    <li>After three failed delivery attempts, the item will be marked as scrap, and no refund will be provided.</li>
+                    <div className="bg-[#fff3eb] p-8 md:p-12 rounded-b-xl">
+                        <div className="space-y-6 text-gray-800">
+                            <p className="font-semibold text-lg">Pocket Shop–এ আমরা সবসময় গ্রাহকের সন্তুষ্টিকে গুরুত্ব দিই। তাই নির্দিষ্ট শর্তসাপেক্ষে রিটার্ন ও এক্সচেঞ্জ সুবিধা প্রদান করা হয়।</p>
+                            
+                            <div className="space-y-4">
+                                <h3 className="font-bold text-xl text-[#003d29]">🔁 Return Policy (রিটার্ন নীতি)</h3>
+                                <p className="font-medium">নিম্নলিখিত ক্ষেত্রে পণ্য রিটার্ন করা যাবে:</p>
+                                <ul className="list-disc space-y-2 pl-5">
+                                    <li>ডেলিভারি বয়ের সামনে সাথে সাথে পণ্য চেক করে</li>
+                                    <li>ভুল পণ্য পেলে</li>
+                                    <li>ত্রুটিপূর্ণ বা ক্ষতিগ্রস্ত পণ্য পেলে</li>
                                 </ul>
                             </div>
 
-                            <p className="text-gray-700 pt-4 border-t">
-                                We appreciate your understanding and cooperation in following these guidelines to ensure a smooth process. If you have any questions, feel free to contact our support team – we're always here to help!
-                            </p>
-                        </CardContent>
-                    </Card>
+                            <div className="space-y-4">
+                                <h3 className="font-bold text-xl text-[#003d29]">✅ পণ্য পছন্দ না হলে</h3>
+                                <p>ডেলিভারি বয়ের সামনে পণ্য রেখে ডেলিভারি চার্জ দিয়ে রিটার্ন করতে হবে।</p>
+                            </div>
+
+                            <div className="space-y-4">
+                                <h3 className="font-bold text-xl text-[#003d29]">❌ ডেলিভারি বয় চলে যাওয়ার পর সরাসরি রিটার্ন গ্রহণযোগ্য নয়।</h3>
+                                <p>তবে অভিযোগ করলে আমরা এক্সচেঞ্জের ব্যবস্থা করবো।</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Replacement Policy Section */}
+                <section>
+                    <div className="bg-[#ff6a00] text-white py-4 px-6 rounded-t-xl text-center">
+                        <h2 className="text-2xl font-bold uppercase tracking-wide">Replacement Policy (রিপ্লেসমেন্ট নীতি)</h2>
+                    </div>
+                    <div className="bg-[#fff3eb] p-8 md:p-12 rounded-b-xl">
+                        <div className="space-y-4 text-gray-800">
+                            <p className="font-medium">পণ্য রিসিভের ৩ / ৫ / ৭ দিনের মধ্যে (পণ্যভেদে প্রযোজ্য) রিপ্লেসমেন্ট আবেদন করা যাবে।</p>
+                            
+                            <div className="space-y-3">
+                                <h3 className="font-bold text-xl text-[#003d29]">শর্তসমূহ:</h3>
+                                <ul className="list-disc space-y-2 pl-5">
+                                    <li>শুধুমাত্র ইলেকট্রনিক পণ্যের ক্ষেত্রে প্রযোজ্য</li>
+                                    <li>নন-ইলেকট্রনিক পণ্যের রিপ্লেসমেন্ট নেই</li>
+                                    <li>Change of mind হলে প্রযোজ্য নয়</li>
+                                    <li>পণ্য অব্যবহৃত থাকতে হবে</li>
+                                    <li>ব্যবহারজনিত ক্ষতি হলে প্রযোজ্য নয়</li>
+                                    <li>অরিজিনাল প্যাকেজিং থাকতে হবে</li>
+                                    <li>ভুল / ত্রুটিপূর্ণ / ক্ষতিগ্রস্ত হলে প্রযোজ্য</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Refund Policy Section */}
+                <section>
+                    <div className="bg-[#ff6a00] text-white py-4 px-6 rounded-t-xl text-center">
+                        <h2 className="text-2xl font-bold uppercase tracking-wide">Refund Policy (রিফান্ড নীতি)</h2>
+                    </div>
+                    <div className="bg-[#fff3eb] p-8 md:p-12 rounded-b-xl">
+                        <div className="space-y-4 text-gray-800">
+                            <p className="font-medium">আমাদের কোনো ক্যাশ রিফান্ড সিস্টেম নেই</p>
+                            <p className="font-medium">বিশেষ ক্ষেত্রে পণ্য এক্সচেঞ্জ করা হবে</p>
+                            <p className="font-medium">এক্সচেঞ্জ পণ্যেও সমস্যা থাকলে উন্নতমানের পণ্য দেওয়া হতে পারে</p>
+                            <p className="font-medium">সেই ক্ষেত্রে অল্প পরিমাণ অতিরিক্ত মূল্য যোগ হতে পারে</p>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Return Shipping Charge Section */}
+                <section>
+                    <div className="bg-[#ff6a00] text-white py-4 px-6 rounded-t-xl text-center">
+                        <h2 className="text-2xl font-bold uppercase tracking-wide">Return Shipping Charge</h2>
+                    </div>
+                    <div className="bg-[#fff3eb] p-8 md:p-12 rounded-b-xl">
+                        <div className="space-y-4 text-gray-800">
+                            <ul className="list-disc space-y-2 pl-5">
+                                <li>৫০% কাস্টমার বহন করবেন</li>
+                                <li>৫০% Pocket Shop বহন করবে</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Damaged Product Section */}
+                <section>
+                    <div className="bg-[#ff6a00] text-white py-4 px-6 rounded-t-xl text-center">
+                        <h2 className="text-2xl font-bold uppercase tracking-wide">📦 ক্ষতিগ্রস্ত পণ্য পেলে করণীয়</h2>
+                    </div>
+                    <div className="bg-[#fff3eb] p-8 md:p-12 rounded-b-xl">
+                        <div className="space-y-4 text-gray-800">
+                            <ul className="list-disc space-y-2 pl-5">
+                                <li>ডেলিভারি ম্যানের সামনে প্যাকেট খুলে চেক করুন</li>
+                                <li>সমস্যা থাকলে সাথে সাথে রিটার্ন করুন</li>
+                                <li>অথবা</li>
+                                <li>স্পষ্ট আনবক্সিং ভিডিও রেকর্ড করুন</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Product Security Section */}
+                <section>
+                    <div className="bg-[#ff6a00] text-white py-4 px-6 rounded-t-xl text-center">
+                        <h2 className="text-2xl font-bold uppercase tracking-wide">🔒 পণ্য নিরাপত্তা নিশ্চয়তা</h2>
+                    </div>
+                    <div className="bg-[#fff3eb] p-8 md:p-12 rounded-b-xl">
+                        <div className="space-y-4 text-gray-800">
+                            <p className="font-medium">আমাদের প্যাকেজিং ও নিরাপত্তা ব্যবস্থা:</p>
+                            <ul className="list-disc space-y-2 pl-5">
+                                <li>বাবল র্যাপ প্রোটেকশন</li>
+                            </ul>
+                        </div>
+                    </div>
                 </section>
             </div>
         </main>

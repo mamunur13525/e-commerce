@@ -9,6 +9,7 @@ import { QueryClientProviderWrapper } from "@/providers/query-client-provider";
 import { GoogleOAuthProviderWrapper } from "@/providers/google-oauth-provider";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { CartAnimationLayer } from "@/components/layout/cart-animation-layer";
+import { FloatingActions } from "@/components/layout/floating-actions";
 import NextTopLoader from "nextjs-toploader";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -50,6 +51,7 @@ export default function RootLayout({
               <ConditionalLayout>
                 {children}
               </ConditionalLayout>
+              <FloatingActions />
               <Toaster
                 duration={5000}
                 position="bottom-left"

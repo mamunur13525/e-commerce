@@ -1,16 +1,6 @@
-export interface CTAButton {
-  color: string;
-  text: string;
-  bg_color: string;
-  link: string;
-}
-
 export interface HeroSlider {
-  bg_color: string;
-  title: string;
-  description: string;
-  cta_btn: CTAButton;
   image_url: string;
+  link?: string;
 }
 
 export interface Offer {

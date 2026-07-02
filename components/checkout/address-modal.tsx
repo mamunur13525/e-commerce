@@ -1,12 +1,12 @@
 "use client";
 
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
@@ -41,46 +41,38 @@ export function AddressModal({
   isLoading = false,
 }: AddressModalProps) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-125">
-        <DialogHeader>
-          <DialogTitle className="text-[#003d29]">
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="w-full sm:min-w-xl px-4">
+        <SheetHeader>
+          <SheetTitle className="text-[#003d29]">
             Select Delivery Address
-          </DialogTitle>
-          <DialogDescription>
+          </SheetTitle>
+          <SheetDescription>
             Choose from your saved addresses or add a new one
-          </DialogDescription>
-        </DialogHeader>
+          </SheetDescription>
+        </SheetHeader>
 
-        {isLoading ? (
-          <div className="py-8 text-center">
-            <p className="text-gray-500">Loading addresses...</p>
-          </div>
-        ) : addresses.length === 0 ? (
-          <div className="py-8 text-center">
-            <p className="text-gray-500 mb-4">No addresses saved yet</p>
-            <AddAddressModalButton />
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {addresses.map((address) => (
-              <AddressCard key={address._id!} address={address || {}} />
-            ))}
-            <Separator className="my-3" />
-            <AddAddressModalButton />
-          </div>
-        )}
-
-        <div className="flex justify-end gap-3 mt-6">
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            className={"w-32"}
-          >
-            Close
-          </Button>
+        <div className="mt-6">
+          {isLoading ? (
+            <div className="py-8 text-center">
+              <p className="text-gray-500">Loading addresses...</p>
+            </div>
+          ) : addresses.length === 0 ? (
+            <div className="py-8 text-center">
+              <p className="text-gray-500 mb-4">No addresses saved yet</p>
+              <AddAddressModalButton />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {addresses.map((address) => (
+                <AddressCard key={address._id!} address={address || {}} />
+              ))}
+              <Separator className="my-3" />
+              <AddAddressModalButton />
+            </div>
+          )}
         </div>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }

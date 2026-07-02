@@ -24,22 +24,13 @@ const ctaButtonSchema = new mongoose.Schema(
 
 const heroSliderSchema = new mongoose.Schema(
   {
-    bg_color: {
-      type: String,
-      required: true,
-    },
-    title: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
-    cta_btn: ctaButtonSchema,
     image_url: {
       type: String,
       required: true,
+    },
+    link: {
+      type: String,
+      default: "/shop",
     },
   },
   { _id: false }
@@ -110,31 +101,6 @@ const discountCardSchema = new mongoose.Schema(
   { _id: false }
 );
 
-const categoriesSchema = new mongoose.Schema(
-  {
-    type: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    subtitle: {
-      type: String,
-      required: true,
-    },
-    color: {
-      type: String,
-      required: true,
-    },
-    icon: {
-      type: String,
-      required: true,
-    },
-  },
-  { _id: false }
-);
 const metadataSchema = new mongoose.Schema(
   {
     hero_slider: {

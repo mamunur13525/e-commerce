@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import {
   useAdminDeliveryZones,
   useCreateDeliveryZone,
@@ -38,11 +38,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Add01Icon, Edit01Icon, Delete01Icon, Search01Icon, MapPinIcon } from "hugeicons-react";
+import {
+  Add01Icon,
+  Edit01Icon,
+  Delete01Icon,
+  Search01Icon,
+  MapPinIcon,
+} from "hugeicons-react";
 import { toast } from "sonner";
+import { getRegions, getCitiesByRegion } from "@/lib/locations";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 
 interface ZoneForm {
   name: string;
+  city: string;
+  allRemaining: boolean;
   fee: string;
   estimatedDelivery: string;
   isActive: boolean;
@@ -50,6 +67,8 @@ interface ZoneForm {
 
 const defaultZoneForm: ZoneForm = {
   name: "",
+  city: "",
+  allRemaining: false,
   fee: "",
   estimatedDelivery: "",
   isActive: true,
@@ -61,7 +80,9 @@ export default function AdminDeliveryZonesPage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [editingZone, setEditingZone] = useState<AdminDeliveryZone | null>(null);
+  const [editingZone, setEditingZone] = useState<AdminDeliveryZone | null>(
+    null,
+  );
   const [form, setForm] = useState<ZoneForm>(defaultZoneForm);
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -93,7 +114,10 @@ export default function AdminDeliveryZonesPage() {
     setForm(defaultZoneForm);
   };
 
-  const updateField = <K extends keyof ZoneForm>(key: K, value: ZoneForm[K]) => {
+  const updateField = <K extends keyof ZoneForm>(
+    key: K,
+    value: ZoneForm[K],
+  ) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -102,10 +126,27 @@ export default function AdminDeliveryZonesPage() {
     setIsCreateOpen(true);
   };
 
+  const allCities = useMemo(() => {
+    const usedCities = new Set((data?.data || []).map((z) => z.city));
+    const available = new Set<string>();
+    const regions = getRegions();
+    for (const region of regions) {
+      const cities = getCitiesByRegion(region);
+      for (const city of cities) {
+        if (!usedCities.has(city)) {
+          available.add(city);
+        }
+      }
+    }
+    return Array.from(available);
+  }, [data]);
+
   const openEdit = (zone: AdminDeliveryZone) => {
     setEditingZone(zone);
     setForm({
       name: zone.name,
+      city: zone.city,
+      allRemaining: zone.allRemaining,
       fee: zone.fee.toString(),
       estimatedDelivery: zone.estimatedDelivery,
       isActive: zone.isActive,
@@ -114,13 +155,20 @@ export default function AdminDeliveryZonesPage() {
   };
 
   const handleCreate = async () => {
-    if (!form.name.trim() || !form.fee || !form.estimatedDelivery.trim()) {
+    if (
+      !form.name.trim() ||
+      !form.fee ||
+      !form.estimatedDelivery.trim() ||
+      (!form.allRemaining && !form.city)
+    ) {
       toast.error("Please fill in all required fields");
       return;
     }
     try {
       await createZone.mutateAsync({
         name: form.name,
+        city: form.city,
+        allRemaining: form.allRemaining,
         fee: Number(form.fee),
         estimatedDelivery: form.estimatedDelivery,
         isActive: form.isActive,
@@ -129,13 +177,20 @@ export default function AdminDeliveryZonesPage() {
       setIsCreateOpen(false);
       resetForm();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to create delivery zone");
+      toast.error(
+        error?.response?.data?.message || "Failed to create delivery zone",
+      );
     }
   };
 
   const handleUpdate = async () => {
     if (!editingZone) return;
-    if (!form.name.trim() || !form.fee || !form.estimatedDelivery.trim()) {
+    if (
+      !form.name.trim() ||
+      !form.fee ||
+      !form.estimatedDelivery.trim() ||
+      (!form.allRemaining && !form.city)
+    ) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -143,6 +198,8 @@ export default function AdminDeliveryZonesPage() {
       await updateZone.mutateAsync({
         id: editingZone._id,
         name: form.name,
+        city: form.city,
+        allRemaining: form.allRemaining,
         fee: Number(form.fee),
         estimatedDelivery: form.estimatedDelivery,
         isActive: form.isActive,
@@ -152,7 +209,9 @@ export default function AdminDeliveryZonesPage() {
       setEditingZone(null);
       resetForm();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to update delivery zone");
+      toast.error(
+        error?.response?.data?.message || "Failed to update delivery zone",
+      );
     }
   };
 
@@ -161,7 +220,9 @@ export default function AdminDeliveryZonesPage() {
       await deleteZone.mutateAsync(id);
       toast.success("Delivery zone deleted successfully");
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to delete delivery zone");
+      toast.error(
+        error?.response?.data?.message || "Failed to delete delivery zone",
+      );
     }
   };
 
@@ -216,6 +277,7 @@ export default function AdminDeliveryZonesPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Zone Name</TableHead>
+                <TableHead>City</TableHead>
                 <TableHead>Delivery Fee</TableHead>
                 <TableHead>Est. Delivery</TableHead>
                 <TableHead>Status</TableHead>
@@ -231,6 +293,7 @@ export default function AdminDeliveryZonesPage() {
                       {zone.name}
                     </span>
                   </TableCell>
+                  <TableCell className="font-medium text-gray-900">{zone.city}</TableCell>
                   <TableCell className="font-medium text-gray-900">
                     ৳{zone.fee.toFixed(2)}
                   </TableCell>
@@ -317,7 +380,9 @@ export default function AdminDeliveryZonesPage() {
       >
         <DialogContent className="max-w-md w-[calc(100%-2rem)] sm:w-full">
           <DialogHeader>
-            <DialogTitle>{isCreateOpen ? "Add Delivery Zone" : "Edit Delivery Zone"}</DialogTitle>
+            <DialogTitle>
+              {isCreateOpen ? "Add Delivery Zone" : "Edit Delivery Zone"}
+            </DialogTitle>
             <DialogDescription>
               {isCreateOpen
                 ? "Create a new delivery zone with a fee."
@@ -337,6 +402,62 @@ export default function AdminDeliveryZonesPage() {
                 placeholder="e.g. Dhaka City, Inside Dhaka"
               />
             </div>
+
+            {/* All Remaining Cities */}
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.allRemaining}
+                onChange={(e) => {
+                  updateField("allRemaining", e.target.checked);
+                  if (e.target.checked) {
+                    updateField("city", "");
+                  }
+                }}
+                className="w-4 h-4 rounded border-gray-300 text-[#003d29] focus:ring-[#003d29]"
+              />
+              <div>
+                <span className="text-sm font-medium text-gray-700">
+                  All Remaining Cities
+                </span>
+                <p className="text-xs text-gray-500">
+                  Apply this fee to all cities not assigned to other zones
+                </p>
+              </div>
+            </label>
+
+            {/* City - only show if allRemaining is false */}
+            {!form.allRemaining && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">
+                  City <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  value={form.city}
+                  onValueChange={(value) => {
+                    if (!value) return;
+                    updateField("city", value);
+                  }}
+                >
+                  <SelectTrigger className="h-10 w-full">
+                    <SelectValue>{form.city || "Select City"}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {allCities.map((city: string) => (
+                      <SelectItem key={city} value={city}>
+                        {city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {allCities.length === 0 && (
+                  <p className="text-xs text-gray-500">
+                    All cities have delivery zones. Edit existing zones to change
+                    fees.
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Fee & Estimated Delivery */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -359,7 +480,9 @@ export default function AdminDeliveryZonesPage() {
                 </label>
                 <Input
                   value={form.estimatedDelivery}
-                  onChange={(e) => updateField("estimatedDelivery", e.target.value)}
+                  onChange={(e) =>
+                    updateField("estimatedDelivery", e.target.value)
+                  }
                   placeholder="e.g. 2-3 business days"
                 />
               </div>
@@ -390,7 +513,10 @@ export default function AdminDeliveryZonesPage() {
             >
               Cancel
             </Button>
-            <Button onClick={isCreateOpen ? handleCreate : handleUpdate} className="w-full sm:w-auto">
+            <Button
+              onClick={isCreateOpen ? handleCreate : handleUpdate}
+              className="w-full sm:w-auto"
+            >
               {isCreateOpen ? "Create Zone" : "Update Zone"}
             </Button>
           </DialogFooter>

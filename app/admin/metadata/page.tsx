@@ -26,11 +26,8 @@ import { cn } from "@/lib/utils";
 
 interface MetadataFormData {
   hero_slider: Array<{
-    bg_color: string;
-    title: string;
-    description: string;
-    cta_btn: { color: string; text: string; bg_color: string; link: string };
     image_url: string;
+    link?: string;
   }>;
   offers: Array<{
     _id: string;
@@ -322,91 +319,31 @@ function HeroSlideEditor({
 
   return (
     <div className="group bg-white rounded-2xl border border-gray-200/70 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-      {/* Slide Preview — matches hero.tsx rendering exactly */}
-      <div
-        className="relative overflow-hidden text-white"
-        style={{ backgroundColor: slide?.bg_color || "#f5f5f5" }}
-      >
-        <div className="px-6 md:px-12 pt-12 pb-24 md:pt-20 md:pb-32 flex flex-col md:flex-row items-center gap-12 relative min-h-[300px]">
-          {/* Decorative wave SVGs */}
-          <div className="absolute bottom-10 right-1/3 h-20 w-20 opacity-20">
-            <svg viewBox="0 0 100 100" fill="none" stroke="white"><path d="M0 20 Q25 0 50 20 T100 20"></path><path d="M0 40 Q25 20 50 40 T100 40"></path><path d="M0 60 Q25 40 50 60 T100 60"></path></svg>
-          </div>
-          <div className="absolute top-10 right-1/3 h-20 w-20 opacity-20">
-            <svg viewBox="0 0 100 100" fill="none" stroke="white"><path d="M0 20 Q25 0 50 20 T100 20"></path><path d="M0 40 Q25 20 50 40 T100 40"></path><path d="M0 60 Q25 40 50 60 T100 60"></path></svg>
-          </div>
-          <div className="absolute top-10 left-20 h-20 w-20 opacity-20">
-            <svg viewBox="0 0 100 100" fill="none" stroke="white"><path d="M0 20 Q25 0 50 20 T100 20"></path><path d="M0 40 Q25 20 50 40 T100 40"></path><path d="M0 60 Q25 40 50 60 T100 60"></path></svg>
-          </div>
-
-          {/* Text Content */}
-          <div className="flex-1 space-y-6 z-10">
-            <h2 className="text-4xl md:text-5xl font-black leading-tight tracking-tight text-white">
-              {slide?.title ? (
-                <>
-                  {slide.title.split(" ").slice(0, 3).join(" ")}
-                  {slide.title.split(" ").length > 3 && (
-                    <><br />{slide.title.split(" ").slice(3).join(" ")}</>
-                  )}
-                </>
-              ) : (
-                <span className="opacity-30">Slide Title</span>
-              )}
-            </h2>
-            <p className="text-lg md:text-xl max-w-lg text-gray-200">
-              {slide?.description || <span className="opacity-30">Description text appears here</span>}
-            </p>
-            <span
-              className="inline-flex items-center font-bold text-lg px-8 py-3 rounded-md shadow-lg transition-transform hover:scale-105"
-              style={{
-                backgroundColor: slide?.cta_btn?.bg_color || "#d4e157",
-                color: slide?.cta_btn?.color || "#003d29",
+      {/* Image Preview */}
+      <div className="relative w-full bg-gray-100">
+        {hasImage ? (
+          <div className="relative w-full aspect-[16/5]">
+            <Image
+              src={slide?.image_url || ""}
+              alt=""
+              fill
+              className="object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = "none";
               }}
-            >
-              {slide?.cta_btn?.text || "Shop now"}
-            </span>
+            />
           </div>
-
-          {/* Hero Image */}
-          <div className="flex-1 relative z-10 flex justify-center md:justify-end">
-            <div className="relative w-full aspect-square max-w-[280px]">
-              {hasImage ? (
-                <Image
-                  src={slide?.image_url || ""}
-                  alt=""
-                  fill
-                  className="object-contain"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-white/10 rounded-2xl">
-                  <span className="text-white/30 text-sm">Image</span>
-                </div>
-              )}
+        ) : (
+          <div className="flex items-center justify-center h-48 bg-gray-50">
+            <div className="text-center">
+              <Upload01Icon className="size-8 text-gray-300 mx-auto" />
+              <p className="text-sm text-gray-400 mt-2">No image uploaded</p>
             </div>
           </div>
-        </div>
-
-        {/* Curved Divider */}
-        <div className="absolute bottom-0 left-0 w-full translate-y-1 z-20">
-          <svg
-            viewBox="0 0 1440 120"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-auto block"
-            preserveAspectRatio="none"
-          >
-            <path
-              d="M0 0C240 80 1200 80 1440 0V120H0V0Z"
-              fill="#FAFAF9"
-            />
-          </svg>
-        </div>
+        )}
 
         {/* Slide number badge */}
-        <div className="absolute top-3 left-3 z-30 bg-black/40 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full">
+        <div className="absolute top-3 left-3 z-10 bg-black/40 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1 rounded-full">
           Slide {index + 1} / {total}
         </div>
       </div>
@@ -419,7 +356,6 @@ function HeroSlideEditor({
             <span className="text-sm font-semibold text-gray-900">
               Slide {index + 1} Settings
             </span>
-            <span className="text-xs text-gray-400">#{index + 1}</span>
           </div>
           <div className="flex items-center gap-1">
             <ReorderControls
@@ -448,91 +384,30 @@ function HeroSlideEditor({
 
         {!collapsed && (
           <>
-            {/* Background & Image */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Background Color
-                </label>
-                <ColorInput
-                  value={slide?.bg_color || ""}
-                  onChange={(v) => form.setValue(`hero_slider.${index}.bg_color`, v)}
+            {/* Image Upload */}
+            <ImagePicker
+              value={slide?.image_url || ""}
+              onChange={(v) => form.setValue(`hero_slider.${index}.image_url`, v)}
+              label="Slide Image"
+              folder="/metadata/hero"
+            />
+
+            {/* Link */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Link
+              </label>
+              <div className="flex items-center gap-2">
+                <Link02Icon className="size-4 text-gray-400 shrink-0" />
+                <Input
+                  {...register(`hero_slider.${index}.link`)}
+                  placeholder="/shop"
+                  className="text-sm h-9"
                 />
               </div>
-              <ImagePicker
-                value={slide?.image_url || ""}
-                onChange={(v) => form.setValue(`hero_slider.${index}.image_url`, v)}
-                label="Background Image"
-                folder="/metadata/hero"
-              />
-            </div>
-
-            {/* Title */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Title
-              </label>
-              <Input
-                {...register(`hero_slider.${index}.title`)}
-                placeholder="Slide heading text"
-                className="text-sm h-9"
-              />
-            </div>
-
-            {/* Description */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Description
-              </label>
-              <textarea
-                {...register(`hero_slider.${index}.description`)}
-                placeholder="Supporting text for the slide"
-                rows={2}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600/20 focus:border-emerald-600 resize-none"
-              />
-            </div>
-
-            {/* CTA Button */}
-            <div>
-              <label className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2 block">
-                Call-to-Action Button
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[10px] text-gray-400">Text</label>
-                  <Input
-                    {...register(`hero_slider.${index}.cta_btn.text`)}
-                    placeholder="Shop Now"
-                    className="text-sm h-9"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] text-gray-400">Link</label>
-                  <Input
-                    {...register(`hero_slider.${index}.cta_btn.link`)}
-                    placeholder="/shop"
-                    className="text-sm h-9"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] text-gray-400">Text Color</label>
-                  <ColorInput
-                    value={slide?.cta_btn?.color || "#ffffff"}
-                    onChange={(v) =>
-                      form.setValue(`hero_slider.${index}.cta_btn.color`, v)
-                    }
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] text-gray-400">BG Color</label>
-                  <ColorInput
-                    value={slide?.cta_btn?.bg_color || "#003d29"}
-                    onChange={(v) =>
-                      form.setValue(`hero_slider.${index}.cta_btn.bg_color`, v)
-                    }
-                  />
-                </div>
-              </div>
+              <p className="text-[10px] text-gray-400">
+                Optional. Where users go when they click the slide. Defaults to /shop
+              </p>
             </div>
 
             {/* Remove */}
@@ -1107,16 +982,8 @@ export default function AdminMetadataPage() {
                 type="button"
                 onClick={() =>
                   appendHero({
-                    bg_color: "#003d29",
-                    title: "",
-                    description: "",
-                    cta_btn: {
-                      color: "#ffffff",
-                      text: "Shop Now",
-                      bg_color: "#003d29",
-                      link: "/shop",
-                    },
                     image_url: "",
+                    link: "/shop",
                   })
                 }
                 className="w-full py-4 rounded-2xl border-2 border-dashed border-gray-200 text-gray-400 hover:border-emerald-600/40 hover:text-emerald-600 transition-all duration-200 flex items-center justify-center gap-2 text-sm font-medium"

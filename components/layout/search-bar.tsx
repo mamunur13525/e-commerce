@@ -134,10 +134,7 @@ export function SearchBar() {
   const showInitialView = isOpen && !query && !showLoading;
 
   return (
-    <div
-      ref={containerRef}
-      className="relative w-full max-w-2xl md:mx-auto"
-    >
+    <div ref={containerRef} className="relative w-full max-w-2xl md:mx-auto">
       {/* Input Field */}
       <div className="relative group">
         <input
@@ -150,24 +147,19 @@ export function SearchBar() {
               router.push(`/shop?search=${encodeURIComponent(query)}`);
             }
           }}
-          placeholder="Search for Grocery, Stores, Vegetable or Meat"
-          className="w-full h-12 rounded-full pl-6 pr-12 text-gray-900 placeholder:text-gray-500 bg-white focus:outline-none focus:ring-2 focus:ring-[#d4e157] transition-all shadow-sm"
+          placeholder="Search for Gadgets, Accessories, and more..."
+          className="w-full h-12 rounded-full pl-6 pr-12 border text-gray-900 placeholder:text-gray-500 bg-[#f2f4f7] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#d4e157] transition-all"
         />
 
         <button
           onClick={() => {
-            if (query.trim()) {
-              setQuery("");
-              handleSearch("");
-            }
+            router.push(`/shop?search=${encodeURIComponent(query)}`);
+            setIsOpen(false);
           }}
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
+          className="absolute right-1 top-1/2 -translate-y-1/2 p-2 rounded-full hover:bg-[#1f2936]/90 transition-colors cursor-pointer flex items-center gap-2 bg-gradient-to-b  to-[#003d29] from-[#003d29] text-white px-4"
         >
-          {query ? (
-            <Cancel01Icon className="size-5 text-gray-600" />
-          ) : (
-            <Search01Icon className="size-5 text-gray-600" />
-          )}
+          <Search01Icon className="size-5 text-white" />
+          Search
         </button>
       </div>
 
@@ -193,26 +185,29 @@ export function SearchBar() {
                     Categories
                   </h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {categories.filter((cat) => cat.count > 0)?.slice(0, 6)?.map((category, index) => (
-                      <Link
-                        key={index}
-                        href={`/shop?category=${category.slug || category.name.toLowerCase().replace(/\s+/g, "-")}`}
-                        className="group relative p-4 rounded-2xl transition-all duration-300 hover:shadow-md"
-                        style={{ backgroundColor: category.color }}
-                      >
-                        <div className="flex flex-col z-10">
-                          <h4 className="text-base font-bold text-[#003d29] group-hover:translate-x-1 transition-transform">
-                            {category.name}
-                          </h4>
-                          <span className="text-xs text-gray-500">
-                            {category.count || 0} Products
-                          </span>
-                        </div>
-                        <div className="absolute right-2 bottom-2 text-2xl leading-none group-hover:scale-110 transition-transform opacity-80">
-                          {category.icon}
-                        </div>
-                      </Link>
-                    ))}
+                    {categories
+                      .filter((cat) => cat.count > 0)
+                      ?.slice(0, 6)
+                      ?.map((category, index) => (
+                        <Link
+                          key={index}
+                          href={`/shop?category=${category.slug || category.name.toLowerCase().replace(/\s+/g, "-")}`}
+                          className="group relative p-4 rounded-2xl transition-all duration-300 hover:shadow-md"
+                          style={{ backgroundColor: category.color }}
+                        >
+                          <div className="flex flex-col z-10">
+                            <h4 className="text-base font-bold text-[#003d29] group-hover:translate-x-1 transition-transform">
+                              {category.name}
+                            </h4>
+                            <span className="text-xs text-gray-500">
+                              {category.count || 0} Products
+                            </span>
+                          </div>
+                          <div className="absolute right-2 bottom-2 text-2xl leading-none group-hover:scale-110 transition-transform opacity-80">
+                            {category.icon}
+                          </div>
+                        </Link>
+                      ))}
                   </div>
                 </div>
               )}
@@ -286,8 +281,6 @@ export function SearchBar() {
                     </ul>
                   </div>
                 )}
-
-
               </div>
 
               {/* Right Column: Products */}

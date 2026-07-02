@@ -7,6 +7,7 @@ import { ProductSection } from "@/components/home/product-section";
 import { DiscountGrid } from "@/components/home/discount-grid";
 import { ServicesSection } from "@/components/home/services-section";
 import { ConnectWithUs } from "@/components/home/connect-with-us";
+import { FAQSection } from "@/components/home/faq-section";
 import { useMetadata } from "@/hooks";
 import { Suspense } from "react";
 import { LoadingScreen } from "@/components/loading/animated-loading-icon";
@@ -46,6 +47,7 @@ function HomeContent() {
       <DiscountGrid discountCards={metadata.discout_cards} />
       <ProductSection title="You might need" />
       <ServicesSection />
+      <FAQSection />
     </main>
   );
 }

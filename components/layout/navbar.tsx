@@ -5,13 +5,6 @@ import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -21,13 +14,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Menu01Icon,
   ShoppingBasket01Icon,
   UserIcon,
-  Settings02Icon,
   Logout01Icon,
-  Home01Icon,
-  VegetarianFoodIcon,
   FavouriteIcon,
   DashboardSquare01Icon,
 } from "hugeicons-react";
@@ -35,15 +24,12 @@ import { SearchBar } from "@/components/layout/search-bar";
 import { CartSheet } from "@/components/layout/cart-sheet";
 import { useAuthStore } from "@/store/auth-store";
 import { toast } from "sonner";
-import { useState } from "react";
 import Image from "next/image";
 import logo from "@/public/assets/logo2.png";
 
 export function Navbar() {
   const pathname = usePathname();
   const { user, logout, isAuthenticated } = useAuthStore();
-  const [sheetOpen, setSheetOpen] = useState(false);
-
   const handleLogout = () => {
     logout();
     toast.success("Logged out successfully");
@@ -67,95 +53,12 @@ export function Navbar() {
     return "Guest";
   };
 
-  const handleCloseSidebar = () => setSheetOpen(false);
   return (
-    <header className="bg-[#003d29] backdrop-blur-2xl text-white  sticky top-0 z-50">
+    <header className="bg-white backdrop-blur-2xl sticky top-0 z-50 border-b border-gray-200">
       <div className="container mx-auto py-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
-        {/* Left: Menu & Logo */}
+        {/* Left: Logo */}
         <div className="flex items-center gap-4">
-          {/* Sidebar Trigger */}
-          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-            <SheetTrigger className="p-2 hover:bg-white/10 rounded-full transition-colors cursor-pointer">
-              <Menu01Icon className="size-6 text-white" />
-            </SheetTrigger>
-            <SheetContent
-              side="left"
-              className="bg-white text-gray-900 w-75 sm:w-87.5"
-            >
-              <SheetHeader>
-                <SheetTitle className="text-left px-4 text-xl font-bold text-[#003d29]">
-                  Pocket Shop
-                </SheetTitle>
-              </SheetHeader>
-              <div className="flex flex-col gap-4 px-4 mt-8">
-                <Link
-                  href="/"
-                  className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
-                  onClick={handleCloseSidebar}
-                >
-                  <Home01Icon className="size-6 text-[#003d29]" />
-                  Home
-                </Link>
-                <Link
-                  href="/categories"
-                  className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
-                  onClick={handleCloseSidebar}
-                >
-                  <VegetarianFoodIcon className="size-6 text-[#003d29]" />
-                  Shop by Category
-                </Link>
-                <Link
-                  href="/wishlist"
-                  className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
-                  onClick={handleCloseSidebar}
-                >
-                  <FavouriteIcon className="size-6 text-[#003d29]" />
-                  Wishlist
-                </Link>
-                <Link
-                  href="/cart"
-                  className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
-                  onClick={handleCloseSidebar}
-                >
-                  <ShoppingBasket01Icon className="size-6 text-[#003d29]" />
-                  My Orders
-                </Link>
-                <Link
-                  href="/account/profile"
-                  className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
-                  onClick={handleCloseSidebar}
-                >
-                  <Settings02Icon className="size-6 text-[#003d29]" />
-                  Settings
-                </Link>
-                <Link
-                  href="/compare"
-                  className="flex items-center gap-3 p-3 hover:bg-green-50 rounded-lg transition-colors text-lg font-medium"
-                  onClick={handleCloseSidebar}
-                >
-                  <svg
-                    className="size-5 text-[#003d29]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                    />
-                  </svg>
-                  Compare
-                </Link>
-
-                {/* Separator */}
-                <div className="border-t border-gray-200 my-2" />
-              </div>
-            </SheetContent>
-          </Sheet>
-
-          <Link href="/" className="relative ">
+          <Link href="/" className="relative">
             <Image className="size-12 w-full" src={logo} alt="logo" />
           </Link>
         </div>
@@ -167,9 +70,9 @@ export function Navbar() {
 
         {/* Right: Actions */}
         <div className="flex items-center gap-6">
-          <Link href="/wishlist" className="group relative flex items-center justify-center gap-2 cursor-pointer">
-            <FavouriteIcon className="size-6 text-white/90 group-hover:text-white duration-200" />
-            <span className="hidden md:inline text-white/90 group-hover:text-white duration-200">Wishlist</span>
+          <Link href="/wishlist" className="group relative flex flex-col items-center justify-center cursor-pointer">
+            <FavouriteIcon className="size-6  duration-200" />
+            <span className="hidden md:inline  duration-200">Wishlist</span>
           </Link>
 
           <CartSheet />
@@ -236,8 +139,9 @@ export function Navbar() {
             <Link href={`/login?callbackUrl=${encodeURIComponent(pathname)}`}>
               <Button
                 variant="ghost"
-                className="text-white hover:text-white cursor-pointer hover:bg-white/10 border border-white/20"
+                className="text-black flex flex-col hover:bg-transparent cursor-pointer"
               >
+                <UserIcon className="size-6  duration-200" />
                 Sign In
               </Button>
             </Link>

@@ -62,20 +62,20 @@ export function CartSheet() {
       <SheetTrigger className="relative p-2  transition-colors cursor-pointer outline-none">
         <div
           ref={registerCartIcon}
-          className="relative flex items-center justify-center gap-2 group"
+          className="relative flex flex-col items-center justify-center group"
         >
-          <ShoppingBasket01Icon className="size-6 text-white/90 group-hover:text-white duration-200" />
+          <ShoppingBasket01Icon className="size-6 duration-200" />
           {isAuthenticated && displayCartItems.length > 0 && (
             <span className="absolute -top-1 left-4 bg-red-500 text-white text-[10px] font-bold size-4 flex items-center justify-center rounded-full border-2 border-white">
               {displayCartItems.length}
             </span>
           )}
-          <span className="hidden md:inline text-white/90 group-hover:text-white duration-200">Cart</span>
+          <span className="hidden md:inline duration-200">Cart</span>
         </div>
       </SheetTrigger>
       <SheetContent className="flex flex-col w-full sm:max-w-md p-0 gap-0 ">
         <SheetHeader className="p-6 border-b">
-          <SheetTitle className="flex items-center gap-2 text-xl font-bold text-[#003d29]">
+          <SheetTitle className="flex  items-center gap-2 text-xl font-bold text-[#003d29]">
             <ShoppingBasket01Icon className="size-6" />
             My Cart ({displayCartItems.length})
           </SheetTitle>
