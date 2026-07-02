@@ -1,208 +1,141 @@
 "use client";
 
-import { forwardRef, useState } from "react";
+import { useState, useCallback } from "react";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import type { Product } from "@/hooks";
+import type { CarouselApi } from "@/components/ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
-interface ProductImageGalleryProps {
+type ProductImageGalleryProps = {
+  ref: React.RefObject<HTMLDivElement | null>;
   product: Product;
-}
+};
 
-export const ProductImageGallery = forwardRef<HTMLImageElement, ProductImageGalleryProps>(
-  function ProductImageGallery({ product }, imageRef) {
-    const [selectedImage, setSelectedImage] = useState(0);
-    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+const ProductImageGallery = ({ ref, product }: ProductImageGalleryProps) => {
+  // Build array of all available images
+  const allImages = [
+    product.image,
+    ...(product.images || []),
+  ].filter((img): img is { url: string; display_url?: string } => !!img?.url);
 
-  const allImages = [product.image, ...(product.images || [])];
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [mainApi, setMainApi] = useState<CarouselApi | null>(null);
 
-  const getImageUrl = (idx: number) => {
-    return (
-      allImages[idx]?.url ||
-      allImages[idx]?.display_url ||
-      product.image.url
-    );
-  };
+  const handleThumbnailClick = useCallback(
+    (index: number) => {
+      setSelectedIndex(index);
+      mainApi?.scrollTo(index);
+    },
+    [mainApi],
+  );
+
+  const handleSelect = useCallback((api: CarouselApi) => {
+    if (!api) return;
+    setSelectedIndex(api.selectedScrollSnap());
+  }, []);
 
   return (
-    <div className="space-y-4">
-      <div
-        className="relative aspect-square bg-[#f4f6f6] rounded-lg overflow-hidden cursor-zoom-in p-8"
-        onClick={() => setIsPreviewOpen(true)}
-      >
-        {product.discount && product.discount > 0 ? (
-          <div className="absolute top-4 right-4 bg-linear-to-r from-red-500 to-red-600 text-white text-sm font-bold px-4 py-2 rounded-full z-10 shadow-md">
-            -{product.discount}% OFF
-          </div>
-        ) : null}
-        <Image
-          ref={imageRef}
-          key={selectedImage}
-          src={getImageUrl(selectedImage)}
-          alt={product.name}
-          fill
-          className="object-contain animate-in fade-in duration-300 overflow-hidden"
-        />
+    <div ref={ref} className="space-y-4">
+      {/* Main Image Carousel */}
+      <div className="relative w-full aspect-square rounded-xl overflow-hidden bg-gray-100 shadow-lg border border-gray-200">
+        
+        <Carousel
+          setApi={(api) => {
+            setMainApi(api);
+            api?.on("select", () => handleSelect(api));
+          }}
+          className="w-full h-full"
+          opts={{
+            align: "start",
+            loop: true,
+            duration: 30,
+            slidesToScroll: 1,
+          }}
+        >
+          <CarouselContent className="h-full">
+            {allImages.map((img, index) => (
+              <CarouselItem key={index} className="h-full">
+                <div className="relative w-full h-full aspect-square">
+                  <Image
+                    src={
+                      img?.display_url || img?.url || "/placeholder.svg"
+                    }
+                    alt={`${product.name} ${index + 1}`}
+                    fill
+                    className="object-cover"
+                    priority={index === 0}
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          {allImages.length > 1 && (
+            <>
+              <CarouselPrevious className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 hover:bg-white shadow-md border-0" />
+              <CarouselNext className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 hover:bg-white shadow-md border-0" />
+            </>
+          )}
+        </Carousel>
 
-        {/* Navigation Buttons - Bottom Right */}
+        {/* Discount Badge */}
+        {product.discount && product.discount > 0 && (
+          <div className="absolute top-3 right-3 z-10 bg-red-500 text-white text-sm font-bold px-3 py-1 rounded-full shadow-md">
+            -{product.discount}%
+          </div>
+        )}
+
+        {/* Image Counter */}
         {allImages.length > 1 && (
-          <div className="absolute bottom-4 right-4 flex gap-2 z-10">
-            <Button
-              type="button"
-              size="icon"
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedImage((prev) =>
-                  prev === 0 ? allImages.length - 1 : prev - 1,
-                );
-              }}
-              className="w-10 h-10 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center transition-all cursor-pointer"
-              aria-label="Previous image"
-            >
-              <svg
-                className="w-5 h-5 text-gray-700"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </Button>
-            <Button
-              type="button"
-              size="icon"
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedImage((prev) =>
-                  prev === allImages.length - 1 ? 0 : prev + 1,
-                );
-              }}
-              className="w-10 h-10 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center transition-all cursor-pointer"
-              aria-label="Next image"
-            >
-              <svg
-                className="w-5 h-5 text-gray-700"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </Button>
+          <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs font-medium px-2.5 py-1 rounded-full z-10">
+            {selectedIndex + 1} / {allImages.length}
           </div>
         )}
       </div>
 
-      {/* Thumbnail Gallery */}
+      {/* Thumbnail Carousel */}
       {allImages.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto">
-          {allImages.map((img, idx) => (
-            <Button
-              key={idx}
-              onClick={() => setSelectedImage(idx)}
-              className={cn(
-                "relative w-20 h-20 shrink-0 rounded-lg overflow-hidden transition-all bg-[#f4f6f6] cursor-pointer border-2 hover:bg-[#f4f6f6]",
-                selectedImage === idx
-                  ? "border-[#0c762e]"
-                  : "border-transparent",
-              )}
-            >
-              <Image
-                src={img?.url || img?.display_url || product.image.url}
-                alt={`${product.name} ${idx + 1}`}
-                fill
-                className="object-contain p-2"
-              />
-            </Button>
-          ))}
-        </div>
+        <Carousel
+          className="w-full"
+          opts={{
+            align: "start",
+            loop: false,
+            duration: 20,
+            slidesToScroll: 1,
+          }}
+        >
+          <CarouselContent className="-ml-2">
+            {allImages.map((img, index) => (
+              <CarouselItem key={index} className="pl-2 basis-auto">
+                <button
+                  onClick={() => handleThumbnailClick(index)}
+                  className={`relative w-20 h-20 shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-200 cursor-pointer ${
+                    index === selectedIndex
+                      ? "border-blue-600 ring-2 ring-blue-600/20"
+                      : "border-gray-200 hover:border-gray-400"
+                  }`}
+                >
+                  <Image
+                    src={img?.display_url || img?.url || "/placeholder.svg"}
+                    alt={`${product.name} ${index + 1}`}
+                    fill
+                    className="object-cover"
+                  />
+                </button>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="absolute left-1 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 hover:bg-white shadow-md border-0" />
+          <CarouselNext className="absolute right-1 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/90 hover:bg-white shadow-md border-0" />
+        </Carousel>
       )}
-
-      {/* Image Preview Dialog */}
-      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-        <DialogContent className="max-w-7xl w-full h-[90vh] p-0">
-          <div className="relative w-full h-full bg-black/95 flex items-center justify-center rounded-xl">
-            <Image
-              key={selectedImage}
-              src={getImageUrl(selectedImage)}
-              alt={product.name}
-              fill
-              className="object-contain animate-in fade-in duration-300"
-            />
-
-            {/* Navigation Buttons */}
-            {allImages.length > 1 && (
-              <>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedImage((prev) =>
-                      prev === 0 ? allImages.length - 1 : prev - 1,
-                    );
-                  }}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition-all z-50"
-                  aria-label="Previous image"
-                >
-                  <svg
-                    className="w-6 h-6 text-gray-700"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedImage((prev) =>
-                      prev === allImages.length - 1 ? 0 : prev + 1,
-                    );
-                  }}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 hover:bg-white shadow-lg flex items-center justify-center transition-all z-50"
-                  aria-label="Next image"
-                >
-                  <svg
-                    className="w-6 h-6 text-gray-700"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </button>
-
-                {/* Image Counter */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-sm z-50">
-                  {selectedImage + 1} / {allImages.length}
-                </div>
-              </>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
-});
+};
+
+export { ProductImageGallery };

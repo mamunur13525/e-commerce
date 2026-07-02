@@ -51,7 +51,7 @@ export default function ProductPage() {
   const { startAnimation } = useCartAnimation();
   const { openAuthModal } = useAuthModalStore();
   const { addToCompare, isInCompare, removeFromCompare } = useCompareStore();
-  const imageRef = useRef<HTMLImageElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
 
   // Fetch product using TanStack Query
   const { data: product, isLoading, error } = useProduct(productId);
@@ -74,9 +74,8 @@ export default function ProductPage() {
       const targetRef = imageRef && imageRef.current;
       if (targetRef) {
         const rect = targetRef.getBoundingClientRect();
-        const originalUrl = decodeURIComponent(
-          targetRef.src.split("url=")[1].split("&")[0],
-        );
+        const img = targetRef.querySelector("img");
+        const originalUrl = img?.src || "/placeholder.svg";
         startAnimation(originalUrl, rect);
       }
       toast.success("Added to cart!");
@@ -183,7 +182,7 @@ export default function ProductPage() {
               product={product}
               isWishlisted={isWishlisted}
               isCompared={isCompared}
-              isPending={addToCartMutation.isPending}
+              isPending={addToCartMutation.isPending} 
               isWishlistPending={addToWishlistMutation.isPending}
               isRemoveWishlistPending={removeFromWishlistMutation.isPending}
               onAddToCart={handleAddToCart}

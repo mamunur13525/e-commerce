@@ -12,7 +12,13 @@ export interface Offer {
   primary_color: string;
   secondary_color: string;
 }
-
+export interface CTAButton {
+  color: string;
+  text: string;
+  bg_color: string;
+  link: string;
+}
+ 
 export interface DiscountCard {
   _id: string;
   type: string;
