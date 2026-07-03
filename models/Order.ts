@@ -78,6 +78,21 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    onlinePaymentDetails: {
+      provider: {
+        type: String,
+        enum: ["bkash", "nagad", "rocket"],
+        required: false,
+      },
+      phoneNumber: {
+        type: String,
+        required: false,
+      },
+      transactionId: {
+        type: String,
+        required: false,
+      },
+    },
     promoCode: {
       code: {
         type: String,

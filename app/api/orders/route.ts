@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
 
     // Only accept identifiers and choices from the client
     const body = await request.json();
-    const { addressId, paymentMethod, promoCode, itemIds, buyNowProductId, buyNowQuantity, guestInfo, guestAddress, deliveryZoneId } = body;
+    const { addressId, paymentMethod, promoCode, itemIds, buyNowProductId, buyNowQuantity, guestInfo, guestAddress, deliveryZoneId, onlinePaymentDetails } = body;
 
     // Validate required fields
     if (!paymentMethod) {
@@ -444,6 +444,7 @@ export async function POST(request: NextRequest) {
       deliveryZoneId: deliveryZoneId || "",
       deliveryZoneName,
       onlinePaymentDiscount,
+      ...(onlinePaymentDetails && { onlinePaymentDetails }),
       ...(promoDetails && {
         promoCode: {
           code: promoDetails.code,

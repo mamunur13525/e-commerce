@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useMemo, Suspense } from "react";
+import React, { useState, useMemo, Suspense, useEffect } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Edit02Icon, Add01Icon, Remove01Icon, Loading03Icon } from "hugeicons-react";
+import { Edit02Icon, Add01Icon, Remove01Icon, Loading03Icon, SmartPhone01Icon } from "hugeicons-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -28,6 +28,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getRegions, getCitiesByRegion } from "@/lib/locations";
+
+type PaymentMethod = "cod" | "online";
+type OnlineProvider = "bkash" | "nagad" | "rocket";
+
+const ONLINE_PROVIDERS: { key: OnlineProvider; label: string; color: string; bg: string }[] = [
+  { key: "bkash", label: "bKash", color: "text-pink-600", bg: "bg-pink-50 border-pink-200 hover:bg-pink-100" },
+  { key: "nagad", label: "Nagad", color: "text-orange-600", bg: "bg-orange-50 border-orange-200 hover:bg-orange-100" },
+  { key: "rocket", label: "Rocket", color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200 hover:bg-emerald-100" },
+];
+
+const is11DigitPhone = (value: string) => /^\d{11}$/.test(value);
+const is10DigitTransactionId = (value: string) => /^.{10}$/.test(value);
 
 function CheckoutContent() {
   const { isAuthenticated, token } = useAuthStore();
@@ -73,9 +85,17 @@ function CheckoutContent() {
     isAuthenticated ? token : null,
   );
 
-  const [paymentMethod, setPaymentMethod] = useState<"online" | "cod">(
-    "cod",
-  );
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod");
+  const [onlineProvider, setOnlineProvider] = useState<OnlineProvider | null>(null);
+  const [onlinePhone, setOnlinePhone] = useState("");
+  const [onlineTransactionId, setOnlineTransactionId] = useState("");
+
+  // Online payment discount settings from server
+  const [onlinePaymentDiscountSettings, setOnlinePaymentDiscountSettings] = useState<{
+    type: "percentage" | "fixed";
+    value: number;
+  } | null>(null);
+
   const [appliedPromo, setAppliedPromo] = useState<{
     code: string;
     discount: number;
@@ -88,8 +108,24 @@ function CheckoutContent() {
 
   const selectedAddress = addressesData?.find((addr) => addr.isDefault);
 
+  // Fetch online payment discount settings
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch("/api/public/settings");
+        const data = await res.json();
+        if (data.success && data.data?.onlinePaymentDiscount) {
+          setOnlinePaymentDiscountSettings(data.data.onlinePaymentDiscount);
+        }
+      } catch {
+        // silently fail
+      }
+    };
+    fetchSettings();
+  }, []);
+
   // Fetch delivery fee based on selected address region/city
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchDeliveryFee = async () => {
       let region = "";
       let city = "";
@@ -153,9 +189,36 @@ function CheckoutContent() {
     (acc, item) => acc + (item.product?.final_price || 0) * item.quantity,
     0,
   );
+
   const promoDiscount = appliedPromo?.discount || 0;
+
+  // Validate online payment fields
+  const isOnlinePaymentValid = useMemo(() => {
+    if (paymentMethod !== "online") return true;
+    if (!onlineProvider) return false;
+    if (!is11DigitPhone(onlinePhone)) return false;
+    if (!is10DigitTransactionId(onlineTransactionId)) return false;
+    return true;
+  }, [paymentMethod, onlineProvider, onlinePhone, onlineTransactionId]);
+
+  // Calculate online payment discount (only when payment details are valid)
+  const onlinePaymentDiscount = useMemo(() => {
+    if (paymentMethod !== "online") return 0;
+    if (!isOnlinePaymentValid) return 0;
+    if (!onlinePaymentDiscountSettings || onlinePaymentDiscountSettings.value <= 0) return 0;
+
+    const { type, value } = onlinePaymentDiscountSettings;
+    let discount = 0;
+    if (type === "percentage") {
+      discount = (subtotal * value) / 100;
+    } else {
+      discount = value;
+    }
+    return parseFloat(discount.toFixed(2));
+  }, [paymentMethod, isOnlinePaymentValid, onlinePaymentDiscountSettings, subtotal]);
+
   const taxes = (subtotal - promoDiscount) * 0.1;
-  const total = subtotal + deliveryFee - promoDiscount + taxes;
+  const total = subtotal + deliveryFee - promoDiscount + taxes - onlinePaymentDiscount;
 
   const handleConfirmOrder = async () => {
     if (checkoutItems.length === 0) {
@@ -189,15 +252,38 @@ function CheckoutContent() {
       }
     }
 
+    if (paymentMethod === "online") {
+      if (!onlineProvider) {
+        toast.error("Please select an online payment provider.");
+        return;
+      }
+      if (!is11DigitPhone(onlinePhone)) {
+        toast.error("Please enter a valid 11-digit phone number.");
+        return;
+      }
+      if (!is10DigitTransactionId(onlineTransactionId)) {
+        toast.error("Transaction ID must be exactly 10 characters.");
+        return;
+      }
+    }
+
     setIsConfirming(true);
 
     try {
       const body: Record<string, unknown> = {
-        paymentMethod: "COD",
+        paymentMethod: paymentMethod === "online" ? "Online" : "COD",
         ...(appliedPromo?.code && { promoCode: appliedPromo.code }),
         ...(isDirectBuy && { buyNowProductId, buyNowQuantity }),
         ...(!isDirectBuy && selectedItemIds && { itemIds: selectedItemIds }),
       };
+
+      if (paymentMethod === "online" && onlineProvider) {
+        body.onlinePaymentDetails = {
+          provider: onlineProvider,
+          phoneNumber: onlinePhone,
+          transactionId: onlineTransactionId,
+        };
+      }
 
       if (isAuthenticated) {
         body.addressId = selectedAddress!._id;
@@ -468,6 +554,194 @@ function CheckoutContent() {
             </CardContent>
           </Card>
 
+          {/* Payment Method Section */}
+          <Card className="border-none shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-xl font-bold text-[#003d29]">
+                Payment Method
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* COD option */}
+              <button
+                type="button"
+                onClick={() => {
+                  setPaymentMethod("cod");
+                  setOnlineProvider(null);
+                  setOnlinePhone("");
+                  setOnlineTransactionId("");
+                }}
+                className={cn(
+                  "w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all cursor-pointer",
+                  paymentMethod === "cod"
+                    ? "border-[#003d29] bg-[#003d29]/5"
+                    : "border-gray-200 hover:border-gray-300 bg-white"
+                )}
+              >
+                <div className={cn(
+                  "size-6 rounded-full border-2 flex items-center justify-center shrink-0",
+                  paymentMethod === "cod" ? "border-[#003d29]" : "border-gray-300"
+                )}>
+                  {paymentMethod === "cod" && (
+                    <div className="size-3 bg-[#003d29] rounded-full" />
+                  )}
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="font-semibold text-[#003d29]">Cash on Delivery</p>
+                  <p className="text-sm text-gray-500">Pay when you receive your order</p>
+                </div>
+                <div className="text-2xl">💵</div>
+              </button>
+
+              {/* Online Payment option */}
+              <button
+                type="button"
+                onClick={() => {
+                  setPaymentMethod("online");
+                }}
+                className={cn(
+                  "w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all cursor-pointer",
+                  paymentMethod === "online"
+                    ? "border-[#003d29] bg-[#003d29]/5"
+                    : "border-gray-200 hover:border-gray-300 bg-white"
+                )}
+              >
+                <div className={cn(
+                  "size-6 rounded-full border-2 flex items-center justify-center shrink-0",
+                  paymentMethod === "online" ? "border-[#003d29]" : "border-gray-300"
+                )}>
+                  {paymentMethod === "online" && (
+                    <div className="size-3 bg-[#003d29] rounded-full" />
+                  )}
+                </div>
+                <div className="flex-1 text-left">
+                  <p className="font-semibold text-[#003d29]">Online Payment</p>
+                  <p className="text-sm text-gray-500">Pay via bKash, Nagad, or Rocket</p>
+                </div>
+                <div className="text-2xl">📱</div>
+              </button>
+
+              {/* Online Payment Details */}
+              {paymentMethod === "online" && (
+                <div className="space-y-5 pl-10 border-l-2 border-[#003d29]/20 ml-3">
+                  {/* Provider selection */}
+                  <div>
+                    <p className="text-sm font-medium text-gray-700 mb-3">
+                      Select your payment provider
+                    </p>
+                    <div className="grid grid-cols-3 gap-3">
+                      {ONLINE_PROVIDERS.map((provider) => (
+                        <button
+                          key={provider.key}
+                          type="button"
+                          onClick={() => {
+                            setOnlineProvider(provider.key);
+                          }}
+                          className={cn(
+                            "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all cursor-pointer",
+                            onlineProvider === provider.key
+                              ? "border-[#003d29] bg-[#003d29]/5"
+                              : "border-gray-200 hover:border-gray-300 bg-white"
+                          )}
+                        >
+                          <span className={cn(
+                            "text-lg font-bold",
+                            provider.color
+                          )}>
+                            {provider.key === "bkash" ? "bKash" : provider.key === "nagad" ? "Nagad" : "Rocket"}
+                          </span>
+                          {onlineProvider === provider.key && (
+                            <svg className="size-4 text-[#003d29]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Phone number input */}
+                  {onlineProvider && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                      <FloatingInput
+                        id="online-phone"
+                        label="Send Money To (Phone Number)"
+                        type="tel"
+                        value={onlinePhone}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, "").slice(0, 11);
+                          setOnlinePhone(val);
+                        }}
+                        startIcon={<SmartPhone01Icon className="size-5" />}
+                        placeholder="01XXXXXXXXX"
+                        required
+                      />
+                      {onlinePhone.length > 0 && !is11DigitPhone(onlinePhone) && (
+                        <p className="text-xs text-red-500 -mt-3">
+                          Phone number must be exactly 11 digits
+                        </p>
+                      )}
+
+                      <FloatingInput
+                        id="online-transaction-id"
+                        label="Transaction ID"
+                        value={onlineTransactionId}
+                        onChange={(e) => {
+                          const val = e.target.value.slice(0, 10);
+                          setOnlineTransactionId(val);
+                        }}
+                        placeholder="Enter 10-digit transaction ID"
+                        required
+                      />
+                      {onlineTransactionId.length > 0 && !is10DigitTransactionId(onlineTransactionId) && (
+                        <p className="text-xs text-red-500 -mt-3">
+                          Transaction ID must be exactly 10 characters
+                        </p>
+                      )}
+
+                      {/* Online payment discount info */}
+                      {onlinePaymentDiscountSettings && onlinePaymentDiscountSettings.value > 0 && (
+                        <div className={cn(
+                          "p-4 rounded-xl border",
+                          isOnlinePaymentValid
+                            ? "bg-emerald-50 border-emerald-200"
+                            : "bg-gray-50 border-gray-200"
+                        )}>
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">🎉</span>
+                            <div>
+                              <p className="text-sm font-semibold text-emerald-700">
+                                Online Payment Discount Available!
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                {onlinePaymentDiscountSettings.type === "percentage"
+                                  ? `Get ${onlinePaymentDiscountSettings.value}% off`
+                                  : `Get ৳${onlinePaymentDiscountSettings.value.toFixed(2)} off`}
+                                {" "}when you pay online. Fill in the details above to apply.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {isOnlinePaymentValid && onlinePaymentDiscount > 0 && (
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 flex items-center gap-2">
+                          <svg className="size-5 text-emerald-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12" />
+                          </svg>
+                          <p className="text-sm text-emerald-700 font-medium">
+                            Online payment verified! You save ৳{onlinePaymentDiscount.toFixed(2)} on this order.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Review Items Section */}
           <Card className="border-none shadow-sm">
             <CardHeader>
               <CardTitle className="text-xl font-bold text-[#003d29]">
@@ -586,15 +860,20 @@ function CheckoutContent() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 w-fit">
-                  <div className="size-5 rounded-full border flex items-center justify-center border-red-400">
-                    <div className="size-2.5 bg-red-400 rounded-full" />
-                  </div>
-                  <span className="font-semibold text-[#003d29]">
-                    Cash on delivery
+              {/* Payment method indicator - moved inline */}
+              <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                <div className={cn(
+                  "size-2.5 rounded-full",
+                  paymentMethod === "cod" ? "bg-red-400" : "bg-emerald-400"
+                )} />
+                <span className="text-sm font-semibold text-[#003d29]">
+                  {paymentMethod === "cod" ? "Cash on Delivery" : "Online Payment"}
+                </span>
+                {paymentMethod === "online" && onlineProvider && (
+                  <span className="text-xs text-gray-500 ml-1">
+                    · {onlineProvider === "bkash" ? "bKash" : onlineProvider === "nagad" ? "Nagad" : "Rocket"}
                   </span>
-                </div>
+                )}
               </div>
 
               <PromoCodeInput
@@ -627,6 +906,14 @@ function CheckoutContent() {
                     </span>
                   </div>
                 )}
+                {onlinePaymentDiscount > 0 && (
+                  <div className="flex justify-between text-sm font-medium">
+                    <span className="text-gray-500">Online Payment Discount</span>
+                    <span className="text-emerald-600 font-bold">
+                      -৳{onlinePaymentDiscount.toFixed(2)}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm text-gray-500 font-medium">
                   <span>Taxes</span>
                   <span className="text-[#003d29] font-bold">
@@ -640,18 +927,36 @@ function CheckoutContent() {
                 <span>৳{total.toFixed(2)}</span>
               </div>
 
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <p className="text-sm text-blue-700">
-                  <span className="font-semibold">Payment Method:</span> Cash on Delivery
-                </p>
-              </div>
+              {paymentMethod === "online" && onlineProvider && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 space-y-1">
+                  <p className="text-sm text-blue-700">
+                    <span className="font-semibold">Payment Method:</span>{" "}
+                    {onlineProvider === "bkash" ? "bKash" : onlineProvider === "nagad" ? "Nagad" : "Rocket"}
+                  </p>
+                  <p className="text-sm text-blue-700">
+                    <span className="font-semibold">Phone:</span> {onlinePhone}
+                  </p>
+                  <p className="text-sm text-blue-700">
+                    <span className="font-semibold">Transaction ID:</span> {onlineTransactionId}
+                  </p>
+                </div>
+              )}
+
+              {paymentMethod === "cod" && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-sm text-blue-700">
+                    <span className="font-semibold">Payment Method:</span> Cash on Delivery
+                  </p>
+                </div>
+              )}
 
               <Button
                 onClick={handleConfirmOrder}
-                disabled={isConfirming}
+                disabled={isConfirming || (paymentMethod === "online" && !isOnlinePaymentValid)}
                 className={cn(
                   buttonVariants(),
                   "w-full bg-[#beef63] hover:bg-[#aedf4d] text-[#003d29] font-bold rounded-full py-3.5 text-base flex justify-center items-center sm:h-auto",
+                  (isConfirming || (paymentMethod === "online" && !isOnlinePaymentValid)) && "opacity-50 cursor-not-allowed"
                 )}
               >
                 {isConfirming
