@@ -344,7 +344,7 @@ export default function TrackOrderPage() {
                   <div>
                     <h3 className="font-bold text-gray-900 mb-2">Payment Details</h3>
                     <div className="text-sm text-gray-600 space-y-1">
-                      <p>Method: <span className="font-medium text-gray-900">{trackingResult.paymentMethod === 'COD' ? 'Cash on Delivery' : ''}</span></p>
+                      <p>Method: <span className="font-medium text-gray-900">{trackingResult.paymentMethod === 'COD' ? 'Cash on Delivery' : trackingResult.paymentMethod || 'Not specified'}</span></p>
                       <p>Status: <span className="font-medium text-gray-900 capitalize">{trackingResult.paymentStatus || 'unpaid'}</span></p>
                     </div>
                   </div>
@@ -366,6 +366,12 @@ export default function TrackOrderPage() {
                       <div className="flex justify-between text-[#003d29]">
                         <span>Discount</span>
                         <span className="font-medium">-৳{trackingResult.promoDiscount?.toFixed(2)}</span>
+                      </div>
+                    )}
+                    {trackingResult.onlinePaymentDiscount > 0 && (
+                      <div className="flex justify-between text-emerald-600">
+                        <span>Online Payment Discount</span>
+                        <span className="font-medium">-৳{trackingResult.onlinePaymentDiscount?.toFixed(2)}</span>
                       </div>
                     )}
                     <div className="flex justify-between">

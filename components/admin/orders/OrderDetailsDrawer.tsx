@@ -333,7 +333,7 @@ export default function OrderDetailsDrawer({
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent
           side="right"
-          className="w-full sm:max-w-lg md:max-w-xl p-0 flex flex-col"
+          className="w-full sm:min-w-lg md:min-w-xl p-0 flex flex-col"
         >
           <SheetHeader className="px-5 pt-5 pb-3 border-b border-gray-100 shrink-0">
             <div className="flex items-start justify-between pr-8">

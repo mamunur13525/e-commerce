@@ -374,11 +374,24 @@ export async function POST(request: NextRequest) {
       // If promo is invalid, we silently ignore it (order proceeds without discount)
     }
 
-    // Step 6: Get delivery zone fee from DB
+    // Step 6: Get delivery zone fee from DB based on delivery address city
     let deliveryFee = 0;
     let deliveryZoneName = "";
-    if (deliveryZoneId) {
-      const zone = await DeliveryZone.findById(deliveryZoneId);
+    const deliveryCity = deliveryAddressData.city;
+    if (deliveryCity) {
+      let zone = await DeliveryZone.findOne({
+        city: deliveryCity,
+        isActive: true,
+      }).lean();
+
+      // If no specific city zone found, check for "allRemaining" zone
+      if (!zone) {
+        zone = await DeliveryZone.findOne({
+          allRemaining: true,
+          isActive: true,
+        }).lean();
+      }
+
       if (zone) {
         deliveryFee = zone.fee;
         deliveryZoneName = zone.name;

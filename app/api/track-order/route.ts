@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
         subtotal: order.subtotal,
         deliveryFee: order.deliveryFee,
         promoDiscount: order.promoDiscount,
+        onlinePaymentDiscount: order.onlinePaymentDiscount || 0,
         taxes: order.taxes,
         totalPrice: order.totalPrice,
         subOrders: subOrders,
