@@ -52,13 +52,16 @@ export function Footer() {
                   Shop
                 </h4>
                 <ul className="space-y-3 text-sm text-gray-600">
-                  {["All Categories", "Help"].map((item) => (
-                    <li key={item}>
+                  {[
+                    { label: "All Categories", link: "/categories" },
+                    { label: "Help", link: "/help" },
+                  ].map((item) => (
+                    <li key={item.label}>
                       <Link
-                        href="#"
+                        href={item.link || "#"}
                         className="hover:text-amber-600 transition-colors duration-200 inline-block"
                       >
-                        {item}
+                        {item.label}
                       </Link>
                     </li>
                   ))}

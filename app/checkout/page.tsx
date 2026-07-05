@@ -90,8 +90,12 @@ function CheckoutContent() {
   const [onlinePhone, setOnlinePhone] = useState("");
   const [onlineTransactionId, setOnlineTransactionId] = useState("");
 
-  // Online payment discount settings from server
+  // Settings from server
   const [onlinePaymentDiscountSettings, setOnlinePaymentDiscountSettings] = useState<{
+    type: "percentage" | "fixed";
+    value: number;
+  } | null>(null);
+  const [taxSettings, setTaxSettings] = useState<{
     type: "percentage" | "fixed";
     value: number;
   } | null>(null);
@@ -108,14 +112,19 @@ function CheckoutContent() {
 
   const selectedAddress = addressesData?.find((addr) => addr.isDefault);
 
-  // Fetch online payment discount settings
+  // Fetch settings
   useEffect(() => {
     const fetchSettings = async () => {
       try {
         const res = await fetch("/api/public/settings");
         const data = await res.json();
-        if (data.success && data.data?.onlinePaymentDiscount) {
-          setOnlinePaymentDiscountSettings(data.data.onlinePaymentDiscount);
+        if (data.success) {
+          if (data.data?.onlinePaymentDiscount) {
+            setOnlinePaymentDiscountSettings(data.data.onlinePaymentDiscount);
+          }
+          if (data.data?.tax) {
+            setTaxSettings(data.data.tax);
+          }
         }
       } catch {
         // silently fail
@@ -217,7 +226,18 @@ function CheckoutContent() {
     return parseFloat(discount.toFixed(2));
   }, [paymentMethod, isOnlinePaymentValid, onlinePaymentDiscountSettings, subtotal]);
 
-  const taxes = (subtotal - promoDiscount) * 0.1;
+  // Calculate tax from settings
+  const taxes = useMemo(() => {
+    if (!taxSettings || taxSettings.value <= 0) return 0;
+    const taxableAmount = subtotal - promoDiscount;
+    let taxAmount = 0;
+    if (taxSettings.type === "percentage") {
+      taxAmount = (taxableAmount * taxSettings.value) / 100;
+    } else {
+      taxAmount = taxSettings.value;
+    }
+    return parseFloat(taxAmount.toFixed(2));
+  }, [taxSettings, subtotal, promoDiscount]);
   const total = subtotal + deliveryFee - promoDiscount + taxes - onlinePaymentDiscount;
 
   const handleConfirmOrder = async () => {

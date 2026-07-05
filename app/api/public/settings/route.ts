@@ -21,6 +21,7 @@ export async function GET() {
       success: true,
       data: {
         onlinePaymentDiscount: settings.onlinePaymentDiscount,
+        tax: settings.tax,
       },
     });
   } catch (error) {

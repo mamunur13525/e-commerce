@@ -10,8 +10,6 @@ import User from "@/models/User";
 import connectDB from "@/lib/db";
 import { sendOrderConfirmationEmail } from "@/lib/mail";
 
-// Server-side constants
-const TAX_RATE = 0.1; // 10%
 
 /**
  * Validates a promo code server-side and calculates the discount amount.
@@ -404,7 +402,17 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const taxes = parseFloat(((subtotal - promoDiscount) * TAX_RATE).toFixed(2));
+    // Step 7.5: Calculate tax from settings
+    let taxes = 0;
+    const settingsDoc = await Settings.findOne().lean();
+    if (settingsDoc && settingsDoc.tax && settingsDoc.tax.value > 0) {
+      if (settingsDoc.tax.type === "percentage") {
+        taxes = ((subtotal - promoDiscount) * settingsDoc.tax.value) / 100;
+      } else {
+        taxes = settingsDoc.tax.value;
+      }
+      taxes = parseFloat(taxes.toFixed(2));
+    }
     const totalPrice = parseFloat(
       (subtotal + deliveryFee - promoDiscount + taxes - onlinePaymentDiscount).toFixed(2)
     );

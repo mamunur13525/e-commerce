@@ -14,6 +14,10 @@ export async function GET() {
           type: "percentage",
           value: 0,
         },
+        tax: {
+          type: "percentage",
+          value: 0,
+        },
       });
     }
 

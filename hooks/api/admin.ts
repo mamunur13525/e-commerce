@@ -641,6 +641,10 @@ export interface AdminSettings {
     type: "percentage" | "fixed";
     value: number;
   };
+  tax: {
+    type: "percentage" | "fixed";
+    value: number;
+  };
   createdAt: string;
   updatedAt: string;
 }

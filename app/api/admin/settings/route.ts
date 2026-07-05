@@ -43,32 +43,58 @@ export async function PUT(request: NextRequest) {
     await connectToDatabase();
 
     const body = await request.json();
-    const { onlinePaymentDiscount } = body;
+    const { onlinePaymentDiscount, tax } = body;
 
-    if (!onlinePaymentDiscount || !onlinePaymentDiscount.type || onlinePaymentDiscount.value === undefined) {
-      return NextResponse.json(
-        { success: false, message: "Missing required fields: onlinePaymentDiscount.type, onlinePaymentDiscount.value" },
-        { status: 400 }
-      );
+    const updateFields: Record<string, unknown> = {};
+
+    if (onlinePaymentDiscount) {
+      if (!onlinePaymentDiscount.type || onlinePaymentDiscount.value === undefined) {
+        return NextResponse.json(
+          { success: false, message: "Missing required fields: onlinePaymentDiscount.type, onlinePaymentDiscount.value" },
+          { status: 400 }
+        );
+      }
+      if (!["percentage", "fixed"].includes(onlinePaymentDiscount.type)) {
+        return NextResponse.json(
+          { success: false, message: "Invalid discount type. Must be 'percentage' or 'fixed'" },
+          { status: 400 }
+        );
+      }
+      updateFields.onlinePaymentDiscount = {
+        type: onlinePaymentDiscount.type,
+        value: Number(onlinePaymentDiscount.value),
+      } as Record<string, unknown>;
     }
 
-    if (!["percentage", "fixed"].includes(onlinePaymentDiscount.type)) {
+    if (tax) {
+      if (!tax.type || tax.value === undefined) {
+        return NextResponse.json(
+          { success: false, message: "Missing required fields: tax.type, tax.value" },
+          { status: 400 }
+        );
+      }
+      if (!["percentage", "fixed"].includes(tax.type)) {
+        return NextResponse.json(
+          { success: false, message: "Invalid tax type. Must be 'percentage' or 'fixed'" },
+          { status: 400 }
+        );
+      }
+      updateFields.tax = {
+        type: tax.type,
+        value: Number(tax.value),
+      } as Record<string, unknown>;
+    }
+
+    if (Object.keys(updateFields).length === 0) {
       return NextResponse.json(
-        { success: false, message: "Invalid discount type. Must be 'percentage' or 'fixed'" },
+        { success: false, message: "No valid fields to update" },
         { status: 400 }
       );
     }
 
     const settings = await Settings.findOneAndUpdate(
       {},
-      {
-        $set: {
-          onlinePaymentDiscount: {
-            type: onlinePaymentDiscount.type,
-            value: Number(onlinePaymentDiscount.value),
-          },
-        },
-      },
+      { $set: updateFields },
       { upsert: true, new: true }
     );
 
@@ -77,10 +103,11 @@ export async function PUT(request: NextRequest) {
       data: settings,
       message: "Settings updated successfully",
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error updating settings:", error);
+    const errorMessage = error instanceof Error ? error.message : "Internal Server Error";
     return NextResponse.json(
-      { success: false, message: error.message || "Internal Server Error" },
+      { success: false, message: errorMessage },
       { status: 500 }
     );
   }

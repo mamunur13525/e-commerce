@@ -14,6 +14,18 @@ const settingsSchema = new mongoose.Schema(
         min: 0,
       },
     },
+    tax: {
+      type: {
+        type: String,
+        enum: ["percentage", "fixed"],
+        default: "percentage",
+      },
+      value: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+    },
   },
   {
     timestamps: true,
