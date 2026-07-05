@@ -198,12 +198,18 @@ export function useDeleteUser() {
 
 export interface DeliveryAddress {
   full_name: string;
-  street: string;
-  city: string;
-  state: string;
-  zip: string;
-  country: string;
   phone?: string;
+  building?: string;
+  colony?: string;
+  region?: string;
+  city?: string;
+  area?: string;
+  address?: string;
+  label?: string;
+  country?: string;
+  street?: string;
+  state?: string;
+  zip?: string;
 }
 
 export interface OrderItem {
@@ -211,21 +217,41 @@ export interface OrderItem {
     _id: string;
     name: string;
     images?: Array<{ display_url: string }>;
+    slug?: string;
+    price?: number;
+    final_price?: number;
   };
   variant?: string;
   price: number;
   quantity: number;
 }
 
+export interface OnlinePaymentDetails {
+  provider?: "bkash" | "nagad" | "rocket";
+  phoneNumber?: string;
+  transactionId?: string;
+}
+
+export interface PromoCode {
+  code?: string;
+  discountType?: "percentage" | "fixed";
+  discountValue?: number;
+}
+
 export interface AdminOrder {
   _id: string;
   orderId: string;
-  user?: { _id: string; first_name: string; last_name: string; email: string };
+  user?: { _id: string; first_name: string; last_name: string; email: string; phone?: string; image?: string };
   guestInfo?: { name: string; email: string; phone: string };
   items: OrderItem[];
   deliveryAddress: DeliveryAddress;
   subtotal: number;
   deliveryFee: number;
+  deliveryZoneId?: string;
+  deliveryZoneName?: string;
+  onlinePaymentDiscount?: number;
+  onlinePaymentDetails?: OnlinePaymentDetails;
+  promoCode?: PromoCode;
   promoDiscount: number;
   taxes: number;
   totalPrice: number;

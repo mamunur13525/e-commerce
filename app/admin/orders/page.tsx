@@ -4,19 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   useAdminOrders,
-  useUpdateOrderStatus,
-  AdminOrder,
 } from "@/hooks/api/admin";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -27,7 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Pagination } from "@/components/ui/pagination";
 import { Search01Icon, FilterIcon, ArrowRight01Icon } from "hugeicons-react";
-import { toast } from "sonner";
+import OrderDetailsDrawer from "@/components/admin/orders/OrderDetailsDrawer";
 
 const ORDER_STATUSES = ["pending", "processing", "shipped", "delivered", "cancelled"] as const;
 const PAYMENT_STATUSES = ["unpaid", "paid", "failed", "refunded"] as const;
@@ -66,12 +56,9 @@ export default function AdminOrdersPage() {
   const [toDate, setToDate] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
-  // Edit order dialog state
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [editingOrder, setEditingOrder] = useState<AdminOrder | null>(null);
-  const [editStatus, setEditStatus] = useState("");
-  const [editPaymentStatus, setEditPaymentStatus] = useState("");
-  const [editCancelNote, setEditCancelNote] = useState("");
+  // Drawer state
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
   const { data, isLoading } = useAdminOrders({
     page,
@@ -83,8 +70,6 @@ export default function AdminOrdersPage() {
     toDate,
   });
 
-  const updateOrderStatus = useUpdateOrderStatus();
-
   const handleSearch = (value: string) => {
     setSearch(value);
     const timer = setTimeout(() => {
@@ -94,29 +79,14 @@ export default function AdminOrdersPage() {
     return () => clearTimeout(timer);
   };
 
-  const openEditDialog = (order: AdminOrder) => {
-    setEditingOrder(order);
-    setEditStatus(order.status);
-    setEditPaymentStatus(order.paymentStatus);
-    setEditCancelNote(order.cancelNote || "");
-    setEditDialogOpen(true);
+  const openOrderDrawer = (orderId: string) => {
+    setSelectedOrderId(orderId);
+    setDrawerOpen(true);
   };
 
-  const handleUpdateOrder = async () => {
-    if (!editingOrder) return;
-    try {
-      await updateOrderStatus.mutateAsync({
-        id: editingOrder._id,
-        status: editStatus,
-        paymentStatus: editPaymentStatus,
-        cancelNote: editCancelNote,
-      });
-      toast.success("Order updated successfully");
-      setEditDialogOpen(false);
-      setEditingOrder(null);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to update order");
-    }
+  const closeOrderDrawer = () => {
+    setDrawerOpen(false);
+    setSelectedOrderId(null);
   };
 
   const clearFilters = () => {
@@ -130,7 +100,8 @@ export default function AdminOrdersPage() {
   const hasFilters = statusFilter || paymentFilter || fromDate || toDate;
 
   return (
-    <div className="space-y-6">            <div className="flex items-center justify-between gap-4 flex-wrap">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between gap-4 flex-wrap">
         <h1 className="text-2xl font-bold text-gray-900">Orders</h1>
         <Button variant="outline" size="sm" onClick={() => setShowFilters(!showFilters)}>
           <FilterIcon className="size-4" />
@@ -259,7 +230,7 @@ export default function AdminOrdersPage() {
                 <TableRow
                   key={order._id}
                   className="cursor-pointer"
-                  onClick={() => router.push(`/admin/orders/${order._id}`)}
+                  onClick={() => openOrderDrawer(order._id)}
                 >
                   <TableCell>
                     <span className="font-mono text-xs font-medium text-gray-900">
@@ -296,24 +267,16 @@ export default function AdminOrdersPage() {
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openEditDialog(order);
-                        }}
-                      >
-                        Edit Status
-                      </Button>
-                      <Button
                         variant="ghost"
                         size="sm"
                         onClick={(e) => {
                           e.stopPropagation();
                           router.push(`/admin/orders/${order._id}`);
                         }}
+                        className="text-[#003d29] hover:text-[#003d29]/80"
                       >
                         <ArrowRight01Icon className="size-4" />
+                        <span className="ml-1 text-xs font-medium">Details</span>
                       </Button>
                     </div>
                   </TableCell>
@@ -334,106 +297,15 @@ export default function AdminOrdersPage() {
         )}
       </div>
 
-      {/* Edit Order Dialog */}
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="max-w-md w-[calc(100%-2rem)] sm:w-full">
-          <DialogHeader>
-            <DialogTitle>Edit Order</DialogTitle>
-            <DialogDescription>
-              Update status for order {editingOrder?.orderId}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="grid gap-4 py-4">
-            {/* Order Details */}
-            {editingOrder && (
-              <div className="bg-gray-50 rounded-lg p-3 text-sm space-y-1">
-                <p>
-                  <span className="text-gray-500">Customer:</span>{" "}
-                  <span className="font-medium">
-                    {editingOrder.user
-                      ? `${editingOrder.user.first_name} ${editingOrder.user.last_name}`
-                      : editingOrder.guestInfo?.name || "Guest"}
-                  </span>
-                </p>
-                <p>
-                  <span className="text-gray-500">Total:</span>{" "}
-                  <span className="font-medium">
-                    ${editingOrder.totalPrice?.toFixed(2)}
-                  </span>
-                </p>
-                <p>
-                  <span className="text-gray-500">Payment:</span>{" "}
-                  <span className="font-medium capitalize">
-                    {editingOrder.paymentMethod}
-                  </span>
-                </p>
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Order Status
-              </label>
-              <select
-                value={editStatus}
-                onChange={(e) => setEditStatus(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#003d29]/20 focus:border-[#003d29]"
-              >
-                {ORDER_STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {s.charAt(0).toUpperCase() + s.slice(1)}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Payment Status
-              </label>
-              <select
-                value={editPaymentStatus}
-                onChange={(e) => setEditPaymentStatus(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#003d29]/20 focus:border-[#003d29]"
-              >
-                {PAYMENT_STATUSES.map((s) => (
-                  <option key={s} value={s}>
-                    {s.charAt(0).toUpperCase() + s.slice(1)}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {editStatus === "cancelled" && (
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Cancel Note
-                </label>
-                <textarea
-                  value={editCancelNote}
-                  onChange={(e) => setEditCancelNote(e.target.value)}
-                  placeholder="Reason for cancellation..."
-                  className="w-full min-h-[60px] px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#003d29]/20 focus:border-[#003d29]"
-                />
-              </div>
-            )}
-          </div>
-
-          <DialogFooter className="flex-col-reverse sm:flex-row gap-2">
-            <Button variant="outline" onClick={() => setEditDialogOpen(false)} className="w-full sm:w-auto">
-              Cancel
-            </Button>
-            <Button
-              onClick={handleUpdateOrder}
-              disabled={updateOrderStatus.isPending}
-              className="w-full sm:w-auto"
-            >
-              {updateOrderStatus.isPending ? "Updating..." : "Update Order"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Order Details Drawer */}
+      <OrderDetailsDrawer
+        orderId={selectedOrderId}
+        open={drawerOpen}
+        onOpenChange={(open) => {
+          setDrawerOpen(open);
+          if (!open) setSelectedOrderId(null);
+        }}
+      />
     </div>
   );
 }

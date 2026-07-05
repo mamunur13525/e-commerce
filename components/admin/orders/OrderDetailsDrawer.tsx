@@ -1,11 +1,15 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
-  useAdminOrder,
-  useUpdateOrderStatus,
-  AdminOrder,
-} from "@/hooks/api/admin";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -16,10 +20,9 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { ArrowLeft01Icon } from "hugeicons-react";
+import { ArrowRight01Icon } from "hugeicons-react";
+import { useAdminOrder, useUpdateOrderStatus, AdminOrder } from "@/hooks/api/admin";
 import { toast } from "sonner";
-import { useState } from "react";
-import Image from "next/image";
 
 const ORDER_STATUSES = ["pending", "processing", "shipped", "delivered", "cancelled"] as const;
 const PAYMENT_STATUSES = ["unpaid", "paid", "failed", "refunded"] as const;
@@ -50,10 +53,14 @@ function StatusBadge({ status }: { status: string }) {
 function SectionCard({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
   return (
     <div className={`bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden ${className}`}>
-      <div className="px-5 py-3.5 border-b border-gray-100 bg-gray-50/50">
-        <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2"> {title} </h3>
+      <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
+        <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+          {title}
+        </h3>
       </div>
-      <div className="p-5">{children}</div>
+      <div className="p-4">
+        {children}
+      </div>
     </div>
   );
 }
@@ -61,29 +68,8 @@ function SectionCard({ title, children, className = "" }: { title: string; child
 function InfoRow({ label, value, valueClass = "" }: { label: string; value: React.ReactNode; valueClass?: string }) {
   return (
     <div className="flex items-start justify-between gap-2 py-1.5 border-b border-gray-50 last:border-b-0">
-      <span className="text-xs text-gray-500 shrink-0 min-w-[120px]">{label}</span>
+      <span className="text-xs text-gray-500 shrink-0 min-w-[100px]">{label}</span>
       <span className={`text-sm text-gray-900 text-right font-medium ${valueClass}`}>{value}</span>
-    </div>
-  );
-}
-
-function OrderDetailSkeleton() {
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Skeleton className="h-9 w-24" />
-        <Skeleton className="h-8 w-48" />
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <Skeleton className="h-48 w-full rounded-xl" />
-          <Skeleton className="h-64 w-full rounded-xl" />
-        </div>
-        <div className="space-y-6">
-          <Skeleton className="h-40 w-full rounded-xl" />
-          <Skeleton className="h-48 w-full rounded-xl" />
-        </div>
-      </div>
     </div>
   );
 }
@@ -91,7 +77,7 @@ function OrderDetailSkeleton() {
 function OrderInfoCard({ order }: { order: AdminOrder }) {
   return (
     <SectionCard title="📋 Order Information">
-      <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+      <div className="space-y-1">
         <InfoRow label="Order ID" value={<span className="font-mono">{order.orderId}</span>} />
         <InfoRow label="Date" value={new Date(order.createdAt).toLocaleDateString("en-US", {
           year: "numeric", month: "long", day: "numeric",
@@ -99,15 +85,15 @@ function OrderInfoCard({ order }: { order: AdminOrder }) {
         <InfoRow label="Order Status" value={<StatusBadge status={order.status} />} />
         <InfoRow label="Payment Status" value={<StatusBadge status={order.paymentStatus} />} />
         <InfoRow label="Payment Method" value={<span className="capitalize">{order.paymentMethod}</span>} />
-        {order.deliveryZoneName && <InfoRow label="Delivery Zone" value={order.deliveryZoneName} />}
+        {order.deliveryZoneName && (
+          <InfoRow label="Delivery Zone" value={order.deliveryZoneName} />
+        )}
         <InfoRow label="Delivery Fee" value={order.deliveryFee > 0 ? `$${order.deliveryFee.toFixed(2)}` : <span className="text-green-600">Free</span>} />
-        {order.onlinePaymentDiscount ? (
+        {order.onlinePaymentDiscount != null && order.onlinePaymentDiscount > 0 && (
           <InfoRow label="Online Pay Discount" valueClass="text-green-600" value={`-$${order.onlinePaymentDiscount.toFixed(2)}`} />
-        ) : null}
+        )}
         {order.cancelNote && (
-          <div className="col-span-2">
-            <InfoRow label="Cancel Note" value={<span className="text-red-600">{order.cancelNote}</span>} />
-          </div>
+          <InfoRow label="Cancel Note" value={<span className="text-red-600">{order.cancelNote}</span>} />
         )}
       </div>
     </SectionCard>
@@ -119,7 +105,9 @@ function CustomerInfoCard({ order }: { order: AdminOrder }) {
     <SectionCard title="👤 Customer Information">
       <div className="space-y-1">
         <InfoRow label="Name" value={
-          order.user ? `${order.user.first_name} ${order.user.last_name}` : order.guestInfo?.name || "Guest"
+          order.user
+            ? `${order.user.first_name} ${order.user.last_name}`
+            : order.guestInfo?.name || "Guest"
         } />
         <InfoRow label="Email" value={order.user?.email || order.guestInfo?.email || "—"} />
         <InfoRow label="Phone" value={order.guestInfo?.phone || "—"} />
@@ -135,7 +123,7 @@ function DeliveryAddressCard({ order }: { order: AdminOrder }) {
   return (
     <SectionCard title="📍 Delivery Address">
       <div className="space-y-1">
-        <p className="text-sm font-semibold text-gray-900 mb-2">{addr.full_name}</p>
+        <p className="text-sm font-semibold text-gray-900">{addr.full_name}</p>
         {addr.phone && <InfoRow label="Phone" value={addr.phone} />}
         {addr.building && <InfoRow label="Building" value={addr.building} />}
         {addr.colony && <InfoRow label="Colony" value={addr.colony} />}
@@ -150,99 +138,42 @@ function DeliveryAddressCard({ order }: { order: AdminOrder }) {
   );
 }
 
-function OrderItemsTable({ order }: { order: AdminOrder }) {
-  return (
-    <SectionCard title={`🛒 Ordered Items (${order.items?.length || 0})`}>
-      <div className="-m-5">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-gray-100">
-              <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-3">Product</th>
-              <th className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-3">Price</th>
-              <th className="text-center text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-3">Qty</th>
-              <th className="text-right text-xs font-medium text-gray-500 uppercase tracking-wider px-5 py-3">Total</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {order.items?.map((item: any, index: number) => {
-              const productName = item.product?.name || "Unknown Product";
-              const unitPrice = item.price || 0;
-              const quantity = item.quantity || 1;
-              const totalPrice = unitPrice * quantity;
-              const product = item.product;
-              return (
-                <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="px-5 py-3">
-                    <div className="flex items-center gap-3">
-                      {product?.images?.[0]?.display_url ? (
-                        <Image
-                          src={product.images[0].display_url}
-                          alt={productName}
-                          className="w-12 h-12 rounded-lg object-cover bg-gray-50 shrink-0 ring-1 ring-gray-200"
-                          width={48}
-                          height={48}
-                        />
-                      ) : (
-                        <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center text-xs text-gray-400 shrink-0 ring-1 ring-gray-200">
-                          N/A
-                        </div>
-                      )}
-                      <div>
-                        <p className="font-medium text-gray-900 text-sm">{productName}</p>
-                        {item.variant && <p className="text-xs text-gray-500 mt-0.5">Variant: {item.variant}</p>}
-                        {product?.slug && <p className="text-xs text-gray-400 mt-0.5">SKU: {product.slug}</p>}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-5 py-3 text-sm text-gray-600">${unitPrice.toFixed(2)}</td>
-                  <td className="px-5 py-3 text-center text-sm text-gray-900">{quantity}</td>
-                  <td className="px-5 py-3 text-right text-sm font-semibold text-gray-900">${totalPrice.toFixed(2)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </SectionCard>
-  );
-}
-
 function OrderSummaryCard({ order }: { order: AdminOrder }) {
   return (
     <SectionCard title="💰 Order Summary">
-      <div className="space-y-2">
+      <div className="space-y-1">
         <div className="flex justify-between py-1.5 border-b border-gray-50">
-          <span className="text-sm text-gray-500">Subtotal</span>
+          <span className="text-xs text-gray-500">Subtotal</span>
           <span className="text-sm font-medium text-gray-900">${order.subtotal?.toFixed(2)}</span>
         </div>
         <div className="flex justify-between py-1.5 border-b border-gray-50">
-          <span className="text-sm text-gray-500">Delivery Fee</span>
+          <span className="text-xs text-gray-500">Delivery Fee</span>
           <span className="text-sm font-medium text-gray-900">
             {order.deliveryFee > 0 ? `$${order.deliveryFee?.toFixed(2)}` : <span className="text-green-600">Free</span>}
           </span>
         </div>
         {order.promoDiscount > 0 && (
           <div className="flex justify-between py-1.5 border-b border-gray-50">
-            <span className="text-sm text-gray-500">
+            <span className="text-xs text-gray-500">
               Promo Discount
               {order.promoCode?.code && <span className="text-gray-400 ml-1">({order.promoCode.code})</span>}
             </span>
             <span className="text-sm font-medium text-green-600">-${order.promoDiscount?.toFixed(2)}</span>
           </div>
         )}
-        {order.onlinePaymentDiscount ? (
+        {order.onlinePaymentDiscount != null && order.onlinePaymentDiscount > 0 && (
           <div className="flex justify-between py-1.5 border-b border-gray-50">
-            <span className="text-sm text-gray-500">Online Payment Discount</span>
-            <span className="text-sm font-medium text-green-600">-${order.onlinePaymentDiscount?.toFixed(2)}</span>
+            <span className="text-xs text-gray-500">Online Payment Discount</span>
+            <span className="text-sm font-medium text-green-600">-${order.onlinePaymentDiscount.toFixed(2)}</span>
           </div>
-        ) : null}
+        )}
         <div className="flex justify-between py-1.5 border-b border-gray-50">
-          <span className="text-sm text-gray-500">Taxes</span>
+          <span className="text-xs text-gray-500">Taxes</span>
           <span className="text-sm font-medium text-gray-900">${order.taxes?.toFixed(2)}</span>
         </div>
-        <div className="flex justify-between py-3 mt-1">
-          <span className="text-base font-bold text-gray-900">Total</span>
-          <span className="text-lg font-bold text-gray-900">${order.totalPrice?.toFixed(2)}</span>
+        <div className="flex justify-between py-2 mt-1">
+          <span className="text-sm font-bold text-gray-900">Total</span>
+          <span className="text-base font-bold text-gray-900">${order.totalPrice?.toFixed(2)}</span>
         </div>
       </div>
     </SectionCard>
@@ -284,12 +215,77 @@ function PaymentInfoCard({ order }: { order: AdminOrder }) {
   );
 }
 
-export default function AdminOrderDetailPage() {
-  const params = useParams();
-  const router = useRouter();
-  const id = params.id as string;
+function OrderItemsList({ order }: { order: AdminOrder }) {
+  return (
+    <SectionCard title={`🛒 Ordered Items (${order.items?.length || 0})`}>
+      <div className="divide-y divide-gray-100 -m-4">
+        {order.items?.map((item: any, index: number) => {
+          const productName = item.product?.name || "Unknown Product";
+          const unitPrice = item.price || 0;
+          const quantity = item.quantity || 1;
+          const totalPrice = unitPrice * quantity;
+          const product = item.product;
+          return (
+            <div key={index} className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50/50 transition-colors">
+              {product?.images?.[0]?.display_url ? (
+                <Image
+                  src={product.images[0].display_url}
+                  alt={productName}
+                  className="w-12 h-12 rounded-lg object-cover bg-gray-50 shrink-0 ring-1 ring-gray-200"
+                  width={48}
+                  height={48}
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center text-xs text-gray-400 shrink-0 ring-1 ring-gray-200">
+                  N/A
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-gray-900 text-sm leading-tight">{productName}</p>
+                {item.variant && (
+                  <p className="text-xs text-gray-500 mt-0.5">Variant: {item.variant}</p>
+                )}
+                {product?.slug && (
+                  <p className="text-xs text-gray-400 mt-0.5 truncate">SKU: {product.slug}</p>
+                )}
+              </div>
+              <div className="text-right shrink-0">
+                <p className="text-sm text-gray-500">${unitPrice.toFixed(2)} × {quantity}</p>
+                <p className="text-sm font-semibold text-gray-900 mt-0.5">${totalPrice.toFixed(2)}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </SectionCard>
+  );
+}
 
-  const { data: order, isLoading } = useAdminOrder(id || null);
+function DrawerSkeleton() {
+  return (
+    <div className="space-y-4 p-4">
+      <Skeleton className="h-6 w-48" />
+      <Skeleton className="h-36 w-full rounded-xl" />
+      <Skeleton className="h-28 w-full rounded-xl" />
+      <Skeleton className="h-36 w-full rounded-xl" />
+      <Skeleton className="h-28 w-full rounded-xl" />
+    </div>
+  );
+}
+
+interface OrderDetailsDrawerProps {
+  orderId: string | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export default function OrderDetailsDrawer({
+  orderId,
+  open,
+  onOpenChange,
+}: OrderDetailsDrawerProps) {
+  const router = useRouter();
+  const { data: order, isLoading } = useAdminOrder(orderId);
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editStatus, setEditStatus] = useState("");
@@ -326,75 +322,84 @@ export default function AdminOrderDetailPage() {
     }
   };
 
-  if (isLoading) {
-    return <OrderDetailSkeleton />;
-  }
-
-  if (!order) {
-    return (
-      <div className="text-center py-16">
-        <h2 className="text-lg font-semibold text-gray-900">Order not found</h2>
-        <p className="text-gray-500 mt-1">The order you&#39;re looking for doesn&#39;t exist.</p>
-        <Button
-          variant="outline"
-          className="mt-4"
-          onClick={() => router.push("/admin/orders")}
-        >
-          Back to Orders
-        </Button>
-      </div>
-    );
-  }
+  const handleViewFullDetails = () => {
+    if (!orderId) return;
+    onOpenChange(false);
+    router.push(`/admin/orders/${orderId}`);
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push("/admin/orders")}
-          >
-            <ArrowLeft01Icon className="size-4" />
-            Back
-          </Button>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">
-              Order #{order.orderId}
-            </h1>
-            <p className="text-sm text-gray-500">
-              Placed on{" "}
-              {new Date(order.createdAt).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </p>
+    <>
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent
+          side="right"
+          className="w-full sm:max-w-lg md:max-w-xl p-0 flex flex-col"
+        >
+          <SheetHeader className="px-5 pt-5 pb-3 border-b border-gray-100 shrink-0">
+            <div className="flex items-start justify-between pr-8">
+              <div>
+                <SheetTitle className="text-lg font-bold text-gray-900">
+                  {order ? `Order #${order.orderId}` : "Order Details"}
+                </SheetTitle>
+                <SheetDescription className="text-xs text-gray-500 mt-0.5">
+                  {order
+                    ? `Created ${new Date(order.createdAt).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}`
+                    : "Loading order details..."}
+                </SheetDescription>
+              </div>
+            </div>
+          </SheetHeader>
+
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+            {isLoading ? (
+              <DrawerSkeleton />
+            ) : !order ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500">Order not found.</p>
+              </div>
+            ) : (
+              <>
+                <OrderInfoCard order={order} />
+                <OrderSummaryCard order={order} />
+                {(order.paymentMethod === "Online" || order.promoCode?.code) && (
+                  <PaymentInfoCard order={order} />
+                )}
+                <CustomerInfoCard order={order} />
+                <DeliveryAddressCard order={order} />
+                <OrderItemsList order={order} />
+              </>
+            )}
           </div>
-        </div>
-        <Button onClick={openEditDialog} className="w-full sm:w-auto">Edit Status</Button>
-      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column */}
-        <div className="lg:col-span-2 space-y-6">
-          <OrderInfoCard order={order} />
-          <OrderItemsTable order={order} />
-        </div>
-
-        {/* Right Column */}
-        <div className="space-y-6">
-          <OrderSummaryCard order={order} />
-          <CustomerInfoCard order={order} />
-          <DeliveryAddressCard order={order} />
-          {(order.paymentMethod === "Online" || order.promoCode?.code) && (
-            <PaymentInfoCard order={order} />
+          {/* Bottom actions */}
+          {order && (
+            <div className="border-t border-gray-200 px-5 py-4 flex items-center gap-2 shrink-0 bg-gray-50/80">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={openEditDialog}
+                className="flex-1"
+              >
+                Edit Status
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleViewFullDetails}
+                className="flex-1"
+              >
+                <span>Full Details</span>
+                <ArrowRight01Icon className="size-4 ml-1.5" />
+              </Button>
+            </div>
           )}
-        </div>
-      </div>
+        </SheetContent>
+      </Sheet>
 
       {/* Edit Order Dialog */}
       <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
@@ -402,29 +407,31 @@ export default function AdminOrderDetailPage() {
           <DialogHeader>
             <DialogTitle>Edit Order</DialogTitle>
             <DialogDescription>
-              Update status for order {order.orderId}
+              Update status for order {order?.orderId}
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
-            <div className="bg-gray-50 rounded-xl p-4 text-sm space-y-2 border border-gray-100">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-500">Customer</span>
-                <span className="font-medium text-gray-900">
-                  {order.user
-                    ? `${order.user.first_name} ${order.user.last_name}`
-                    : order.guestInfo?.name || "Guest"}
-                </span>
+            {order && (
+              <div className="bg-gray-50 rounded-xl p-4 text-sm space-y-2 border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-500">Customer</span>
+                  <span className="font-medium text-gray-900">
+                    {order.user
+                      ? `${order.user.first_name} ${order.user.last_name}`
+                      : order.guestInfo?.name || "Guest"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-500">Total</span>
+                  <span className="font-semibold text-gray-900">${order.totalPrice?.toFixed(2)}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-500">Payment</span>
+                  <span className="font-medium capitalize">{order.paymentMethod}</span>
+                </div>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-500">Total</span>
-                <span className="font-semibold text-gray-900">${order.totalPrice?.toFixed(2)}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-500">Payment</span>
-                <span className="font-medium capitalize">{order.paymentMethod}</span>
-              </div>
-            </div>
+            )}
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">
@@ -489,6 +496,6 @@ export default function AdminOrderDetailPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 }
