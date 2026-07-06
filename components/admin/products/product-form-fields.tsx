@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -9,8 +11,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxTrigger,
+  ComboboxContent,
+  ComboboxList,
+  ComboboxItem,
+  ComboboxGroup,
+  ComboboxSeparator,
+  useComboboxAnchor,
+} from "@/components/ui/combobox";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Controller, UseFormRegister, UseFormSetValue, UseFormWatch, Control, FieldErrors } from "react-hook-form";
 import { ProductFormData } from "@/components/admin/products/types";
+import { AdminCategory, useDeleteCategory } from "@/hooks/api/admin";
+import { Add01Icon, Delete01Icon } from "hugeicons-react";
+import { toast } from "sonner";
 
 interface ProductFormFieldsProps {
   register: UseFormRegister<ProductFormData>;
@@ -18,7 +45,7 @@ interface ProductFormFieldsProps {
   errors: FieldErrors<ProductFormData>;
   watch: UseFormWatch<ProductFormData>;
   setValue: UseFormSetValue<ProductFormData>;
-  categories: any[];
+  categories: AdminCategory[];
   newSize: string;
   setNewSize: (v: string) => void;
   addSize: () => void;
@@ -29,6 +56,7 @@ interface ProductFormFieldsProps {
   setColorHex: (v: string) => void;
   addColor: () => void;
   removeColor: (idx: number) => void;
+  onAddCategory?: () => void;
 }
 
 export function ProductFormFields({
@@ -48,7 +76,26 @@ export function ProductFormFields({
   setColorHex,
   addColor,
   removeColor,
+  onAddCategory,
 }: ProductFormFieldsProps) {
+  const anchor = useComboboxAnchor();
+  const deleteCategory = useDeleteCategory();
+
+  const selectedCategory = categories.find((c) => c.name === watch("category"));
+
+  const handleDeleteCategory = async (cat: AdminCategory) => {
+    try {
+      await deleteCategory.mutateAsync(cat._id);
+      toast.success(`Category "${cat.name}" deleted successfully`);
+      if (watch("category") === cat.name) {
+        setValue("category", "");
+      }
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || "Failed to delete category");
+    }
+  };
+
   return (
     <div className="grid gap-4">
       {/* 1. Name (full width) */}
@@ -119,7 +166,6 @@ export function ProductFormFields({
                 checked={field.value}
                 onCheckedChange={(checked) => {
                   field.onChange(checked);
-                  // Auto-select percentage discount type when applying discount
                   if (checked) {
                     setValue("discountType", "percentage");
                   }
@@ -135,7 +181,6 @@ export function ProductFormFields({
 
         {watch("hasDiscount") && (
           <div className="flex items-center gap-4 animate-in fade-in slide-in-from-left-2 duration-200 pl-6">
-            {/* Discount Type Selector */}
             <div className="flex items-center gap-2">
               <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Type</label>
               <Controller
@@ -155,7 +200,6 @@ export function ProductFormFields({
               />
             </div>
 
-            {/* Discount Value Input */}
             <div className="flex items-center gap-2">
               <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
                 {watch("discountType") === "percentage" ? "Discount (%)" : "Discount (৳)"}
@@ -185,7 +229,7 @@ export function ProductFormFields({
       <div className="space-y-4 pt-2 border-t border-gray-100">
         <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Additional Details</h4>
 
-        {/* Category */}
+        {/* Category - Rich Combobox with Icon, Name, Subtitle, Delete & Add */}
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700">Category *</label>
           <Controller
@@ -193,20 +237,99 @@ export function ProductFormFields({
             name="category"
             rules={{ required: "Category is required" }}
             render={({ field }) => (
-              <Select onValueChange={field.onChange} value={field.value}>
-                <SelectTrigger className="w-full h-9 border border-gray-200">
-                  <SelectValue>
-                    {field.value || "Select Category"}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((cat: any) => (
-                    <SelectItem key={cat._id} value={cat.name}>
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Combobox
+                value={field.value}
+                onValueChange={(value: string | null) => {
+                  if (!value) return;
+                  if (value === "__add_category__") {
+                    onAddCategory?.();
+                    return;
+                  }
+                  // Only update if it's a valid category name
+                  const cat = categories.find((c) => c.name === value);
+                  if (cat) {
+                    field.onChange(value);
+                  }
+                }}
+              >
+                <div ref={anchor}>
+                  {selectedCategory ? (
+                    <ComboboxTrigger className="w-full flex items-center gap-3 px-3 py-2 border border-gray-200 rounded-lg bg-white min-h-10 text-left">
+                      <span className="text-xl">{selectedCategory.icon}</span>
+                      <div className="text-left flex-1">
+                        <p className="text-sm font-medium text-gray-900">{selectedCategory.name}</p>
+                        <p className="text-xs text-gray-500">{selectedCategory.subtitle}</p>
+                      </div>
+                    </ComboboxTrigger>
+                  ) : (
+                    <ComboboxInput placeholder="Search categories..." showTrigger showClear={!!field.value} />
+                  )}
+                </div>
+
+                <ComboboxContent anchor={anchor.current}>
+                  <ComboboxList>
+                    {categories.length === 0 && (
+                      <ComboboxItem value="">No categories found</ComboboxItem>
+                    )}
+                    <ComboboxGroup>
+                      {categories.map((cat) => (
+                        <ComboboxItem
+                          key={cat._id}
+                          value={cat.name}
+                          className="flex items-center gap-3 py-2 pr-2"
+                        >
+                          <span className="text-xl shrink-0">{cat.icon}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 truncate">{cat.name}</p>
+                            <p className="text-xs text-gray-500 truncate">{cat.subtitle}</p>
+                          </div>
+                          <div onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
+                            <AlertDialog>
+                              <AlertDialogTrigger
+                                render={
+                                  <button
+                                    type="button"
+                                    className="p-1.5 rounded-md hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors shrink-0"
+                                  >
+                                    <Delete01Icon className="size-4" />
+                                  </button>
+                                }
+                              />
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Delete Category</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Are you sure you want to delete &ldquo;{cat.name}&rdquo;? This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleDeleteCategory(cat)}
+                                    className="bg-red-500 hover:bg-red-600"
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
+                        </ComboboxItem>
+                      ))}
+                    </ComboboxGroup>
+                    <ComboboxSeparator />
+                    <ComboboxGroup>
+                      <ComboboxItem
+                        value="__add_category__"
+                        className="flex items-center gap-2 py-2.5 text-[#003d29] font-medium cursor-pointer"
+                      >
+                        <Add01Icon className="size-4" />
+                        Add Category
+                      </ComboboxItem>
+                    </ComboboxGroup>
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
             )}
           />
           {errors.category && (
@@ -280,9 +403,9 @@ export function ProductFormFields({
                     }
                   }}
                 />
-                <button type="button" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-200 bg-white hover:bg-gray-100 h-9 px-3" onClick={addSize}>
+                <Button type="button" variant="outline" size="sm" onClick={addSize}>
                   Add Size
-                </button>
+                </Button>
               </div>
               <div className="flex flex-wrap gap-2 pt-1">
                 {(watch("sizes") || []).map((size: string, idx: number) => (
@@ -353,9 +476,9 @@ export function ProductFormFields({
                     className="w-24 font-mono text-xs"
                   />
                 </div>
-                <button type="button" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-200 bg-white hover:bg-gray-100 h-9 px-3" onClick={addColor}>
+                <Button type="button" variant="outline" size="sm" onClick={addColor}>
                   Add Color
-                </button>
+                </Button>
               </div>
               <div className="flex flex-wrap gap-2 pt-1">
                 {(watch("colors") || []).map((col: { name: string; code: string }, idx: number) => (

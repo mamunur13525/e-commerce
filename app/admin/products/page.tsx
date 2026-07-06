@@ -27,6 +27,7 @@ import { ProductTable } from "@/components/admin/products/product-table";
 import { ImageUploadSection } from "@/components/admin/products/image-upload-section";
 import { ProductFormFields } from "@/components/admin/products/product-form-fields";
 import { ProductDetailsDrawer } from "@/components/admin/products/product-details-drawer";
+import AddCategoryItem from "@/components/admin/categories/add-category-item";
 
 export default function AdminProductsPage() {
   const [page, setPage] = useState(1);
@@ -37,6 +38,7 @@ export default function AdminProductsPage() {
   const [editingProduct, setEditingProduct] = useState<AdminProduct | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<AdminProduct | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isCategoryCreateOpen, setIsCategoryCreateOpen] = useState(false);
 
   const { data, isLoading } = useAdminProducts({
     page,
@@ -214,6 +216,10 @@ export default function AdminProductsPage() {
     setIsDrawerOpen(true);
   };
 
+  const handleOpenAddCategory = () => {
+    setIsCategoryCreateOpen(true);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -302,6 +308,7 @@ export default function AdminProductsPage() {
                   setColorHex={setColorHex}
                   addColor={addColor}
                   removeColor={removeColor}
+                  onAddCategory={handleOpenAddCategory}
                 />
               </div>
             </div>
@@ -370,6 +377,7 @@ export default function AdminProductsPage() {
                   setColorHex={setColorHex}
                   addColor={addColor}
                   removeColor={removeColor}
+                  onAddCategory={handleOpenAddCategory}
                 />
               </div>
             </div>
@@ -393,6 +401,12 @@ export default function AdminProductsPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Add Category Dialog */}
+      <AddCategoryItem
+        open={isCategoryCreateOpen}
+        onClose={() => setIsCategoryCreateOpen(false)}
+      />
     </div>
   );
 }

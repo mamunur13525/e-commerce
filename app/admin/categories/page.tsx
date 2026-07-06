@@ -3,22 +3,12 @@
 import { useState } from "react";
 import {
   useAdminCategories,
-  useCreateCategory,
   useUpdateCategory,
   useDeleteCategory,
   AdminCategory,
 } from "@/hooks/api/admin";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,6 +31,8 @@ import {
 } from "@/components/ui/table";
 import { Add01Icon, Edit01Icon, Delete01Icon, Search01Icon } from "hugeicons-react";
 import { toast } from "sonner";
+import AddCategoryItem from "@/components/admin/categories/add-category-item";
+import EditCategoryItem from "@/components/admin/categories/edit-category-item";
 
 interface CategoryFormData {
   type: string;
@@ -48,8 +40,6 @@ interface CategoryFormData {
   subtitle: string;
   color: string;
   icon: string;
-  slug: string;
-  count: number;
 }
 
 const defaultValues: CategoryFormData = {
@@ -58,8 +48,6 @@ const defaultValues: CategoryFormData = {
   subtitle: "",
   color: "#d4e157",
   icon: "🌿",
-  slug: "",
-  count: 0,
 };
 
 export default function AdminCategoriesPage() {
@@ -69,7 +57,6 @@ export default function AdminCategoriesPage() {
   const [editingCategory, setEditingCategory] = useState<AdminCategory | null>(null);
 
   const { data, isLoading } = useAdminCategories();
-  const createCategory = useCreateCategory();
   const updateCategory = useUpdateCategory();
   const deleteCategory = useDeleteCategory();
 
@@ -77,6 +64,8 @@ export default function AdminCategoriesPage() {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<CategoryFormData>({
     defaultValues,
@@ -95,24 +84,8 @@ export default function AdminCategoriesPage() {
       subtitle: category.subtitle,
       color: category.color,
       icon: category.icon,
-      slug: category.slug || "",
-      count: category.count,
     });
     setIsEditOpen(true);
-  };
-
-  const handleCreate = async (formData: CategoryFormData) => {
-    try {
-      await createCategory.mutateAsync({
-        ...formData,
-        slug: formData.slug || formData.name.toLowerCase().replace(/\s+/g, "-"),
-      });
-      toast.success("Category created successfully");
-      setIsCreateOpen(false);
-      reset(defaultValues);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to create category");
-    }
   };
 
   const handleEdit = async (formData: CategoryFormData) => {
@@ -121,14 +94,14 @@ export default function AdminCategoriesPage() {
       await updateCategory.mutateAsync({
         id: editingCategory._id,
         ...formData,
-        slug: formData.slug || formData.name.toLowerCase().replace(/\s+/g, "-"),
+        slug: formData.name.toLowerCase().replace(/\s+/g, "-"),
+        count: editingCategory.count,
       });
       toast.success("Category updated successfully");
-      setIsEditOpen(false);
-      setEditingCategory(null);
-      reset(defaultValues);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to update category");
+      closeDialogs();
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || "Failed to update category");
     }
   };
 
@@ -136,8 +109,9 @@ export default function AdminCategoriesPage() {
     try {
       await deleteCategory.mutateAsync(id);
       toast.success(`Category "${name}" deleted successfully`);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to delete category");
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || "Failed to delete category");
     }
   };
 
@@ -262,7 +236,7 @@ export default function AdminCategoriesPage() {
                             <AlertDialogDescription>
                               Are you sure you want to delete{" "}
                               <span className="font-bold text-black">
-                                &quot;{category.name}&quot;
+                                &ldquo;{category.name}&rdquo;
                               </span>
                               ? This action cannot be undone.
                             </AlertDialogDescription>
@@ -287,134 +261,25 @@ export default function AdminCategoriesPage() {
         )}
       </div>
 
-      {/* Create/Edit Category Dialog */}
-      <Dialog
-        open={isCreateOpen || isEditOpen}
-        onOpenChange={(open) => {
-          if (!open) closeDialogs();
-        }}
-      >
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{isCreateOpen ? "Add Category" : "Edit Category"}</DialogTitle>
-            <DialogDescription>
-              {isCreateOpen
-                ? "Create a new product category."
-                : "Update the category details."}
-            </DialogDescription>
-          </DialogHeader>
+      {/* Add Category Dialog */}
+      <AddCategoryItem
+        open={isCreateOpen}
+        onClose={closeDialogs}
+      />
 
-          <form onSubmit={handleSubmit(isCreateOpen ? handleCreate : handleEdit)}>
-            <div className="space-y-4">
-              {/* Name & Type */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Name <span className="text-red-500">*</span>
-                  </label>
-                  <Input
-                    placeholder="e.g. Indoor Plants"
-                    {...register("name", { required: "Name is required" })}
-                  />
-                  {errors.name && (
-                    <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Type <span className="text-red-500">*</span>
-                  </label>
-                  <Input
-                    placeholder="e.g. plants"
-                    {...register("type", { required: "Type is required" })}
-                  />
-                  {errors.type && (
-                    <p className="text-red-500 text-xs mt-1">{errors.type.message}</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Subtitle */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Subtitle <span className="text-red-500">*</span>
-                </label>
-                <Input
-                  placeholder="e.g. Bring nature inside"
-                  {...register("subtitle", { required: "Subtitle is required" })}
-                />
-                {errors.subtitle && (
-                  <p className="text-red-500 text-xs mt-1">{errors.subtitle.message}</p>
-                )}
-              </div>
-
-              {/* Color & Icon */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Color <span className="text-red-500">*</span>
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="color"
-                      {...register("color", { required: "Color is required" })}
-                      className="w-10 h-9 rounded border border-gray-200 cursor-pointer bg-transparent"
-                    />
-                    <Input
-                      placeholder="#d4e157"
-                      {...register("color", { required: "Color is required" })}
-                    />
-                    {errors.color && (
-                      <p className="text-red-500 text-xs mt-1">{errors.color.message}</p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">
-                      Icon <span className="text-red-500">*</span>
-                    </label>
-                    <Input
-                      placeholder="e.g. 🌿 or 🪴"
-                      {...register("icon", { required: "Icon is required" })}
-                    />
-                    {errors.icon && (
-                      <p className="text-red-500 text-xs mt-1">{errors.icon.message}</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Slug & Count */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Slug</label>
-                    <Input
-                      placeholder="Auto-generated if empty"
-                      {...register("slug")}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Product Count</label>
-                    <Input
-                      type="number"
-                      min="0"
-                      placeholder="0"
-                      {...register("count", { valueAsNumber: true })}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <DialogFooter>
-                <Button type="button" variant="outline" onClick={closeDialogs}>
-                  Cancel
-                </Button>
-                <Button type="submit">
-                  {isCreateOpen ? "Create Category" : "Update Category"}
-                </Button>
-              </DialogFooter>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+      {/* Edit Category Dialog */}
+      <EditCategoryItem
+        open={isEditOpen}
+        onClose={closeDialogs}
+        category={editingCategory}
+        register={register}
+        handleSubmit={handleSubmit}
+        errors={errors}
+        onSubmit={handleEdit}
+        isPending={updateCategory.isPending}
+        watch={watch}
+        setValue={setValue}
+      />
     </div>
   );
 }

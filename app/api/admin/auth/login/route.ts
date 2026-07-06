@@ -25,7 +25,6 @@ console.log({user})
         { status: 401 }
       );
     }
-console.l
 
     // Check if user is admin
     if (user.role !== "admin") {
