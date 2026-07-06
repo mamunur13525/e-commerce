@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -29,6 +29,7 @@ import {
   DeliveryInfo,
   ProductDescription,
   ProductNotFound,
+  ProductVariantSelector,
 } from "@/components/product/product-details";
 
 export default function ProductPage() {
@@ -56,6 +57,18 @@ export default function ProductPage() {
   // Fetch product using TanStack Query
   const { data: product, isLoading, error } = useProduct(productId);
 
+  // Variant selection state
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+
+  // Build variant string for cart/order
+  const getVariantString = (): string | undefined => {
+    const parts: string[] = [];
+    if (selectedSize) parts.push(`Size: ${selectedSize}`);
+    if (selectedColor) parts.push(`Color: ${selectedColor}`);
+    return parts.length > 0 ? parts.join(", ") : undefined;
+  };
+
   const isWishlisted = wishlist.some((item) => item._id === productId);
   const isCompared = product ? isInCompare(product._id) : false;
 
@@ -69,6 +82,7 @@ export default function ProductPage() {
       await addToCartMutation.mutateAsync({
         productId,
         quantity: 1,
+        variant: getVariantString(),
       });
 
       const targetRef = imageRef && imageRef.current;
@@ -87,7 +101,11 @@ export default function ProductPage() {
   };
 
   const handleBuyNow = () => {
-    router.push(`/checkout?buyNow=${productId}`);
+    const variant = getVariantString();
+    const params = new URLSearchParams();
+    params.set("buyNow", productId);
+    if (variant) params.set("variant", variant);
+    router.push(`/checkout?${params.toString()}`);
   };
 
   const handleWishlistToggle = () => {
@@ -176,6 +194,16 @@ export default function ProductPage() {
 
             {/* Price */}
             <ProductPriceInfo product={product} />
+
+            {/* Color & Size Selector */}
+            <ProductVariantSelector
+              sizes={product.sizes}
+              colors={product.colors}
+              selectedSize={selectedSize}
+              selectedColor={selectedColor}
+              onSizeChange={setSelectedSize}
+              onColorChange={setSelectedColor}
+            />
 
             {/* Buttons + Additional Actions */}
             <ProductActions

@@ -19,6 +19,7 @@ import {
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { useTrackOrder } from "@/hooks/api/orders";
+import Image from "next/image";
 
 export default function TrackOrderPage() {
   const [orderId, setOrderId] = useState("");
@@ -397,7 +398,7 @@ export default function TrackOrderPage() {
                           <div key={pIndex} className="flex items-center gap-4 bg-gray-50 p-4 rounded-xl">
                             <div className="size-16 bg-white rounded-lg border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden relative">
                               {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img src={product.images?.display_url || "/placeholder-image.png"} alt={product.name} className="object-cover w-full h-full" />
+                              <Image width={64} height={64} src={product?.images?.url || "/placeholder-image.png"} alt={product.name} className="object-cover w-full h-full" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <h4 className="font-medium text-gray-900 truncate">{product.name}</h4>

@@ -49,6 +49,7 @@ export async function GET(request: NextRequest) {
       final_price: item.final_price,
       discount: item.discount,
       product: item.product,
+      ...(item.variant && { variant: item.variant }),
     }));
     console.log({ formattedCart });
     return NextResponse.json({
@@ -84,8 +85,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { productId, quantity = 1 } = await request.json();
-    console.log({ productId, quantity });
+    const { productId, quantity = 1, variant } = await request.json();
+    console.log({ productId, quantity, variant });
     if (!productId) {
       return NextResponse.json(
         { success: false, message: "Product ID is required" },
@@ -114,6 +115,7 @@ export async function POST(request: NextRequest) {
             price: product.price,
             final_price: product.final_price,
             discount: product.discount || 0,
+            ...(variant && { variant }),
           },
         ],
       });
@@ -133,6 +135,7 @@ export async function POST(request: NextRequest) {
           price: product.price,
           final_price: product.final_price,
           discount: product.discount || 0,
+          ...(variant && { variant }),
         });
       }
     }
@@ -152,6 +155,7 @@ export async function POST(request: NextRequest) {
       final_price: item.final_price,
       discount: item.discount,
       product: item.product,
+      ...(item.variant && { variant: item.variant }),
     }));
 
     return NextResponse.json({

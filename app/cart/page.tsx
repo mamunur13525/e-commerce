@@ -211,6 +211,9 @@ export default function CartPage() {
                                             <Link href={'/products/' + item.productId} className="hover:underline font-bold text-[#003d29] text-lg">
                                                 {item.product?.name || `Product ${item.productId}`}
                                             </Link>
+                                            {item.variant && (
+                                                <p className="text-xs text-gray-500 mt-1">{item.variant}</p>
+                                            )}
                                             <button
                                                 onClick={() => handleRemoveItem(item.productId)}
                                                 disabled={removeFromCartMutation.isPending}

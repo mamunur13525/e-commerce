@@ -22,6 +22,8 @@ export interface Product {
   discount?: number;
   currency?: string;
   quantity?: number;
+  sizes?: string[];
+  colors?: Array<{ name: string; code: string }>;
   store?:
   | {
     id?: string;

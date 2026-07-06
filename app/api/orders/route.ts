@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
 
     // Only accept identifiers and choices from the client
     const body = await request.json();
-    const { addressId, paymentMethod, promoCode, itemIds, buyNowProductId, buyNowQuantity, guestInfo, guestAddress, deliveryZoneId, onlinePaymentDetails } = body;
+    const { addressId, paymentMethod, promoCode, itemIds, buyNowProductId, buyNowQuantity, buyNowVariant, guestInfo, guestAddress, deliveryZoneId, onlinePaymentDetails } = body;
 
     // Validate required fields
     if (!paymentMethod) {
@@ -240,6 +240,7 @@ export async function POST(request: NextRequest) {
         product: fetchedProduct._id.toString(),
         quantity: quantity,
         price: fetchedProduct.final_price,
+        ...(buyNowVariant && { variant: buyNowVariant }),
         name: fetchedProduct.name,
         discount: fetchedProduct.discount,
         images: fetchedProduct.image,

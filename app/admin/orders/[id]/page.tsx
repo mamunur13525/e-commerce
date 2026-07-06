@@ -174,9 +174,9 @@ function OrderItemsTable({ order }: { order: AdminOrder }) {
                 <tr key={index} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-3">
-                      {product?.images?.[0]?.display_url ? (
+                      {product?.image?.url ? (
                         <Image
-                          src={product.images[0].display_url}
+                          src={product?.image?.url}
                           alt={productName}
                           className="w-12 h-12 rounded-lg object-cover bg-gray-50 shrink-0 ring-1 ring-gray-200"
                           width={48}
@@ -189,7 +189,7 @@ function OrderItemsTable({ order }: { order: AdminOrder }) {
                       )}
                       <div>
                         <p className="font-medium text-gray-900 text-sm">{productName}</p>
-                        {item.variant && <p className="text-xs text-gray-500 mt-0.5">Variant: {item.variant}</p>}
+                        {item.variant && <p className="text-xs text-gray-500 mt-0.5">Variant: <strong>{item.variant}</strong></p>}
                         {product?.slug && <p className="text-xs text-gray-400 mt-0.5">SKU: {product.slug}</p>}
                       </div>
                     </div>

@@ -25,9 +25,9 @@ export async function GET(
 
     const order = await Order.findById(id)
       .populate("user", "first_name last_name email phone image")
-      .populate("items.product", "name price final_price images slug")
+      .populate("items.product", "name price final_price image slug")
       .lean();
-
+console.log({order})
     if (!order) {
       return NextResponse.json(
         { success: false, message: "Order not found" },

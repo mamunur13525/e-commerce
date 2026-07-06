@@ -19,6 +19,7 @@ export interface CartItem {
   productId: string;
   quantity: number;
   product?: ProductDetails;
+  variant?: string;
 }
 
 export interface CartResponse {
@@ -75,11 +76,11 @@ export const useGetCart = (token: string | null): UseQueryResult<CartItem[], Err
  * Add item to cart
  * @param token - Authentication token
  */
-export const useAddToCart = (token: string | null): UseMutationResult<CartMutationResponse, Error, { productId: string; quantity?: number }> => {
+export const useAddToCart = (token: string | null): UseMutationResult<CartMutationResponse, Error, { productId: string; quantity?: number; variant?: string }> => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: { productId: string; quantity?: number }) => {
+    mutationFn: async (data: { productId: string; quantity?: number; variant?: string }) => {
       if (!token) {
         throw new Error("No authentication token");
       }
@@ -93,6 +94,7 @@ export const useAddToCart = (token: string | null): UseMutationResult<CartMutati
         body: JSON.stringify({
           productId: data.productId,
           quantity: data.quantity || 1,
+          ...(data.variant && { variant: data.variant }),
         }),
       });
 

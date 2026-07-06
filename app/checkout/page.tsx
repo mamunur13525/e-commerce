@@ -54,6 +54,7 @@ function CheckoutContent() {
 
   // Handle direct buy ("buyNow")
   const buyNowProductId = searchParams.get("buyNow");
+  const buyNowVariant = searchParams.get("variant");
   const [buyNowQuantity, setBuyNowQuantity] = useState(1);
 
   // Guest info form state
@@ -293,7 +294,7 @@ function CheckoutContent() {
       const body: Record<string, unknown> = {
         paymentMethod: paymentMethod === "online" ? "Online" : "COD",
         ...(appliedPromo?.code && { promoCode: appliedPromo.code }),
-        ...(isDirectBuy && { buyNowProductId, buyNowQuantity }),
+        ...(isDirectBuy && { buyNowProductId, buyNowQuantity, ...(buyNowVariant && { buyNowVariant }) }),
         ...(!isDirectBuy && selectedItemIds && { itemIds: selectedItemIds }),
       };
 

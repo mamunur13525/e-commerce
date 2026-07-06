@@ -7,3 +7,4 @@ export { ProductMetaInfo } from "./product-meta-info";
 export { DeliveryInfo } from "./delivery-info";
 export { ProductDescription } from "./product-description";
 export { ProductNotFound } from "./product-not-found";
+export { ProductVariantSelector } from "./product-variant-selector";

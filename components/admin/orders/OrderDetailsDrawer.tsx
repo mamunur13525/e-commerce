@@ -227,9 +227,9 @@ function OrderItemsList({ order }: { order: AdminOrder }) {
           const product = item.product;
           return (
             <div key={index} className="flex items-start gap-3 px-4 py-3 hover:bg-gray-50/50 transition-colors">
-              {product?.images?.[0]?.display_url ? (
+              {product?.image?.url ? (
                 <Image
-                  src={product.images[0].display_url}
+                  src={product.image.url}
                   alt={productName}
                   className="w-12 h-12 rounded-lg object-cover bg-gray-50 shrink-0 ring-1 ring-gray-200"
                   width={48}
@@ -243,7 +243,7 @@ function OrderItemsList({ order }: { order: AdminOrder }) {
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-gray-900 text-sm leading-tight">{productName}</p>
                 {item.variant && (
-                  <p className="text-xs text-gray-500 mt-0.5">Variant: {item.variant}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Variant: <strong>{item.variant}</strong></p>
                 )}
                 {product?.slug && (
                   <p className="text-xs text-gray-400 mt-0.5 truncate">SKU: {product.slug}</p>
